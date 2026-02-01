@@ -1,3 +1,4 @@
 token.txt
 .env
-.idea/
+.idea
+.vscode
