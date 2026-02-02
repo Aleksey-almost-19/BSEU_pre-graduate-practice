@@ -1,619 +1,436 @@
-\<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Кредиты - банковские услуги</title>
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            -webkit-tap-highlight-color: transparent;
-        }
-
-        html {
-            font-size: 16px;
+            font-family: Arial, sans-serif;
         }
 
         body {
-            background-color: #ffffff; /* Белый фон */
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            -webkit-font-smoothing: antialiased;
-            -moz-osx-font-smoothing: grayscale;
+            background-color: white;
             color: #333;
-        }
-
-        /* Основной контейнер */
-        .Main {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            width: 100%;
-            max-width: 1400px;
-            margin: 0 auto;
+            line-height: 1.6;
             padding: 20px;
+            min-height: 100vh;
         }
 
-        /* Шапка */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
         .header {
             text-align: center;
             margin-bottom: 40px;
-            padding: 25px 0;
-            border-bottom: 1px solid #e8f5e9;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #e8f5e9;
         }
 
         .header h1 {
-            color: #2e7d32; /* Зеленый цвет для заголовка */
-            font-size: 2.5rem;
-            margin-bottom: 12px;
-            font-weight: 700;
+            color: #2e7d32;
+            font-size: 2.5em;
+            margin-bottom: 10px;
         }
 
         .header p {
-            color: #66bb6a; /* Светло-зеленый */
-            font-size: 1.1rem;
-            font-weight: 500;
+            color: #666;
+            font-size: 1.2em;
         }
 
-        /* Горизонтальный контейнер для кнопок */
-        .button-container {
+        /* Горизонтальное расположение кнопок */
+        .credit-options {
             display: flex;
             flex-wrap: nowrap;
-            gap: 25px;
-            width: 100%;
+            gap: 20px;
             margin-bottom: 50px;
             overflow-x: auto;
-            scrollbar-width: none;
-            -ms-overflow-style: none;
-            padding: 15px 5px;
+            padding: 10px 5px;
+            scrollbar-width: thin;
+            scrollbar-color: #4caf50 #f1f8e9;
         }
 
-        /* Скрываем скроллбар для Webkit браузеров */
-        .button-container::-webkit-scrollbar {
-            display: none;
+        .credit-options::-webkit-scrollbar {
+            height: 8px;
         }
 
-        /* Крупные горизонтальные кнопки */
-        .credit-button {
-            flex: 1 1 320px;
-            min-width: 320px;
-            background-color: #f8fef8; /* Очень светлый зеленый фон для кнопок */
+        .credit-options::-webkit-scrollbar-track {
+            background: #f1f8e9;
+            border-radius: 4px;
+        }
+
+        .credit-options::-webkit-scrollbar-thumb {
+            background: #4caf50;
+            border-radius: 4px;
+        }
+
+        .credit-card {
+            flex: 0 0 auto;
+            width: 350px;
+            min-width: 300px;
+            background: #f8fef8;
             border: 2px solid #e8f5e9;
-            border-radius: 20px;
-            padding: 35px 30px;
-            text-align: left;
+            border-radius: 15px;
+            padding: 25px;
+            transition: all 0.3s ease;
             cursor: pointer;
-            transition: all 0.25s ease;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            box-shadow: 0 6px 20px rgba(76, 175, 80, 0.08);
-            height: 220px;
         }
 
-        .credit-button:hover {
-            background-color: #f1f8e9;
-            border-color: #4caf50;
+        .credit-card:hover {
             transform: translateY(-5px);
-            box-shadow: 0 12px 30px rgba(76, 175, 80, 0.15);
+            box-shadow: 0 10px 20px rgba(76, 175, 80, 0.15);
+            border-color: #4caf50;
+            background: #f1f8e9;
         }
 
-        .credit-button:active {
-            transform: translateY(-2px);
-        }
-
-        .button-content {
-            display: flex;
-            flex-direction: column;
-            flex-grow: 1;
-        }
-
-        .button-title {
-            font-size: 1.6rem;
-            font-weight: 700;
-            color: #1b5e20; /* Темно-зеленый */
+        .credit-card h3 {
+            color: #1b5e20;
+            font-size: 1.5em;
             margin-bottom: 15px;
-            line-height: 1.3;
+            min-height: 60px;
         }
 
-        .button-subtitle {
-            font-size: 1.05rem;
-            color: #66bb6a; /* Зеленый */
-            font-weight: 400;
-            line-height: 1.5;
-            margin-bottom: 25px;
-        }
-
-        .button-footer {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-top: auto;
-        }
-
-        .amount-badge {
+        .credit-amount {
+            display: inline-block;
             background: linear-gradient(135deg, #4caf50, #2e7d32);
             color: white;
-            padding: 10px 20px;
-            border-radius: 25px;
-            font-size: 1.2rem;
-            font-weight: 700;
-            box-shadow: 0 3px 8px rgba(76, 175, 80, 0.2);
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            font-size: 1.2em;
+        }
+
+        .credit-description {
+            color: #555;
+            font-size: 1.1em;
+            line-height: 1.5;
+            min-height: 80px;
+        }
+
+        /* Разделитель */
+        .divider {
+            height: 2px;
+            background: linear-gradient(to right, transparent, #4caf50, transparent);
+            margin: 40px 0;
         }
 
         /* Информационная секция */
         .info-section {
-            background-color: #f8fef8; /* Светлый фон для информационной секции */
-            border-radius: 20px;
-            padding: 40px;
-            box-shadow: 0 6px 20px rgba(76, 175, 80, 0.08);
+            margin-top: 40px;
+            padding: 30px;
+            background: #f8fef8;
+            border-radius: 15px;
             border: 2px solid #e8f5e9;
-            margin-top: 20px;
         }
 
         .info-section h2 {
             color: #2e7d32;
-            font-size: 1.8rem;
-            margin-bottom: 30px;
-            font-weight: 700;
+            font-size: 1.8em;
+            margin-bottom: 25px;
             text-align: center;
         }
 
-        .info-list {
+        .info-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-            gap: 25px;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
         }
 
         .info-item {
-            background-color: #ffffff; /* Белый фон для карточек */
-            border-radius: 15px;
-            padding: 25px;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
             border-left: 4px solid #4caf50;
-            transition: all 0.2s ease;
             box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
         }
 
         .info-item:hover {
-            background-color: #f1f8e9;
             transform: translateX(5px);
             box-shadow: 0 5px 15px rgba(76, 175, 80, 0.1);
         }
 
         .info-item strong {
             color: #1b5e20;
-            font-weight: 700;
-            font-size: 1.1rem;
+            font-size: 1.1em;
             display: block;
-            margin-bottom: 12px;
-            line-height: 1.4;
+            margin-bottom: 10px;
         }
 
         .info-item p {
             color: #555;
-            font-size: 0.95rem;
-            line-height: 1.6;
+            font-size: 0.95em;
+            line-height: 1.5;
         }
 
         /* Футер */
         .footer {
             text-align: center;
             margin-top: 50px;
-            padding: 30px 0;
+            padding-top: 20px;
             border-top: 2px solid #e8f5e9;
             color: #666;
-            font-size: 0.9rem;
         }
 
-        .currency {
+        .footer strong {
             color: #2e7d32;
-            font-weight: 600;
         }
 
         /* Адаптивность */
-        
-        /* Планшеты и небольшие экраны */
-        @media (max-width: 1024px) {
-            .credit-button {
-                flex: 1 1 300px;
-                min-width: 300px;
-                height: 200px;
-                padding: 30px 25px;
-            }
-            
-            .button-title {
-                font-size: 1.4rem;
-            }
-            
-            .info-list {
-                grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-                gap: 20px;
-            }
-        }
-
-        /* Мобильные устройства */
         @media (max-width: 768px) {
-            .Main {
-                padding: 15px;
-            }
-            
-            .header {
-                margin-bottom: 30px;
-                padding: 20px 0;
-            }
-            
-            .header h1 {
-                font-size: 2rem;
-            }
-            
-            .button-container {
-                gap: 20px;
-                margin-bottom: 40px;
-                padding: 10px 5px;
-            }
-            
-            .credit-button {
-                flex: 1 1 280px;
-                min-width: 280px;
-                height: 190px;
-                padding: 25px 20px;
-            }
-            
-            .button-title {
-                font-size: 1.3rem;
-            }
-            
-            .button-subtitle {
-                font-size: 1rem;
-                margin-bottom: 20px;
-            }
-            
-            .amount-badge {
-                font-size: 1.1rem;
-                padding: 8px 16px;
-            }
-            
-            .info-section {
-                padding: 30px;
-            }
-            
-            .info-section h2 {
-                font-size: 1.6rem;
-                margin-bottom: 25px;
-            }
-        }
-
-        /* Маленькие мобильные */
-        @media (max-width: 480px) {
-            .header h1 {
-                font-size: 1.7rem;
-            }
-            
-            .header p {
-                font-size: 1rem;
-            }
-            
-            .button-container {
-                gap: 15px;
-            }
-            
-            .credit-button {
-                flex: 1 1 250px;
-                min-width: 250px;
-                height: 180px;
-                padding: 22px 18px;
-            }
-            
-            .button-title {
-                font-size: 1.2rem;
-            }
-            
-            .button-subtitle {
-                font-size: 0.95rem;
-                margin-bottom: 15px;
-            }
-            
-            .amount-badge {
-                font-size: 1rem;
-                padding: 7px 14px;
-            }
-            
-            .info-section {
-                padding: 25px 20px;
-            }
-            
-            .info-section h2 {
-                font-size: 1.4rem;
-                margin-bottom: 20px;
-            }
-            
-            .info-list {
-                grid-template-columns: 1fr;
-                gap: 18px;
-            }
-            
-            .info-item {
-                padding: 20px;
-            }
-        }
-
-        /* Ландшафтная ориентация на мобильных */
-        @media (max-height: 500px) and (orientation: landscape) {
-            .credit-button {
-                height: 160px;
-                padding: 20px;
-                min-width: 240px;
-            }
-            
-            .button-title {
-                font-size: 1.1rem;
-                margin-bottom: 10px;
-            }
-            
-            .button-subtitle {
-                font-size: 0.9rem;
-                margin-bottom: 15px;
-            }
-        }
-
-        /* Темная тема */
-        @media (prefers-color-scheme: dark) {
             body {
-                background-color: #121212;
-                color: #e0e0e0;
+                padding: 10px;
             }
             
-            .credit-button {
-                background-color: #1e1e1e;
-                border-color: #2e4a2e;
+            .container {
+                padding: 20px;
             }
             
-            .credit-button:hover {
-                background-color: #2d2d2d;
-                border-color: #4caf50;
+            .header h1 {
+                font-size: 2em;
             }
             
-            .button-title {
-                color: #81c784;
+            .credit-card {
+                width: 280px;
+                min-width: 280px;
+                padding: 20px;
             }
             
-            .button-subtitle {
-                color: #a5d6a7;
+            .credit-card h3 {
+                font-size: 1.3em;
+                min-height: 50px;
             }
             
-            .amount-badge {
-                background: linear-gradient(135deg, #388e3c, #1b5e20);
+            .credit-description {
+                min-height: 70px;
+                font-size: 1em;
+            }
+            
+            .info-grid {
+                grid-template-columns: 1fr;
             }
             
             .info-section {
-                background-color: #1e1e1e;
-                border-color: #2e4a2e;
+                padding: 20px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .credit-card {
+                width: 250px;
+                min-width: 250px;
             }
             
-            .info-item {
-                background-color: #2d2d2d;
+            .credit-card h3 {
+                font-size: 1.2em;
             }
             
-            .info-item strong {
-                color: #81c784;
+            .credit-amount {
+                font-size: 1.1em;
             }
             
-            .info-item p {
-                color: #bdbdbd;
-            }
-            
-            .footer {
-                border-color: #2e4a2e;
-                color: #bdbdbd;
+            .header h1 {
+                font-size: 1.8em;
             }
         }
     </style>
 </head>
 <body>
-    <div class="Main">
+    <div class="container">
         <div class="header">
             <h1>Кредиты</h1>
             <p>Выберите подходящий кредитный продукт</p>
         </div>
-
-        <!-- Горизонтальный контейнер для кнопок -->
-        <div class="button-container">
-            <!-- Кнопка 1: Потребительские кредиты -->
-            <button class="credit-button" id="consumerCredit">
-                <div class="button-content">
-                    <div class="button-title">
-                        Потребительские кредиты
-                    </div>
-                    <div class="button-subtitle">
-                        Быстрое решение, минимальный пакет документов для любых целей. Одобрение за 1 час.
-                    </div>
-                </div>
-                <div class="button-footer">
-                    <span class="amount-badge">до 50 000 BYN</span>
-                </div>
-            </button>
-
-            <!-- Кнопка 2: Кредиты на недвижимость -->
-            <button class="credit-button" id="mortgageCredit">
-                <div class="button-content">
-                    <div class="button-title">
-                        Кредиты на недвижимость
-                    </div>
-                    <div class="button-subtitle">
-                        Ипотека на покупку квартиры, дома или земельного участка. Ставка от 6% годовых.
-                    </div>
-                </div>
-                <div class="button-footer">
-                    <span class="amount-badge">до 200 000 BYN</span>
-                </div>
-            </button>
-
-            <!-- Кнопка 3: Льготное кредитование -->
-            <button class="credit-button" id="preferentialCredit">
-                <div class="button-content">
-                    <div class="button-title">
-                        Льготное кредитование
-                    </div>
-                    <div class="button-subtitle">
-                        Специальные программы для предпринимателей, молодых семей и многодетных родителей.
-                    </div>
-                </div>
-                <div class="button-footer">
-                    <span class="amount-badge">от 4.5% годовых</span>
-                </div>
-            </button>
+        
+        <!-- Горизонтальные кнопки -->
+        <div class="credit-options">
+            <div class="credit-card" onclick="selectCredit('consumer')">
+                <h3>Потребительские кредиты</h3>
+                <div class="credit-amount">до 50 000 BYN</div>
+                <p class="credit-description">Быстрое решение, минимальный пакет документов для любых целей. Одобрение за 1 час.</p>
+            </div>
+            
+            <div class="credit-card" onclick="selectCredit('mortgage')">
+                <h3>Кредиты на недвижимость</h3>
+                <div class="credit-amount">до 200 000 BYN</div>
+                <p class="credit-description">Ипотека на покупку квартиры, дома или земельного участка. Ставка от 6% годовых.</p>
+            </div>
+            
+            <div class="credit-card" onclick="selectCredit('preferential')">
+                <h3>Льготное кредитование</h3>
+                <div class="credit-amount">от 4.5% годовых</div>
+                <p class="credit-description">Специальные программы для предпринимателей и молодых семей. Льготные условия.</p>
+            </div>
         </div>
-
-        <!-- Информационная секция -->
+        
+        <div class="divider"></div>
+        
+        <!-- Справочная информация -->
         <div class="info-section">
             <h2>Справочная информация для кредитополучателей</h2>
-            <div class="info-list">
-                <div class="info-item">
+            <div class="info-grid">
+                <div class="info-item" onclick="showInfo('alert')">
                     <strong>Будьте бдительны! Не станьте жертвой мошенников</strong>
-                    <p>Никогда не сообщайте посторонним лицам данные вашей банковской карты, коды из SMS и пароли от интернет-банкинга. Банк никогда не запрашивает эти данные по телефону или email.</p>
+                    <p>Никогда не сообщайте посторонним лицам данные вашей банковской карты, коды из SMS и пароли от интернет-банкинга.</p>
                 </div>
                 
-                <div class="info-item">
+                <div class="info-item" onclick="showInfo('notice')">
                     <strong>Вниманию кредитополучателей</strong>
-                    <p>Ознакомьтесь с условиями кредитования перед подачей заявки. Все тарифы и условия указаны в договоре. Внимательно читайте все документы перед подписанием.</p>
+                    <p>Ознакомьтесь с условиями кредитования перед подачей заявки. Все тарифы и условия указаны в договоре.</p>
                 </div>
                 
-                <div class="info-item">
+                <div class="info-item" onclick="showInfo('repayment')">
                     <strong>Информация по погашению кредитов</strong>
-                    <p>Погашение кредита возможно через отделения банка, банкоматы, интернет-банкинг и мобильное приложение. Также доступно автопогашение с привязанной карты.</p>
+                    <p>Погашение кредита возможно через отделения банка, банкоматы, интернет-банкинг и мобильное приложение.</p>
                 </div>
                 
-                <div class="info-item">
+                <div class="info-item" onclick="showInfo('delay')">
                     <strong>Отсрочка по погашению кредитов</strong>
-                    <p>В случае финансовых трудностей вы можете обратиться в банк для рассмотрения возможности реструктуризации кредита или предоставления кредитных каникул.</p>
+                    <p>В случае финансовых трудностей вы можете обратиться в банк для рассмотрения возможности реструктуризации кредита.</p>
                 </div>
                 
-                <div class="info-item">
+                <div class="info-item" onclick="showInfo('offers')">
                     <strong>Публичные оферты ОАО «АСБ Беларусбанк»</strong>
-                    <p>С официальными документами и публичными офертами можно ознакомиться на сайте банка в соответствующем разделе или в любом отделении банка.</p>
+                    <p>С официальными документами и публичными офертами можно ознакомиться на сайте банка в соответствующем разделе.</p>
                 </div>
                 
-                <div class="info-item">
+                <div class="info-item" onclick="showInfo('contacts')">
                     <strong>Адреса и телефоны ипотечных офисов</strong>
-                    <p>Консультацию по ипотечным кредитам можно получить в специализированных офисах банка по всей стране. Актуальные адреса и телефоны на сайте банка.</p>
+                    <p>Консультацию по ипотечным кредитам можно получить в специализированных офисах банка по всей стране.</p>
                 </div>
                 
-                <div class="info-item">
+                <div class="info-item" onclick="showInfo('status')">
                     <strong>Ход рассмотрения заявки на кредит (овердрафт)</strong>
-                    <p>Статус рассмотрения вашей заявки можно отслеживать в личном кабинете или уточнить у персонального менеджера. Средний срок рассмотрения - 1-3 рабочих дня.</p>
+                    <p>Статус рассмотрения вашей заявки можно отслеживать в личном кабинете или уточнить у персонального менеджера.</p>
                 </div>
             </div>
         </div>
-
+        
         <div class="footer">
-            <p>Все кредиты предоставляются в <span class="currency">белорусских рублях (BYN)</span></p>
-            <p style="margin-top: 12px;">© 2023 Кредитный сервис. Все права защищены.</p>
+            <p>Все кредиты предоставляются в <strong>белорусских рублях (BYN)</strong></p>
+            <p style="margin-top: 15px;">© 2023 Кредитный сервис</p>
         </div>
     </div>
 
-    <script src="{{ url_for('static',filename='js/jquery-3.3.1.min.js') }}"></script>
     <script>
-        $(document).ready(function() {
-            const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+        function selectCredit(type) {
+            let title = '';
+            let amount = '';
+            let description = '';
             
-            // Обработчики для кнопок кредитов
-            $('.credit-button').click(function(e) {
-                if (isMobile) e.preventDefault();
-                
-                const buttonId = $(this).attr('id');
-                const buttonTitle = $(this).find('.button-title').text();
-                
-                // Анимация нажатия
-                $(this).css({
-                    'transform': 'scale(0.98)',
-                    'background-color': '#e8f5e9',
-                    'border-color': '#4caf50'
+            switch(type) {
+                case 'consumer':
+                    title = 'Потребительские кредиты';
+                    amount = 'до 50 000 BYN';
+                    description = 'Быстрое решение, минимальный пакет документов для любых целей. Одобрение за 1 час.';
+                    break;
+                case 'mortgage':
+                    title = 'Кредиты на недвижимость';
+                    amount = 'до 200 000 BYN';
+                    description = 'Ипотека на покупку квартиры, дома или земельного участка. Ставка от 6% годовых.';
+                    break;
+                case 'preferential':
+                    title = 'Льготное кредитование';
+                    amount = 'от 4.5% годовых';
+                    description = 'Специальные программы для предпринимателей и молодых семей. Льготные условия.';
+                    break;
+            }
+            
+            // Анимация выбора
+            const card = event.currentTarget;
+            card.style.transform = 'scale(0.98)';
+            card.style.background = '#e8f5e9';
+            
+            setTimeout(() => {
+                card.style.transform = '';
+                card.style.background = '';
+            }, 200);
+            
+            // В реальном приложении здесь будет переход на другую страницу
+            console.log(`Выбран кредит: ${title}`);
+            alert(`Вы выбрали: ${title}\n${amount}\n\n${description}\n\nФункционал будет добавлен позже.`);
+        }
+        
+        function showInfo(type) {
+            const item = event.currentTarget;
+            const title = item.querySelector('strong').textContent;
+            
+            // Анимация
+            item.style.transform = 'scale(0.98)';
+            item.style.background = '#e8f5e9';
+            
+            setTimeout(() => {
+                item.style.transform = '';
+                item.style.background = '';
+            }, 200);
+            
+            console.log(`Открыта информация: ${title}`);
+            alert(`Информация: ${title}\n\nБолее подробную информацию можно получить в отделении банка или на официальном сайте.`);
+        }
+        
+        // Добавляем обработчики клавиатуры для доступности
+        document.addEventListener('DOMContentLoaded', function() {
+            // Для кредитных карточек
+            const creditCards = document.querySelectorAll('.credit-card');
+            creditCards.forEach(card => {
+                card.setAttribute('tabindex', '0');
+                card.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        this.click();
+                    }
                 });
-                
-                setTimeout(() => {
-                    $(this).css({
-                        'transform': '',
-                        'background-color': '',
-                        'border-color': ''
-                    });
-                }, 200);
-                
-                console.log(`Выбран кредит: "${buttonTitle}"`);
-                
-                // Показать уведомление (в реальном приложении здесь будет переход)
-                const badgeText = $(this).find('.amount-badge').text();
-                alert(`Вы выбрали: ${buttonTitle}\n${badgeText}\n\nФункционал находится в разработке.`);
-                
-                // Вибрация на мобильных
-                if (isMobile && navigator.vibrate) {
-                    navigator.vibrate(30);
-                }
             });
             
-            // Горизонтальный скролл для кнопок
-            const container = $('.button-container')[0];
-            if (container) {
+            // Для информационных блоков
+            const infoItems = document.querySelectorAll('.info-item');
+            infoItems.forEach(item => {
+                item.setAttribute('tabindex', '0');
+                item.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        this.click();
+                    }
+                });
+            });
+            
+            // Автоматический скролл для горизонтальных карточек
+            const creditOptions = document.querySelector('.credit-options');
+            if (creditOptions) {
                 let isDown = false;
                 let startX;
                 let scrollLeft;
                 
-                container.addEventListener('mousedown', (e) => {
+                creditOptions.addEventListener('mousedown', (e) => {
                     isDown = true;
-                    startX = e.pageX - container.offsetLeft;
-                    scrollLeft = container.scrollLeft;
+                    startX = e.pageX - creditOptions.offsetLeft;
+                    scrollLeft = creditOptions.scrollLeft;
                 });
                 
-                container.addEventListener('mouseleave', () => {
+                creditOptions.addEventListener('mouseleave', () => {
                     isDown = false;
                 });
                 
-                container.addEventListener('mouseup', () => {
+                creditOptions.addEventListener('mouseup', () => {
                     isDown = false;
                 });
                 
-                container.addEventListener('mousemove', (e) => {
+                creditOptions.addEventListener('mousemove', (e) => {
                     if (!isDown) return;
                     e.preventDefault();
-                    const x = e.pageX - container.offsetLeft;
+                    const x = e.pageX - creditOptions.offsetLeft;
                     const walk = (x - startX) * 2;
-                    container.scrollLeft = scrollLeft - walk;
-                });
-                
-                // Touch события для мобильных
-                container.addEventListener('touchstart', (e) => {
-                    startX = e.touches[0].pageX - container.offsetLeft;
-                    scrollLeft = container.scrollLeft;
-                });
-                
-                container.addEventListener('touchmove', (e) => {
-                    const x = e.touches[0].pageX - container.offsetLeft;
-                    const walk = (x - startX) * 2;
-                    container.scrollLeft = scrollLeft - walk;
+                    creditOptions.scrollLeft = scrollLeft - walk;
                 });
             }
-            
-            // Интерактивность для информационных блоков
-            $('.info-item').click(function() {
-                const title = $(this).find('strong').text();
-                
-                $(this).css({
-                    'transform': 'scale(0.99)',
-                    'background-color': '#e8f5e9'
-                });
-                
-                setTimeout(() => {
-                    $(this).css({
-                        'transform': '',
-                        'background-color': ''
-                    });
-                }, 200);
-                
-                console.log(`Открыта информация: "${title}"`);
-            });
         });
     </script>
 </body>
