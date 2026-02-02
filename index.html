@@ -2,7 +2,7 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Кредиты - банковские услуги</title>
     <style>
         * {
@@ -10,117 +10,130 @@
             padding: 0;
             box-sizing: border-box;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            -webkit-tap-highlight-color: transparent; /* Убирает подсветку при тапе на мобильных */
+        }
+
+        html {
+            font-size: 16px; /* Базовый размер шрифта для расчета rem */
         }
 
         body {
             background-color: #f0f9f0;
-            padding: 30px 20px;
+            padding: 20px 15px;
             min-height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
         }
 
         .Main {
             background-color: white;
-            border-radius: 24px;
-            padding: 35px;
-            max-width: 450px;
+            border-radius: 20px;
+            padding: 25px 20px;
             width: 100%;
-            box-shadow: 0 12px 35px rgba(72, 187, 120, 0.15);
+            max-width: 500px;
+            box-shadow: 0 10px 30px rgba(72, 187, 120, 0.15);
             border: 1px solid #e8f5e9;
         }
 
         .header {
             text-align: center;
-            margin-bottom: 35px;
-            padding-bottom: 25px;
+            margin-bottom: 25px;
+            padding-bottom: 20px;
             border-bottom: 1px solid #e8f5e9;
         }
 
         .header h1 {
             color: #2e7d32;
-            font-size: 32px;
-            margin-bottom: 8px;
+            font-size: 1.8rem; /* Используем rem для адаптивности */
+            margin-bottom: 6px;
             font-weight: 700;
-            letter-spacing: -0.5px;
+            line-height: 1.2;
         }
 
         .header p {
             color: #66bb6a;
-            font-size: 15px;
+            font-size: 0.9rem;
             font-weight: 500;
         }
 
         .button-container {
             display: flex;
             flex-direction: column;
-            gap: 18px;
-            margin-top: 30px;
+            gap: 16px;
+            margin-top: 25px;
         }
 
         /* Стиль кнопок в светло-зеленой гамме */
         .credit-button {
             background-color: #ffffff;
             border: 2px solid #e8f5e9;
-            border-radius: 18px;
-            padding: 22px 25px;
+            border-radius: 16px;
+            padding: 18px 16px;
             text-align: left;
             cursor: pointer;
-            transition: all 0.25s ease;
+            transition: all 0.2s ease;
             position: relative;
             display: flex;
             align-items: center;
             justify-content: space-between;
-            box-shadow: 0 4px 12px rgba(76, 175, 80, 0.08);
+            box-shadow: 0 4px 10px rgba(76, 175, 80, 0.08);
+            width: 100%;
+            -webkit-appearance: none; /* Убирает стили по умолчанию на iOS */
+            appearance: none;
         }
 
-        .credit-button:hover {
+        .credit-button:hover, .credit-button:active {
             background-color: #f1f8e9;
             border-color: #66bb6a;
-            transform: translateY(-3px);
-            box-shadow: 0 8px 20px rgba(76, 175, 80, 0.15);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(76, 175, 80, 0.15);
         }
 
         .credit-button:active {
-            transform: translateY(-1px);
+            transform: translateY(0);
         }
 
         .button-content {
             display: flex;
             flex-direction: column;
             flex-grow: 1;
+            min-width: 0; /* Для правильного обрезания текста */
         }
 
         .button-title {
-            font-size: 18px;
+            font-size: 1.1rem;
             font-weight: 600;
             color: #1b5e20;
-            margin-bottom: 6px;
+            margin-bottom: 5px;
             display: flex;
             align-items: center;
+            flex-wrap: wrap;
+            line-height: 1.3;
         }
 
         .button-subtitle {
-            font-size: 14px;
+            font-size: 0.85rem;
             color: #66bb6a;
             font-weight: 400;
             line-height: 1.4;
         }
 
         .button-icon {
-            width: 48px;
-            height: 48px;
+            width: 44px;
+            height: 44px;
+            min-width: 44px; /* Фиксируем минимальный размер */
             border-radius: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
             font-weight: bold;
             color: white;
-            font-size: 20px;
-            flex-shrink: 0;
-            margin-left: 20px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            font-size: 1.25rem;
+            margin-left: 12px;
+            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
         }
 
         /* Разные оттенки зеленого для иконок */
@@ -141,31 +154,241 @@
             color: #2e7d32;
             padding: 4px 10px;
             border-radius: 20px;
-            font-size: 14px;
+            font-size: 0.8rem;
             font-weight: 600;
-            margin-left: 12px;
-            white-space: nowrap;
-        }
-
-        .arrow-icon {
-            color: #4caf50;
-            font-size: 20px;
-            font-weight: bold;
             margin-left: 10px;
+            white-space: nowrap;
+            flex-shrink: 0; /* Не сжимается при нехватке места */
         }
 
         .footer {
             text-align: center;
-            margin-top: 35px;
-            padding-top: 25px;
+            margin-top: 30px;
+            padding-top: 20px;
             border-top: 1px solid #e8f5e9;
             color: #81c784;
-            font-size: 13px;
+            font-size: 0.8rem;
         }
 
         .currency {
             color: #2e7d32;
             font-weight: 600;
+        }
+
+        /* Медиа-запросы для адаптивности */
+
+        /* Планшеты и маленькие ноутбуки (от 768px до 1024px) */
+        @media (min-width: 768px) {
+            body {
+                padding: 30px;
+            }
+            
+            .Main {
+                padding: 30px;
+                border-radius: 24px;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .header p {
+                font-size: 1rem;
+            }
+            
+            .credit-button {
+                padding: 20px 22px;
+            }
+            
+            .button-title {
+                font-size: 1.2rem;
+            }
+            
+            .button-subtitle {
+                font-size: 0.9rem;
+            }
+            
+            .button-icon {
+                width: 48px;
+                height: 48px;
+                font-size: 1.4rem;
+            }
+        }
+
+        /* Большие планшеты и десктопы (от 1024px) */
+        @media (min-width: 1024px) {
+            .Main {
+                max-width: 550px;
+                padding: 35px 30px;
+            }
+            
+            .header h1 {
+                font-size: 2.2rem;
+            }
+            
+            .button-container {
+                gap: 20px;
+            }
+        }
+
+        /* Маленькие мобильные (до 360px) */
+        @media (max-width: 360px) {
+            body {
+                padding: 15px 10px;
+            }
+            
+            .Main {
+                padding: 20px 15px;
+                border-radius: 18px;
+            }
+            
+            .header h1 {
+                font-size: 1.6rem;
+            }
+            
+            .button-title {
+                font-size: 1rem;
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .amount-badge {
+                margin-left: 0;
+                margin-top: 5px;
+                align-self: flex-start;
+            }
+            
+            .credit-button {
+                padding: 15px 14px;
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .button-icon {
+                margin-left: 0;
+                margin-top: 12px;
+                width: 40px;
+                height: 40px;
+                font-size: 1.1rem;
+            }
+            
+            .button-container {
+                gap: 14px;
+            }
+        }
+
+        /* Очень маленькие мобильные (до 320px) */
+        @media (max-width: 320px) {
+            .header h1 {
+                font-size: 1.5rem;
+            }
+            
+            .button-title {
+                font-size: 0.95rem;
+            }
+            
+            .button-subtitle {
+                font-size: 0.8rem;
+            }
+            
+            .amount-badge {
+                font-size: 0.75rem;
+                padding: 3px 8px;
+            }
+        }
+
+        /* Ландшафтная ориентация на мобильных */
+        @media (max-height: 500px) and (orientation: landscape) {
+            body {
+                padding: 10px;
+                align-items: flex-start;
+            }
+            
+            .Main {
+                max-width: 90%;
+                margin: 10px auto;
+            }
+            
+            .button-container {
+                flex-direction: row;
+                flex-wrap: wrap;
+            }
+            
+            .credit-button {
+                flex: 1 1 calc(50% - 8px);
+                min-width: 200px;
+            }
+            
+            .header {
+                margin-bottom: 15px;
+                padding-bottom: 15px;
+            }
+        }
+
+        /* Поддержка темной темы на мобильных */
+        @media (prefers-color-scheme: dark) {
+            body {
+                background-color: #0d1f0d;
+            }
+            
+            .Main {
+                background-color: #1a2c1a;
+                border-color: #2e4a2e;
+            }
+            
+            .header h1 {
+                color: #81c784;
+            }
+            
+            .header p {
+                color: #a5d6a7;
+            }
+            
+            .credit-button {
+                background-color: #243824;
+                border-color: #2e4a2e;
+            }
+            
+            .credit-button:hover, .credit-button:active {
+                background-color: #2d462d;
+                border-color: #4caf50;
+            }
+            
+            .button-title {
+                color: #c8e6c9;
+            }
+            
+            .button-subtitle {
+                color: #a5d6a7;
+            }
+            
+            .amount-badge {
+                background-color: #2d462d;
+                color: #a5d6a7;
+            }
+            
+            .footer {
+                color: #81c784;
+                border-color: #2e4a2e;
+            }
+            
+            .currency {
+                color: #a5d6a7;
+            }
+        }
+
+        /* Оптимизация для устройств с невысоким DPI */
+        @media (-webkit-device-pixel-ratio: 1.5), (min-resolution: 144dpi) {
+            .credit-button {
+                border-width: 1.5px;
+            }
+        }
+
+        /* Предотвращение масштабирования на мобильных при фокусе на input */
+        @media (max-width: 768px) {
+            input, select, textarea, button {
+                font-size: 16px !important; /* Предотвращает увеличение в iOS */
+            }
         }
     </style>
 </head>
@@ -236,54 +459,89 @@
     <script src="{{ url_for('static',filename='js/jquery-3.3.1.min.js') }}"></script>
     <script>
         $(document).ready(function() {
+            // Определяем тип устройства
+            const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+            const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
+            
+            // Настройки для мобильных устройств
+            if (isMobile) {
+                // Улучшаем отзывчивость на тач-устройствах
+                $('.credit-button').on('touchstart', function(e) {
+                    e.preventDefault();
+                    $(this).addClass('active');
+                }).on('touchend', function() {
+                    $(this).removeClass('active');
+                });
+                
+                // Предотвращаем залипание hover на мобильных
+                if (isIOS) {
+                    document.addEventListener('touchstart', function() {}, {passive: true});
+                }
+            }
+            
             // Обработчики для всех кнопок
-            $('.credit-button').click(function() {
+            $('.credit-button').click(function(e) {
+                if (isMobile) {
+                    e.preventDefault(); // Предотвращаем двойной клик на мобильных
+                }
+                
                 const buttonId = $(this).attr('id');
                 const buttonTitle = $(this).find('.button-title').text().split('до')[0].trim();
                 
-                // Анимация нажатия
+                // Анимация нажатия с учетом устройства
                 $(this).css({
-                    'transform': 'scale(0.97)',
+                    'transform': isMobile ? 'scale(0.97)' : 'scale(0.98)',
                     'background-color': '#e8f5e9',
                     'border-color': '#4caf50'
                 });
                 
-                // Возвращаем исходное состояние через 200ms
+                // Возвращаем исходное состояние
                 setTimeout(() => {
                     $(this).css({
                         'transform': '',
                         'background-color': '',
                         'border-color': ''
                     });
-                }, 200);
+                }, isMobile ? 150 : 200);
                 
                 // Выводим информацию в консоль
                 console.log(`Выбран кредит: "${buttonTitle}"`);
                 
-                // Можно добавить здесь функционал перенаправления или открытия модального окна
+                // В реальном приложении здесь будет переход или модальное окно
+                // Для мобильных можно добавить вибрацию (если поддерживается)
+                if (isMobile && navigator.vibrate) {
+                    navigator.vibrate(50); // Короткая вибрация
+                }
             });
             
-            // Эффект при наведении (дополнение к CSS)
-            $('.credit-button').hover(
-                function() {
-                    $(this).find('.button-icon').css('transform', 'scale(1.05)');
-                },
-                function() {
-                    $(this).find('.button-icon').css('transform', 'scale(1)');
-                }
-            );
+            // Для десктопов добавляем hover эффекты
+            if (!isMobile) {
+                $('.credit-button').hover(
+                    function() {
+                        $(this).find('.button-icon').css('transform', 'scale(1.05)');
+                    },
+                    function() {
+                        $(this).find('.button-icon').css('transform', 'scale(1)');
+                    }
+                );
+            }
             
-            // Добавляем эффект при фокусе для доступности
+            // Фокус для доступности (клавиатура, скринридеры)
             $('.credit-button').focus(function() {
                 $(this).css('outline', '3px solid rgba(76, 175, 80, 0.3)');
                 $(this).css('outline-offset', '2px');
-            });
-            
-            $('.credit-button').blur(function() {
+            }).blur(function() {
                 $(this).css('outline', 'none');
             });
             
-            // Можно добавить разные действия для разных кнопок
+            // Обработка клавиши Enter для доступности
+            $('.credit-button').on('keypress', function(e) {
+                if (e.which === 13 || e.keyCode === 13) {
+                    $(this).click();
+                }
+            });
+            
+            // Логика для разных кнопок
             $('#consumerCredit').click(function() {
                 console.log('Открыть форму заявки на потребительский кредит');
             });
@@ -294,6 +552,14 @@
             
             $('#preferentialCredit').click(function() {
                 console.log('Показать условия льготного кредитования');
+            });
+            
+            // Адаптация к изменению ориентации экрана
+            window.addEventListener('orientationchange', function() {
+                // Небольшая задержка для обновления размеров
+                setTimeout(function() {
+                    console.log('Ориентация изменена');
+                }, 300);
             });
         });
     </script>
