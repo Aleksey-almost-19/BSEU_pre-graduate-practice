@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VTBbot - Банковские услуги</title>
+    <title>Кредиты - банковские услуги</title>
     <style>
         * {
             margin: 0;
@@ -13,8 +13,8 @@
         }
 
         body {
-            background-color: #f5f5f5;
-            padding: 20px;
+            background-color: #f0f9f0;
+            padding: 30px 20px;
             min-height: 100vh;
             display: flex;
             justify-content: center;
@@ -23,264 +23,277 @@
 
         .Main {
             background-color: white;
-            border-radius: 20px;
-            padding: 30px;
-            max-width: 400px;
+            border-radius: 24px;
+            padding: 35px;
+            max-width: 450px;
             width: 100%;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 12px 35px rgba(72, 187, 120, 0.15);
+            border: 1px solid #e8f5e9;
         }
 
         .header {
             text-align: center;
-            margin-bottom: 25px;
-            padding-bottom: 20px;
-            border-bottom: 1px solid #eaeaea;
+            margin-bottom: 35px;
+            padding-bottom: 25px;
+            border-bottom: 1px solid #e8f5e9;
         }
 
         .header h1 {
-            color: #1e3a8a;
-            font-size: 28px;
-            margin-bottom: 5px;
+            color: #2e7d32;
+            font-size: 32px;
+            margin-bottom: 8px;
             font-weight: 700;
+            letter-spacing: -0.5px;
         }
 
         .header p {
-            color: #666;
-            font-size: 14px;
-        }
-
-        .section-title {
-            color: #333;
-            font-size: 16px;
-            font-weight: 600;
-            margin-bottom: 15px;
-            margin-top: 25px;
-            padding-left: 10px;
+            color: #66bb6a;
+            font-size: 15px;
+            font-weight: 500;
         }
 
         .button-container {
             display: flex;
             flex-direction: column;
-            gap: 12px;
+            gap: 18px;
+            margin-top: 30px;
         }
 
-        /* Основной стиль кнопок как в VTB */
-        .bank-button {
-            background-color: #f8f9fa;
-            border: none;
-            border-radius: 12px;
-            padding: 18px 20px;
+        /* Стиль кнопок в светло-зеленой гамме */
+        .credit-button {
+            background-color: #ffffff;
+            border: 2px solid #e8f5e9;
+            border-radius: 18px;
+            padding: 22px 25px;
             text-align: left;
             cursor: pointer;
-            transition: all 0.2s ease;
+            transition: all 0.25s ease;
             position: relative;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
             display: flex;
             align-items: center;
             justify-content: space-between;
+            box-shadow: 0 4px 12px rgba(76, 175, 80, 0.08);
         }
 
-        .bank-button:hover {
-            background-color: #e9ecef;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        .credit-button:hover {
+            background-color: #f1f8e9;
+            border-color: #66bb6a;
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(76, 175, 80, 0.15);
         }
 
-        .bank-button:active {
-            transform: translateY(0);
+        .credit-button:active {
+            transform: translateY(-1px);
         }
 
         .button-content {
             display: flex;
             flex-direction: column;
+            flex-grow: 1;
         }
 
         .button-title {
-            font-size: 16px;
+            font-size: 18px;
             font-weight: 600;
-            color: #1a1a1a;
-            margin-bottom: 4px;
+            color: #1b5e20;
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
         }
 
         .button-subtitle {
             font-size: 14px;
-            color: #666;
+            color: #66bb6a;
             font-weight: 400;
+            line-height: 1.4;
         }
 
         .button-icon {
-            width: 40px;
-            height: 40px;
-            border-radius: 10px;
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
             font-weight: bold;
             color: white;
-            font-size: 18px;
+            font-size: 20px;
             flex-shrink: 0;
+            margin-left: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
 
-        /* Разные цвета для иконок кнопок */
-        .icon-blue {
-            background-color: #3b82f6;
+        /* Разные оттенки зеленого для иконок */
+        .icon-light-green {
+            background: linear-gradient(135deg, #66bb6a, #43a047);
         }
 
-        .icon-green {
-            background-color: #10b981;
+        .icon-medium-green {
+            background: linear-gradient(135deg, #4caf50, #2e7d32);
         }
 
-        .icon-orange {
-            background-color: #f59e0b;
+        .icon-dark-green {
+            background: linear-gradient(135deg, #388e3c, #1b5e20);
         }
 
-        .icon-purple {
-            background-color: #8b5cf6;
+        .amount-badge {
+            background-color: #e8f5e9;
+            color: #2e7d32;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+            margin-left: 12px;
+            white-space: nowrap;
         }
 
-        .icon-red {
-            background-color: #ef4444;
-        }
-
-        .divider {
-            height: 1px;
-            background-color: #eaeaea;
-            margin: 25px 0;
-            position: relative;
-        }
-
-        .divider-text {
-            position: absolute;
-            top: -10px;
-            left: 50%;
-            transform: translateX(-50%);
-            background-color: white;
-            padding: 0 15px;
-            color: #999;
-            font-size: 12px;
+        .arrow-icon {
+            color: #4caf50;
+            font-size: 20px;
+            font-weight: bold;
+            margin-left: 10px;
         }
 
         .footer {
             text-align: center;
-            margin-top: 25px;
-            color: #999;
-            font-size: 12px;
+            margin-top: 35px;
+            padding-top: 25px;
+            border-top: 1px solid #e8f5e9;
+            color: #81c784;
+            font-size: 13px;
+        }
+
+        .currency {
+            color: #2e7d32;
+            font-weight: 600;
         }
     </style>
 </head>
 <body>
     <div class="Main">
         <div class="header">
-            <h1>VTBbot</h1>
-            <p>Ваш персональный банковский помощник</p>
+            <h1>Кредиты</h1>
+            <p>Выберите подходящий кредитный продукт</p>
         </div>
 
-        <!-- Первая группа кнопок -->
-        <div class="section-title">Популярные продукты</div>
+        <!-- Контейнер для кнопок -->
         <div class="button-container">
-            <button class="bank-button" id="creditButton">
+            <!-- Кнопка 1: Потребительские кредиты -->
+            <button class="credit-button" id="consumerCredit">
                 <div class="button-content">
-                    <div class="button-title">Кредит наличными</div>
-                    <div class="button-subtitle">До 6 млн тенге на любые цели</div>
+                    <div class="button-title">
+                        Потребительские кредиты
+                        <span class="amount-badge">до 50 000 BYN</span>
+                    </div>
+                    <div class="button-subtitle">
+                        Быстрое решение, минимальный пакет документов
+                    </div>
                 </div>
-                <div class="button-icon icon-blue">₸</div>
+                <div class="button-icon icon-light-green">
+                    💳
+                </div>
             </button>
 
-            <button class="bank-button" id="autoCreditButton">
+            <!-- Кнопка 2: Кредиты на недвижимость -->
+            <button class="credit-button" id="mortgageCredit">
                 <div class="button-content">
-                    <div class="button-title">Автокредит</div>
-                    <div class="button-subtitle">Выгодные условия на покупку авто</div>
+                    <div class="button-title">
+                        Кредиты на недвижимость
+                        <span class="amount-badge">до 200 000 BYN</span>
+                    </div>
+                    <div class="button-subtitle">
+                        Ипотека на покупку квартиры, дома или земельного участка
+                    </div>
                 </div>
-                <div class="button-icon icon-green">🚗</div>
+                <div class="button-icon icon-medium-green">
+                    🏠
+                </div>
             </button>
 
-            <button class="bank-button" id="goldButton">
+            <!-- Кнопка 3: Льготное кредитование -->
+            <button class="credit-button" id="preferentialCredit">
                 <div class="button-content">
-                    <div class="button-title">Купить золото</div>
-                    <div class="button-subtitle">Инвестируйте в золотые слитки</div>
+                    <div class="button-title">
+                        Льготное кредитование
+                        <span class="amount-badge">от 4.5% годовых</span>
+                    </div>
+                    <div class="button-subtitle">
+                        Специальные программы для предпринимателей и молодых семей
+                    </div>
                 </div>
-                <div class="button-icon icon-orange">🪙</div>
-            </button>
-        </div>
-
-        <!-- Разделитель -->
-        <div class="divider">
-            <div class="divider-text">Дополнительные услуги</div>
-        </div>
-
-        <!-- Вторая группа кнопок -->
-        <div class="section-title">Операции и переводы</div>
-        <div class="button-container">
-            <button class="bank-button" id="takeCreditButton">
-                <div class="button-content">
-                    <div class="button-title">Взять кредит</div>
-                    <div class="button-subtitle">Быстрое одобрение онлайн</div>
+                <div class="button-icon icon-dark-green">
+                    ⭐
                 </div>
-                <div class="button-icon icon-purple">💳</div>
-            </button>
-
-            <button class="bank-button" id="transferButton">
-                <div class="button-content">
-                    <div class="button-title">Переводы в Россию</div>
-                    <div class="button-subtitle">Без комиссии и с выгодным курсом</div>
-                </div>
-                <div class="button-icon icon-red">🇷🇺</div>
             </button>
         </div>
 
         <div class="footer">
-            © 2023 VTB Bank. Все права защищены.
+            <p>Все кредиты предоставляются в <span class="currency">белорусских рублях (BYN)</span></p>
+            <p style="margin-top: 8px;">© 2023 Кредитный сервис</p>
         </div>
     </div>
 
     <script src="{{ url_for('static',filename='js/jquery-3.3.1.min.js') }}"></script>
     <script>
         $(document).ready(function() {
-            // Обработчики для всех кнопок (без функционала, только анимация)
-            $('.bank-button').click(function() {
+            // Обработчики для всех кнопок
+            $('.credit-button').click(function() {
                 const buttonId = $(this).attr('id');
-                const buttonText = $(this).find('.button-title').text();
+                const buttonTitle = $(this).find('.button-title').text().split('до')[0].trim();
                 
                 // Анимация нажатия
                 $(this).css({
-                    'transform': 'scale(0.98)',
-                    'background-color': '#dee2e6'
+                    'transform': 'scale(0.97)',
+                    'background-color': '#e8f5e9',
+                    'border-color': '#4caf50'
                 });
                 
-                // Через 150ms возвращаем исходное состояние
+                // Возвращаем исходное состояние через 200ms
                 setTimeout(() => {
                     $(this).css({
                         'transform': '',
-                        'background-color': ''
+                        'background-color': '',
+                        'border-color': ''
                     });
-                }, 150);
+                }, 200);
                 
-                // Выводим в консоль информацию о нажатой кнопке
-                console.log(`Нажата кнопка: ${buttonText} (ID: ${buttonId})`);
+                // Выводим информацию в консоль
+                console.log(`Выбран кредит: "${buttonTitle}"`);
                 
-                // В реальном приложении здесь будет переход или вызов функции
-                // alert(`Кнопка "${buttonText}" нажата. Функционал в разработке.`);
+                // Можно добавить здесь функционал перенаправления или открытия модального окна
             });
             
-            // Добавляем hover эффекты через JS (дополнительно к CSS)
-            $('.bank-button').hover(
+            // Эффект при наведении (дополнение к CSS)
+            $('.credit-button').hover(
                 function() {
-                    // При наведении
-                    $(this).css('box-shadow', '0 5px 15px rgba(0, 0, 0, 0.1)');
+                    $(this).find('.button-icon').css('transform', 'scale(1.05)');
                 },
                 function() {
-                    // При уходе курсора
-                    $(this).css('box-shadow', '0 2px 5px rgba(0, 0, 0, 0.05)');
+                    $(this).find('.button-icon').css('transform', 'scale(1)');
                 }
             );
             
-            // Дополнительно: фокус для клавиатуры
-            $('.bank-button').focus(function() {
-                $(this).css('outline', '2px solid #3b82f6');
+            // Добавляем эффект при фокусе для доступности
+            $('.credit-button').focus(function() {
+                $(this).css('outline', '3px solid rgba(76, 175, 80, 0.3)');
+                $(this).css('outline-offset', '2px');
             });
             
-            $('.bank-button').blur(function() {
+            $('.credit-button').blur(function() {
                 $(this).css('outline', 'none');
+            });
+            
+            // Можно добавить разные действия для разных кнопок
+            $('#consumerCredit').click(function() {
+                console.log('Открыть форму заявки на потребительский кредит');
+            });
+            
+            $('#mortgageCredit').click(function() {
+                console.log('Открыть калькулятор ипотеки');
+            });
+            
+            $('#preferentialCredit').click(function() {
+                console.log('Показать условия льготного кредитования');
             });
         });
     </script>
