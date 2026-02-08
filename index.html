@@ -367,7 +367,19 @@
                 button.style.opacity = '';
             }, 150);
             
-           window.location.href = 'loans.html';
+            // Отправляем команду в бота для открытия страницы кредитов
+            tg.sendData(JSON.stringify({
+                action: 'open_credits',
+                bank: 'aurumbank'
+            }));
+            
+            // Показываем уведомление
+            tg.showAlert('Открываем кредитные продукты...');
+            
+            // Закрываем Web App через 1 секунду
+            setTimeout(() => {
+                tg.close();
+            }, 1000);
         }
         
         // Инициализация при загрузке
