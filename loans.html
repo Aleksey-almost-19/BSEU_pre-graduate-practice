@@ -40,7 +40,7 @@
             display: none;
         }
 
-        /* Логотип на мобильных - ФИКСИРОВАННЫЙ в левом углу (остается при прокрутке) */
+        /* Логотип на мобильных - появляется/исчезает при скролле */
         .mobile-logo {
             position: fixed;
             top: 15px;
@@ -49,11 +49,19 @@
             display: none;
             align-items: center;
             gap: 12px;
-            background-color: rgba(0, 0, 0, 0.9);
-            backdrop-filter: blur(10px);
+            background-color: #000000; /* ЧЕРНЫЙ ФОН */
             padding: 10px 15px;
             border-radius: 12px;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+            transition: all 0.3s ease;
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .mobile-logo.hidden {
+            opacity: 0;
+            transform: translateY(-100%);
+            pointer-events: none;
         }
 
         .logo-placeholder {
@@ -77,7 +85,7 @@
 
         .container {
             width: 100%;
-            padding: 80px 16px 16px 16px; /* Отступ сверху для фиксированного логотипа */
+            padding: 20px 16px 16px 16px; /* Меньший отступ сверху */
         }
 
         .content-header {
@@ -257,7 +265,7 @@
             box-shadow: 0 6px 18px rgba(64, 167, 227, 0.4);
         }
 
-        /* Адаптивность для мобильных - ФИКСИРОВАННЫЙ ЛОГОТИП */
+        /* Адаптивность для мобильных - ЛОГОТИП СКРЫВАЕТСЯ ПРИ СКРОЛЛЕ */
         @media (max-width: 768px) {
             .mobile-logo {
                 display: flex;
@@ -265,6 +273,7 @@
                 left: 15px;
                 right: 15px; /* Занимает всю ширину */
                 justify-content: flex-start; /* Логотип слева */
+                background-color: #000000; /* ЧЕРНЫЙ ФОН */
             }
             
             .logo-placeholder {
@@ -280,7 +289,7 @@
             }
             
             .container {
-                padding: 90px 12px 12px 12px; /* Увеличиваем отступ сверху для фиксированного логотипа */
+                padding: 20px 12px 12px 12px; /* Меньший отступ сверху */
             }
             
             .content-header h1 {
@@ -547,7 +556,7 @@
     </style>
 </head>
 <body>
-    <!-- Логотип для мобильных - ФИКСИРОВАННЫЙ в левом углу -->
+    <!-- Логотип для мобильных - появляется/исчезает при скролле -->
     <div class="mobile-logo">
         <div class="logo-placeholder"></div>
         <div class="bank-name">Аурумбанк</div>
@@ -794,6 +803,33 @@
                     }
                 });
             });
+            
+            // Логика скрытия/показа логотипа при скролле на мобильных
+            let lastScrollTop = 0;
+            const mobileLogo = document.querySelector('.mobile-logo');
+            const scrollThreshold = 100; // Порог скролла для скрытия логотипа
+            
+            if (mobileLogo) {
+                window.addEventListener('scroll', function() {
+                    let scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+                    
+                    if (scrollTop > scrollThreshold) {
+                        // Прокрутили вниз - скрываем логотип
+                        if (scrollTop > lastScrollTop) {
+                            mobileLogo.classList.add('hidden');
+                        } 
+                        // Прокрутили вверх - показываем логотип
+                        else if (scrollTop < lastScrollTop) {
+                            mobileLogo.classList.remove('hidden');
+                        }
+                    } else {
+                        // Вверху страницы - всегда показываем логотип
+                        mobileLogo.classList.remove('hidden');
+                    }
+                    
+                    lastScrollTop = scrollTop;
+                });
+            }
         });
     </script>
 </body>
