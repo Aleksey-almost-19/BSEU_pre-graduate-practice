@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Кредиты - банковские услуги</title>
+    <title>Кредиты - Аурумбанк</title>
     
     <!-- Telegram Web App SDK -->
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
@@ -31,33 +31,57 @@
             background-color: var(--tg-theme-bg-color, #ffffff);
             color: var(--tg-theme-text-color, #000000);
             line-height: 1.6;
-            padding: 0;
             min-height: 100vh;
             -webkit-font-smoothing: antialiased;
         }
 
-        .container {
-            max-width: 100%;
-            margin: 0 auto;
-            padding: 16px;
-            background-color: var(--tg-theme-bg-color, #ffffff);
+        /* Логотип в левом верхнем углу на десктопе, центрирован на мобильных */
+        .header-logo {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 15px;
+            justify-content: center;
         }
 
-        .header {
+        .logo-placeholder {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(46, 125, 50, 0.18);
+            background-image: url('logo-removebg-preview.png');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-color: transparent;
+        }
+
+        .bank-name {
+            font-size: 24px;
+            font-weight: 700;
+            color: #2e7d32;
+        }
+
+        .container {
+            width: 100%;
+            padding: 0 16px 16px 16px;
+        }
+
+        .content-header {
             text-align: center;
             margin-bottom: 32px;
             padding-bottom: 20px;
             border-bottom: 1px solid var(--tg-theme-secondary-bg-color, #e8f5e9);
         }
 
-        .header h1 {
+        .content-header h1 {
             color: var(--tg-theme-text-color, #2e7d32);
             font-size: 28px;
             margin-bottom: 8px;
             font-weight: 700;
         }
 
-        .header p {
+        .content-header p {
             color: var(--tg-theme-hint-color, #666666);
             font-size: 16px;
             font-weight: 400;
@@ -218,29 +242,312 @@
             opacity: 0.9;
         }
 
-        /* Адаптивность для Telegram */
-        @media (min-width: 768px) {
+        /* Адаптивность для мобильных */
+        @media (max-width: 768px) {
+            .header-logo {
+                gap: 12px;
+            }
+            
+            .logo-placeholder {
+                width: 40px;
+                height: 40px;
+            }
+            
+            .bank-name {
+                font-size: 20px;
+            }
+            
             .container {
-                max-width: 768px;
+                padding: 0 12px 12px 12px;
+            }
+            
+            .content-header h1 {
+                font-size: 24px;
+            }
+            
+            .content-header p {
+                font-size: 14px;
+            }
+            
+            .credit-options {
+                gap: 12px;
+            }
+            
+            .credit-card {
+                width: 280px;
+                min-width: 260px;
+                padding: 20px;
+            }
+            
+            .credit-card h3 {
+                font-size: 18px;
+                min-height: 44px;
+            }
+            
+            .credit-amount {
+                font-size: 16px;
+                padding: 6px 12px;
+            }
+            
+            .credit-description {
+                font-size: 14px;
+                min-height: 65px;
+            }
+            
+            .info-section {
+                padding: 20px;
+            }
+            
+            .info-section h2 {
+                font-size: 18px;
+            }
+            
+            .info-item {
+                padding: 16px;
+            }
+            
+            .info-item strong {
+                font-size: 15px;
+            }
+            
+            .info-item p {
+                font-size: 13px;
+            }
+            
+            .tg-button {
+                padding: 12px 20px;
+                font-size: 15px;
+            }
+        }
+
+        /* Для десктопной версии - РАСТЯНУТЫЙ ЭКРАН И ЛОГО В ЛЕВОМ ВЕРХНЕМ УГЛУ */
+        @media (min-width: 769px) {
+            body {
+                background-color: #f8fef8;
+                display: flex;
+                flex-direction: column;
+                min-height: 100vh;
+            }
+            
+            .header-logo {
+                position: fixed;
+                top: 40px;
+                left: 60px;
+                z-index: 100;
+                padding: 0;
+                justify-content: flex-start;
+            }
+            
+            .logo-placeholder {
+                width: 80px;
+                height: 80px;
+                border-radius: 16px;
+                box-shadow: 0 6px 15px rgba(46, 125, 50, 0.25);
+            }
+            
+            .bank-name {
+                font-size: 32px;
+                font-weight: 700;
+                color: #2e7d32;
+            }
+            
+            .container {
+                width: 100%;
+                max-width: 1400px;
                 margin: 0 auto;
+                padding: 140px 80px 60px 80px;
+                background-color: white;
+                min-height: 100vh;
+                box-shadow: 0 15px 40px rgba(76, 175, 80, 0.15);
+                border-radius: 30px 30px 0 0;
+                border: 2px solid #e8f5e9;
+            }
+            
+            .content-header {
+                margin-bottom: 50px;
+            }
+            
+            .content-header h1 {
+                font-size: 36px;
+                margin-bottom: 12px;
+            }
+            
+            .content-header p {
+                font-size: 20px;
+            }
+            
+            .credit-options {
+                gap: 30px;
+                justify-content: center;
+                margin-bottom: 60px;
+            }
+            
+            .credit-card {
+                width: 380px;
+                min-width: 360px;
+                padding: 32px;
+                border-radius: 20px;
+            }
+            
+            .credit-card h3 {
+                font-size: 24px;
+                min-height: 60px;
+            }
+            
+            .credit-amount {
+                font-size: 22px;
+                padding: 10px 20px;
+                border-radius: 22px;
+            }
+            
+            .credit-description {
+                font-size: 18px;
+                min-height: 85px;
+            }
+            
+            .divider {
+                margin: 50px 0;
+            }
+            
+            .info-section {
+                padding: 40px;
+                border-radius: 20px;
+                margin-top: 50px;
+            }
+            
+            .info-section h2 {
+                font-size: 28px;
+                margin-bottom: 30px;
             }
             
             .info-grid {
                 grid-template-columns: repeat(2, 1fr);
+                gap: 24px;
+            }
+            
+            .info-item {
+                padding: 28px;
+                border-radius: 16px;
+                border-left: 5px solid var(--tg-theme-button-color, #4caf50);
+            }
+            
+            .info-item strong {
+                font-size: 20px;
+                margin-bottom: 12px;
+            }
+            
+            .info-item p {
+                font-size: 16px;
+            }
+            
+            .tg-button {
+                max-width: 400px;
+                margin-left: auto;
+                margin-right: auto;
+                padding: 18px 32px;
+                font-size: 18px;
+                border-radius: 14px;
+                margin-top: 30px;
+            }
+            
+            .footer {
+                margin-top: 60px;
+                font-size: 16px;
+                padding-top: 25px;
+            }
+        }
+
+        /* Для очень больших экранов */
+        @media (min-width: 1200px) {
+            .container {
+                max-width: 1600px;
+                padding: 150px 100px 70px 100px;
+            }
+            
+            .header-logo {
+                left: 100px;
+                top: 50px;
+            }
+            
+            .logo-placeholder {
+                width: 90px;
+                height: 90px;
+            }
+            
+            .bank-name {
+                font-size: 36px;
+            }
+            
+            .credit-options {
+                gap: 35px;
+            }
+            
+            .credit-card {
+                width: 420px;
+                min-width: 400px;
+            }
+            
+            .credit-card h3 {
+                font-size: 26px;
+            }
+            
+            .info-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+            
+            .info-item strong {
+                font-size: 22px;
+            }
+            
+            .info-item p {
+                font-size: 17px;
             }
         }
 
         /* Dark theme адаптация */
         @media (prefers-color-scheme: dark) {
-            .credit-card, .info-section, .info-item {
-                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+            @media (min-width: 769px) {
+                body {
+                    background-color: #0d1f0d;
+                }
+                
+                .container {
+                    background-color: #1a2c1a;
+                    border-color: #2e4a2e;
+                }
+                
+                .bank-name {
+                    color: #81c784;
+                }
+                
+                .content-header h1 {
+                    color: #81c784;
+                }
+                
+                .credit-card {
+                    background-color: #2d462d;
+                }
+                
+                .info-section {
+                    background-color: #2d462d;
+                }
+                
+                .info-item {
+                    background-color: #243824;
+                }
             }
         }
     </style>
 </head>
 <body>
+    <!-- Логотип -->
+    <div class="header-logo">
+        <div class="logo-placeholder"></div>
+        <div class="bank-name">Аурумбанк</div>
+    </div>
+
     <div class="container">
-        <div class="header">
+        <div class="content-header">
             <h1>Кредиты</h1>
             <p>Выберите подходящий кредитный продукт</p>
         </div>
@@ -315,7 +622,7 @@
         
         <div class="footer">
             <p>Все кредиты предоставляются в <strong>белорусских рублях (BYN)</strong></p>
-            <p style="margin-top: 12px;">© 2023 Кредитный сервис</p>
+            <p style="margin-top: 15px;">© 2023 Аурумбанк</p>
         </div>
     </div>
 
@@ -326,20 +633,20 @@
         // Расширяем Web App на весь экран
         tg.expand();
         
-        // Устанавливаем цвет кнопки в Telegram
+        // Настраиваем кнопку "Назад"
         tg.MainButton.setParams({
-            text: 'НАЗАД В БОТ',
+            text: 'НАЗАД',
             color: '#40a7e3'
         });
         
         // Показываем кнопку назад
         tg.MainButton.show();
         tg.MainButton.onClick(function() {
-            // Закрываем Web App и возвращаемся в бота
-            tg.close();
+            // Возвращаемся на главную страницу
+            window.location.href = 'index.html';
         });
         
-        // Устанавливаем цвет фона и текст
+        // Устанавливаем цвета
         tg.setHeaderColor('#2e7d32');
         tg.setBackgroundColor('#ffffff');
         
@@ -373,24 +680,8 @@
                 card.style.backgroundColor = '';
             }, 150);
             
-            // В реальном приложении здесь можно:
-            // 1. Отправить данные в бота
-            // 2. Открыть форму заявки
-            // 3. Передать данные в основное приложение
-            
-            // Отправляем данные в бота
-            tg.sendData(JSON.stringify({
-                action: 'select_credit',
-                type: type,
-                title: title,
-                amount: amount
-            }));
-            
-            // Показываем уведомление в Telegram
+            // Показываем уведомление
             tg.showAlert(`Вы выбрали: ${title}\n${amount}\n\nМенеджер свяжется с вами для уточнения деталей.`);
-            
-            // В реальном приложении можно закрыть Web App
-            // setTimeout(() => tg.close(), 2000);
         }
         
         // Функция показа информации
@@ -407,14 +698,7 @@
                 item.style.backgroundColor = '';
             }, 150);
             
-            // Отправляем данные о просмотре информации
-            tg.sendData(JSON.stringify({
-                action: 'view_info',
-                info_type: type,
-                title: title
-            }));
-            
-            // Показываем всплывающее окно в Telegram
+            // Показываем всплывающее окно
             tg.showPopup({
                 title: 'Информация',
                 message: title + '\n\nБолее подробную информацию можно получить в отделении банка или на официальном сайте.',
@@ -442,34 +726,43 @@
                 ]
             }, function(buttonId) {
                 if (buttonId === 'Да, перезвоните') {
-                    // Запрашиваем контактные данные
-                    tg.requestContact(function(contact) {
-                        // Отправляем контакт в бота
-                        tg.sendData(JSON.stringify({
-                            action: 'request_callback',
-                            phone: contact.phone_number,
-                            first_name: contact.first_name,
-                            last_name: contact.last_name
-                        }));
-                        
-                        tg.showAlert('Спасибо! Менеджер свяжется с вами в ближайшее время.');
-                    });
+                    tg.showAlert('Спасибо! Менеджер свяжется с вами в ближайшее время.');
                 }
             });
         }
         
         // Инициализация при загрузке
         document.addEventListener('DOMContentLoaded', function() {
-            console.log('Telegram Web App инициализирован');
-            console.log('Платформа:', tg.platform);
-            console.log('Версия:', tg.version);
-            console.log('Цветовая тема:', tg.colorScheme);
-            console.log('Параметры запуска:', tg.initData);
+            console.log('Страница кредитов загружена');
             
-            // Устанавливаем тему в зависимости от Telegram
+            // Адаптация под тему Telegram
             if (tg.colorScheme === 'dark') {
                 document.body.classList.add('dark-theme');
             }
+            
+            // Проверяем загрузку логотипа
+            const logo = document.querySelector('.logo-placeholder');
+            
+            const logoImg = new Image();
+            logoImg.src = 'logo-removebg-preview.png';
+            
+            logoImg.onerror = function() {
+                console.log('Ошибка загрузки логотипа, используем fallback');
+                logo.style.background = 'linear-gradient(135deg, #2e7d32, #4caf50)';
+                logo.style.display = 'flex';
+                logo.style.alignItems = 'center';
+                logo.style.justifyContent = 'center';
+                logo.innerHTML = 'A';
+                logo.style.color = 'white';
+                logo.style.fontSize = '32px';
+                logo.style.fontWeight = 'bold';
+            };
+            
+            // Делаем логотип кликабельным
+            logo.style.cursor = 'pointer';
+            logo.addEventListener('click', function() {
+                tg.showAlert('Аурумбанк - Ваш надежный финансовый партнер');
+            });
             
             // Добавляем обработчики клавиатуры
             const creditCards = document.querySelectorAll('.credit-card');
@@ -491,35 +784,14 @@
                     }
                 });
             });
-            
-            // Горизонтальный скролл для карточек
-            const creditOptions = document.querySelector('.credit-options');
-            if (creditOptions) {
-                let isDown = false;
-                let startX;
-                let scrollLeft;
-                
-                creditOptions.addEventListener('touchstart', (e) => {
-                    startX = e.touches[0].pageX - creditOptions.offsetLeft;
-                    scrollLeft = creditOptions.scrollLeft;
-                });
-                
-                creditOptions.addEventListener('touchmove', (e) => {
-                    if (!isDown) return;
-                    e.preventDefault();
-                    const x = e.touches[0].pageX - creditOptions.offsetLeft;
-                    const walk = (x - startX) * 2;
-                    creditOptions.scrollLeft = scrollLeft - walk;
-                });
-            }
         });
         
-        // Обработчик изменения видимости (для паузы/возобновления)
-        document.addEventListener('visibilitychange', function() {
-            if (document.hidden) {
-                console.log('Web App скрыт');
+        // Обработчик изменения темы Telegram
+        tg.onEvent('themeChanged', function() {
+            if (tg.colorScheme === 'dark') {
+                document.body.classList.add('dark-theme');
             } else {
-                console.log('Web App активен');
+                document.body.classList.remove('dark-theme');
             }
         });
     </script>
