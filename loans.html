@@ -40,7 +40,7 @@
             display: none;
         }
 
-        /* Логотип на мобильных - в левом углу (остается при прокрутке) */
+        /* Логотип на мобильных - ФИКСИРОВАННЫЙ в левом углу (остается при прокрутке) */
         .mobile-logo {
             position: fixed;
             top: 15px;
@@ -49,6 +49,11 @@
             display: none;
             align-items: center;
             gap: 12px;
+            background-color: rgba(0, 0, 0, 0.9);
+            backdrop-filter: blur(10px);
+            padding: 10px 15px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
         }
 
         .logo-placeholder {
@@ -66,8 +71,8 @@
         .bank-name {
             font-size: 20px;
             font-weight: 700;
-            color: #ffffff;
-            display: none; /* Скрываем название на мобильных */
+            color: #4caf50; /* Зеленый цвет как на десктопе */
+            display: none; /* Будем показывать в мобильной версии */
         }
 
         .container {
@@ -252,12 +257,14 @@
             box-shadow: 0 6px 18px rgba(64, 167, 227, 0.4);
         }
 
-        /* Адаптивность для мобильных */
+        /* Адаптивность для мобильных - ФИКСИРОВАННЫЙ ЛОГОТИП */
         @media (max-width: 768px) {
             .mobile-logo {
                 display: flex;
                 top: 15px;
                 left: 15px;
+                right: 15px; /* Занимает всю ширину */
+                justify-content: flex-start; /* Логотип слева */
             }
             
             .logo-placeholder {
@@ -266,11 +273,14 @@
             }
             
             .bank-name {
-                display: none;
+                display: block; /* ПОКАЗЫВАЕМ название на мобильных */
+                font-size: 20px;
+                font-weight: 700;
+                color: #4caf50;
             }
             
             .container {
-                padding: 80px 12px 12px 12px;
+                padding: 90px 12px 12px 12px; /* Увеличиваем отступ сверху для фиксированного логотипа */
             }
             
             .content-header h1 {
@@ -537,7 +547,7 @@
     </style>
 </head>
 <body>
-    <!-- Логотип для мобильных - фиксированный в левом углу -->
+    <!-- Логотип для мобильных - ФИКСИРОВАННЫЙ в левом углу -->
     <div class="mobile-logo">
         <div class="logo-placeholder"></div>
         <div class="bank-name">Аурумбанк</div>
