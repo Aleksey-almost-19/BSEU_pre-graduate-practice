@@ -35,7 +35,7 @@
             const logo = document.querySelector('.logo-placeholder');
             
             const logoImg = new Image();
-            logoImg.src = 'logo-removebg-preview.png';
+            logoImg.src = 'img/logo-removebg-preview.png';
             
             logoImg.onload = function() {
                 console.log('Логотип logo-removebg-preview.png загружен успешно');

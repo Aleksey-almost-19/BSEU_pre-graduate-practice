@@ -111,7 +111,7 @@
             
             logos.forEach(logo => {
                 const logoImg = new Image();
-                logoImg.src = 'logo-removebg-preview.png';
+                logoImg.src = 'img/logo-removebg-preview.png';
                 
                 logoImg.onerror = function() {
                     console.log('Ошибка загрузки логотипа, используем fallback');
