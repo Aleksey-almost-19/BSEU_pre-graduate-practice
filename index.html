@@ -44,40 +44,50 @@
             display: flex;
             flex-direction: column;
             height: 100vh;
+            position: relative;
         }
 
-        /* Шапка с увеличенным логотипом */
+        /* Шапка с очень большим логотипом */
         .header {
-            padding: 10px 0 40px 0; /* Увеличил отступ снизу */
+            padding: 10px 0 60px 0; /* Увеличил отступ снизу для большого лого */
+            position: relative;
+            z-index: 1;
         }
 
         .logo-container {
             display: flex;
             align-items: center;
-            gap: 20px; /* Увеличил отступ между лого и текстом */
+            gap: 25px; /* Увеличил отступ между лого и текстом */
+            position: relative;
         }
 
         .logo-placeholder {
-            width: 100px; /* Увеличил в 2 раза (было 50px) */
-            height: 100px; /* Увеличил в 2 раза (было 50px) */
-            border-radius: 20px; /* Увеличил скругление */
+            width: 200px; /* Увеличил в 4 раза (было 50px) */
+            height: 200px; /* Увеличил в 4 раза (было 50px) */
+            border-radius: 30px; /* Увеличил скругление */
             display: flex;
             align-items: center;
             justify-content: center;
-            box-shadow: 0 6px 15px rgba(46, 125, 50, 0.25);
+            box-shadow: 0 10px 30px rgba(46, 125, 50, 0.3);
             /* Ваше лого из файла */
             background-image: url('logo-removebg-preview.png');
-            background-size: cover; /* Изменил на cover для заполнения */
+            background-size: cover;
             background-position: center;
             background-repeat: no-repeat;
-            background-color: transparent; /* Прозрачный фон для PNG */
+            background-color: transparent;
+            position: relative;
+            z-index: 2;
+            margin-top: 20px;
         }
 
         .bank-name {
-            font-size: 28px; /* Немного увеличил шрифт */
+            font-size: 32px; /* Увеличил шрифт */
             font-weight: 700;
             color: #2e7d32;
             letter-spacing: -0.5px;
+            position: relative;
+            z-index: 2;
+            margin-top: 30px;
         }
 
         /* Основной контент - по центру */
@@ -89,6 +99,9 @@
             align-items: center;
             text-align: center;
             padding: 20px 0;
+            position: relative;
+            z-index: 1;
+            margin-top: 40px; /* Отодвинул контент от большого лого */
         }
 
         .welcome-text {
@@ -129,6 +142,8 @@
             transition: all 0.3s ease;
             box-shadow: 0 8px 25px rgba(76, 175, 80, 0.3);
             margin-top: 20px;
+            position: relative;
+            z-index: 2;
         }
 
         .main-button:hover, .main-button:active {
@@ -152,6 +167,8 @@
             justify-content: center;
             font-size: 48px;
             box-shadow: 0 8px 20px rgba(76, 175, 80, 0.15);
+            position: relative;
+            z-index: 2;
         }
 
         /* Футер */
@@ -162,26 +179,62 @@
             font-size: 14px;
             border-top: 1px solid #f0f0f0;
             margin-top: auto;
+            position: relative;
+            z-index: 1;
         }
 
         /* Адаптивность */
+        @media (max-width: 768px) {
+            .logo-placeholder {
+                width: 150px; /* Уменьшил для планшетов */
+                height: 150px;
+                border-radius: 25px;
+            }
+            
+            .bank-name {
+                font-size: 28px;
+                margin-top: 20px;
+            }
+            
+            .logo-container {
+                gap: 20px;
+            }
+            
+            .main-content {
+                margin-top: 30px;
+            }
+        }
+
         @media (max-width: 480px) {
             .container {
                 padding: 16px;
             }
             
             .logo-placeholder {
-                width: 80px; /* Увеличил для мобильных (было 44px) */
-                height: 80px; /* Увеличил для мобильных (было 44px) */
-                border-radius: 16px;
+                width: 120px; /* Уменьшил для мобильных (но все еще в 2.4 раза больше оригинала) */
+                height: 120px;
+                border-radius: 20px;
+                margin-top: 10px;
             }
             
             .logo-container {
-                gap: 16px; /* Уменьшил отступ для мобильных */
+                gap: 15px;
+                flex-direction: column;
+                align-items: flex-start;
             }
             
             .bank-name {
-                font-size: 24px; /* Немного уменьшил для мобильных */
+                font-size: 26px;
+                margin-top: 10px;
+                margin-left: 0;
+            }
+            
+            .header {
+                padding-bottom: 40px;
+            }
+            
+            .main-content {
+                margin-top: 20px;
             }
             
             .welcome-text h1 {
@@ -202,6 +255,17 @@
                 width: 100px;
                 height: 100px;
                 font-size: 40px;
+            }
+        }
+
+        @media (max-width: 360px) {
+            .logo-placeholder {
+                width: 100px;
+                height: 100px;
+            }
+            
+            .bank-name {
+                font-size: 24px;
             }
         }
 
@@ -245,7 +309,7 @@
 </head>
 <body>
     <div class="container">
-        <!-- Шапка с увеличенным логотипом -->
+        <!-- Шапка с очень большим логотипом -->
         <div class="header">
             <div class="logo-container">
                 <div class="logo-placeholder"></div>
@@ -347,7 +411,7 @@
                 logo.style.justifyContent = 'center';
                 logo.innerHTML = 'A';
                 logo.style.color = 'white';
-                logo.style.fontSize = '36px';
+                logo.style.fontSize = '72px';
                 logo.style.fontWeight = 'bold';
             };
             
