@@ -46,7 +46,7 @@
             top: 15px;
             left: 15px;
             z-index: 100;
-            display: flex;
+            display: none;
             align-items: center;
             gap: 12px;
         }
@@ -216,7 +216,7 @@
             line-height: 1.5;
         }
 
-        /* Футер */
+        /* Футер - ОБЫЧНЫЙ БЛОК, НЕ АБСОЛЮТНЫЙ */
         .footer {
             text-align: center;
             margin-top: 40px;
@@ -255,17 +255,22 @@
         /* Адаптивность для мобильных */
         @media (max-width: 768px) {
             .mobile-logo {
+                display: flex;
                 top: 15px;
                 left: 15px;
             }
             
             .logo-placeholder {
-                width: 40px;
-                height: 40px;
+                width: 50px;
+                height: 50px;
+            }
+            
+            .bank-name {
+                display: none;
             }
             
             .container {
-                padding: 70px 12px 12px 12px;
+                padding: 80px 12px 12px 12px;
             }
             
             .content-header h1 {
@@ -344,15 +349,15 @@
             }
             
             .desktop-logo .logo-placeholder {
-                width: 80px;
-                height: 80px;
+                width: 70px;
+                height: 70px;
                 border-radius: 16px;
                 box-shadow: 0 6px 15px rgba(46, 125, 50, 0.25);
             }
             
             .desktop-logo .bank-name {
                 display: block;
-                font-size: 36px;
+                font-size: 32px;
                 font-weight: 700;
                 color: #4caf50;
             }
@@ -470,6 +475,7 @@
                 background: linear-gradient(135deg, #40a7e3, #2481cc);
             }
             
+            /* Футер - ОБЫЧНЫЙ БЛОК, НЕ АБСОЛЮТНЫЙ */
             .footer {
                 margin-top: 60px;
                 font-size: 16px;
@@ -495,12 +501,12 @@
             }
             
             .desktop-logo .logo-placeholder {
-                width: 90px;
-                height: 90px;
+                width: 70px;
+                height: 70px;
             }
             
             .desktop-logo .bank-name {
-                font-size: 42px;
+                font-size: 32px;
             }
             
             .credit-options {
