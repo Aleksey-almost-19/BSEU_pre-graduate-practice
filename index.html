@@ -46,25 +46,26 @@
             height: 100vh;
         }
 
-        /* Шапка с логотипом */
+        /* Шапка с логотипом в левом верхнем углу */
         .header {
-            padding: 10px 0 30px 0;
+            padding: 10px 0 20px 0;
+            width: 100%;
         }
 
         .logo-container {
             display: flex;
             align-items: center;
-            gap: 15px;
+            gap: 12px;
         }
 
         .logo-placeholder {
-            width: 100px;
-            height: 100px;
-            border-radius: 18px;
+            width: 50px; /* Уменьшил в 2 раза (было 100px) */
+            height: 50px; /* Уменьшил в 2 раза (было 100px) */
+            border-radius: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
-            box-shadow: 0 5px 12px rgba(46, 125, 50, 0.2);
+            box-shadow: 0 4px 10px rgba(46, 125, 50, 0.18);
             /* Ваше лого из файла */
             background-image: url('logo-removebg-preview.png');
             background-size: cover;
@@ -74,7 +75,7 @@
         }
 
         .bank-name {
-            font-size: 26px;
+            font-size: 22px;
             font-weight: 700;
             color: #2e7d32;
             letter-spacing: -0.5px;
@@ -167,9 +168,9 @@
         /* Адаптивность */
         @media (max-width: 768px) {
             .logo-placeholder {
-                width: 50px; /* Было 75px - уменьшил в 1.5 раза */
-                height: 50px; /* Было 75px - уменьшил в 1.5 раза */
-                border-radius: 14px;
+                width: 50px; /* Оставил таким же как на десктопе */
+                height: 50px;
+                border-radius: 12px;
             }
             
             .bank-name {
@@ -207,9 +208,9 @@
             }
             
             .logo-placeholder {
-                width: 40px; /* Было 60px - уменьшил в 1.5 раза */
-                height: 40px; /* Было 60px - уменьшил в 1.5 раза */
-                border-radius: 12px;
+                width: 40px;
+                height: 40px;
+                border-radius: 10px;
             }
             
             .logo-container {
@@ -249,9 +250,9 @@
 
         @media (max-width: 360px) {
             .logo-placeholder {
-                width: 35px; /* Еще меньше для очень маленьких экранов */
+                width: 35px;
                 height: 35px;
-                border-radius: 10px;
+                border-radius: 8px;
             }
             
             .bank-name {
@@ -262,6 +263,27 @@
                 padding: 16px 28px;
                 font-size: 16px;
                 max-width: 240px;
+            }
+        }
+
+        /* Для больших экранов (компьютеров) */
+        @media (min-width: 1024px) {
+            .container {
+                max-width: 600px;
+                padding: 30px;
+            }
+            
+            .logo-placeholder {
+                width: 50px; /* На компьютере такой же размер */
+                height: 50px;
+            }
+            
+            .bank-name {
+                font-size: 24px;
+            }
+            
+            .main-button {
+                max-width: 320px;
             }
         }
 
@@ -305,7 +327,7 @@
 </head>
 <body>
     <div class="container">
-        <!-- Шапка с логотипом -->
+        <!-- Шапка с логотипом в левом верхнем углу -->
         <div class="header">
             <div class="logo-container">
                 <div class="logo-placeholder"></div>
@@ -396,7 +418,7 @@
                 logo.style.justifyContent = 'center';
                 logo.innerHTML = 'A';
                 logo.style.color = 'white';
-                logo.style.fontSize = '24px'; /* Уменьшил для адаптива */
+                logo.style.fontSize = '22px'; /* Уменьшил для маленького лого */
                 logo.style.fontWeight = 'bold';
             };
             
