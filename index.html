@@ -64,9 +64,6 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            color: white;
-            font-size: 22px;
-            font-weight: bold;
             box-shadow: 0 4px 8px rgba(46, 125, 50, 0.2);
             /* Ваше лого из файла */
             background-image: url('logo-removebg-preview.png');
@@ -331,22 +328,27 @@
             
             // Проверяем загрузку логотипа
             const logo = document.querySelector('.logo-placeholder');
-            logo.addEventListener('load', function() {
-                console.log('Логотип загружен успешно');
-            });
             
-            logo.addEventListener('error', function() {
-                console.log('Ошибка загрузки логотипа, используем fallback');
+            // Предзагрузка логотипа для проверки
+            const logoImg = new Image();
+            logoImg.src = 'logo-removebg-preview.png';
+            
+            logoImg.onload = function() {
+                console.log('Логотип logo-removebg-preview.png загружен успешно');
+            };
+            
+            logoImg.onerror = function() {
+                console.log('Ошибка загрузки логотипа logo-removebg-preview.png, используем fallback');
                 // Fallback если логотип не загрузился
-                this.style.background = 'linear-gradient(135deg, #2e7d32, #4caf50)';
-                this.style.display = 'flex';
-                this.style.alignItems = 'center';
-                this.style.justifyContent = 'center';
-                this.innerHTML = 'A';
-                this.style.color = 'white';
-                this.style.fontSize = '22px';
-                this.style.fontWeight = 'bold';
-            });
+                logo.style.background = 'linear-gradient(135deg, #2e7d32, #4caf50)';
+                logo.style.display = 'flex';
+                logo.style.alignItems = 'center';
+                logo.style.justifyContent = 'center';
+                logo.innerHTML = 'A';
+                logo.style.color = 'white';
+                logo.style.fontSize = '22px';
+                logo.style.fontWeight = 'bold';
+            };
             
             // Добавляем задержку для анимаций
             const fadeElements = document.querySelectorAll('.fade-in');
