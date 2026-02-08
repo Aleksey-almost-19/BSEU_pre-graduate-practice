@@ -48,7 +48,7 @@
 
         /* Шапка с логотипом в левом верхнем углу */
         .header {
-            padding: 10px 0 20px 0;
+            padding: 10px 0 0 0; /* Убрал нижний отступ */
             width: 100%;
         }
 
@@ -59,8 +59,8 @@
         }
 
         .logo-placeholder {
-            width: 50px; /* Уменьшил в 2 раза (было 100px) */
-            height: 50px; /* Уменьшил в 2 раза (было 100px) */
+            width: 50px;
+            height: 50px;
             border-radius: 12px;
             display: flex;
             align-items: center;
@@ -89,7 +89,8 @@
             justify-content: center;
             align-items: center;
             text-align: center;
-            padding: 20px 0;
+            padding: 0; /* Убрал вертикальные отступы */
+            margin-top: -20px; /* Поднимаем контент выше */
         }
 
         .welcome-text {
@@ -165,10 +166,10 @@
             margin-top: auto;
         }
 
-        /* Адаптивность */
+        /* Адаптивность - НЕ ТРОГАЕМ */
         @media (max-width: 768px) {
             .logo-placeholder {
-                width: 50px; /* Оставил таким же как на десктопе */
+                width: 50px;
                 height: 50px;
                 border-radius: 12px;
             }
@@ -222,7 +223,7 @@
             }
             
             .header {
-                padding: 8px 0 25px 0;
+                padding: 8px 0 0 0;
             }
             
             .welcome-text h1 {
@@ -246,6 +247,10 @@
                 font-size: 30px;
                 margin-bottom: 25px;
             }
+            
+            .main-content {
+                margin-top: -10px;
+            }
         }
 
         @media (max-width: 360px) {
@@ -266,34 +271,102 @@
             }
         }
 
-        /* Для больших экранов (компьютеров) */
-        @media (min-width: 1024px) {
+        /* ТОЛЬКО для десктопной версии */
+        @media (min-width: 769px) {
             .container {
-                max-width: 600px;
-                padding: 30px;
+                padding: 40px 60px;
+                max-width: 1200px;
+            }
+            
+            .header {
+                position: absolute;
+                top: 40px;
+                left: 60px;
+                z-index: 10;
+                padding: 0;
+            }
+            
+            .logo-container {
+                gap: 15px;
             }
             
             .logo-placeholder {
-                width: 50px; /* На компьютере такой же размер */
-                height: 50px;
+                width: 60px; /* Немного увеличил для десктопа */
+                height: 60px;
+                border-radius: 14px;
             }
             
             .bank-name {
-                font-size: 24px;
+                font-size: 26px;
+            }
+            
+            .main-content {
+                justify-content: center;
+                align-items: center;
+                margin-top: 0;
+            }
+            
+            .welcome-text {
+                max-width: 400px;
+                margin-bottom: 60px;
+            }
+            
+            .welcome-text h1 {
+                font-size: 36px;
+            }
+            
+            .welcome-text p {
+                font-size: 18px;
             }
             
             .main-button {
-                max-width: 320px;
+                max-width: 350px;
+                padding: 24px 48px;
+                font-size: 22px;
+            }
+            
+            .bank-icon {
+                width: 120px;
+                height: 120px;
+                font-size: 48px;
+                margin-bottom: 40px;
+            }
+            
+            .footer {
+                position: absolute;
+                bottom: 40px;
+                left: 0;
+                right: 0;
+                width: 100%;
+                text-align: center;
+                padding: 0;
+                border-top: none;
+            }
+        }
+
+        /* Для очень больших экранов */
+        @media (min-width: 1200px) {
+            .container {
+                padding: 50px 80px;
+            }
+            
+            .header {
+                left: 80px;
+                top: 50px;
+            }
+            
+            .welcome-text h1 {
+                font-size: 40px;
+            }
+            
+            .welcome-text p {
+                font-size: 20px;
             }
         }
 
         @media (min-height: 700px) {
             .main-content {
                 justify-content: center;
-            }
-            
-            .welcome-text {
-                margin-bottom: 60px;
             }
         }
 
@@ -418,7 +491,7 @@
                 logo.style.justifyContent = 'center';
                 logo.innerHTML = 'A';
                 logo.style.color = 'white';
-                logo.style.fontSize = '22px'; /* Уменьшил для маленького лого */
+                logo.style.fontSize = '22px';
                 logo.style.fontWeight = 'bold';
             };
             
