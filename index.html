@@ -46,35 +46,35 @@
             height: 100vh;
         }
 
-        /* Шапка с логотипом */
+        /* Шапка с увеличенным логотипом */
         .header {
-            padding: 10px 0 30px 0;
+            padding: 10px 0 40px 0; /* Увеличил отступ снизу */
         }
 
         .logo-container {
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 20px; /* Увеличил отступ между лого и текстом */
         }
 
         .logo-placeholder {
-            width: 80px;
-            height: 80px;
-            border-radius: 12px;
+            width: 100px; /* Увеличил в 2 раза (было 50px) */
+            height: 100px; /* Увеличил в 2 раза (было 50px) */
+            border-radius: 20px; /* Увеличил скругление */
             display: flex;
             align-items: center;
             justify-content: center;
-            box-shadow: 0 4px 8px rgba(46, 125, 50, 0.2);
+            box-shadow: 0 6px 15px rgba(46, 125, 50, 0.25);
             /* Ваше лого из файла */
             background-image: url('logo-removebg-preview.png');
-            background-size: contain;
+            background-size: cover; /* Изменил на cover для заполнения */
             background-position: center;
             background-repeat: no-repeat;
-            background-color: #f8fef8;
+            background-color: transparent; /* Прозрачный фон для PNG */
         }
 
         .bank-name {
-            font-size: 24px;
+            font-size: 28px; /* Немного увеличил шрифт */
             font-weight: 700;
             color: #2e7d32;
             letter-spacing: -0.5px;
@@ -171,12 +171,17 @@
             }
             
             .logo-placeholder {
-                width: 90px;
-                height: 90px;
+                width: 80px; /* Увеличил для мобильных (было 44px) */
+                height: 80px; /* Увеличил для мобильных (было 44px) */
+                border-radius: 16px;
+            }
+            
+            .logo-container {
+                gap: 16px; /* Уменьшил отступ для мобильных */
             }
             
             .bank-name {
-                font-size: 22px;
+                font-size: 24px; /* Немного уменьшил для мобильных */
             }
             
             .welcome-text h1 {
@@ -235,16 +240,12 @@
             .footer {
                 border-top-color: #333;
             }
-            
-            .logo-placeholder {
-                background-color: #1a2c1a;
-            }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <!-- Шапка с логотипом -->
+        <!-- Шапка с увеличенным логотипом -->
         <div class="header">
             <div class="logo-container">
                 <div class="logo-placeholder"></div>
@@ -346,7 +347,7 @@
                 logo.style.justifyContent = 'center';
                 logo.innerHTML = 'A';
                 logo.style.color = 'white';
-                logo.style.fontSize = '22px';
+                logo.style.fontSize = '36px';
                 logo.style.fontWeight = 'bold';
             };
             
