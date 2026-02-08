@@ -38,7 +38,7 @@
 
         .container {
             flex: 1;
-            max-width: 100%;
+            width: 100%;
             margin: 0 auto;
             padding: 20px;
             display: flex;
@@ -48,7 +48,7 @@
 
         /* Шапка с логотипом в левом верхнем углу */
         .header {
-            padding: 10px 0 0 0; /* Убрал нижний отступ */
+            padding: 10px 0 0 0;
             width: 100%;
         }
 
@@ -89,8 +89,8 @@
             justify-content: center;
             align-items: center;
             text-align: center;
-            padding: 0; /* Убрал вертикальные отступы */
-            margin-top: -20px; /* Поднимаем контент выше */
+            padding: 0;
+            margin-top: -20px;
         }
 
         .welcome-text {
@@ -271,65 +271,90 @@
             }
         }
 
-        /* ТОЛЬКО для десктопной версии */
+        /* ТОЛЬКО для десктопной версии - ИСПРАВЛЕНО */
         @media (min-width: 769px) {
+            body {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                min-height: 100vh;
+                padding: 40px;
+                background-color: #f8fef8;
+            }
+            
             .container {
-                padding: 40px 60px;
+                width: 100%;
                 max-width: 1200px;
+                height: 90vh;
+                min-height: 700px;
+                background-color: white;
+                border-radius: 30px;
+                box-shadow: 0 15px 40px rgba(76, 175, 80, 0.15);
+                padding: 50px;
+                position: relative;
+                border: 2px solid #e8f5e9;
             }
             
             .header {
                 position: absolute;
-                top: 40px;
-                left: 60px;
+                top: 50px;
+                left: 50px;
                 z-index: 10;
                 padding: 0;
             }
             
             .logo-container {
-                gap: 15px;
+                gap: 20px;
             }
             
             .logo-placeholder {
-                width: 60px; /* Немного увеличил для десктопа */
-                height: 60px;
-                border-radius: 14px;
+                width: 70px; /* Увеличил для десктопа */
+                height: 70px;
+                border-radius: 16px;
+                box-shadow: 0 6px 15px rgba(46, 125, 50, 0.25);
             }
             
             .bank-name {
-                font-size: 26px;
+                font-size: 32px;
+                font-weight: 700;
             }
             
             .main-content {
                 justify-content: center;
                 align-items: center;
                 margin-top: 0;
+                height: 100%;
             }
             
             .welcome-text {
-                max-width: 400px;
-                margin-bottom: 60px;
+                max-width: 500px;
+                margin-bottom: 80px;
             }
             
             .welcome-text h1 {
-                font-size: 36px;
+                font-size: 48px;
+                margin-bottom: 20px;
             }
             
             .welcome-text p {
-                font-size: 18px;
+                font-size: 22px;
+                line-height: 1.6;
             }
             
             .main-button {
-                max-width: 350px;
-                padding: 24px 48px;
-                font-size: 22px;
+                max-width: 400px;
+                padding: 28px 60px;
+                font-size: 24px;
+                border-radius: 18px;
+                margin-top: 30px;
             }
             
             .bank-icon {
-                width: 120px;
-                height: 120px;
-                font-size: 48px;
-                margin-bottom: 40px;
+                width: 150px;
+                height: 150px;
+                font-size: 60px;
+                margin-bottom: 50px;
+                border-radius: 35px;
             }
             
             .footer {
@@ -341,30 +366,39 @@
                 text-align: center;
                 padding: 0;
                 border-top: none;
+                font-size: 16px;
             }
         }
 
         /* Для очень больших экранов */
         @media (min-width: 1200px) {
             .container {
-                padding: 50px 80px;
-            }
-            
-            .header {
-                left: 80px;
-                top: 50px;
+                max-width: 1400px;
+                min-height: 800px;
             }
             
             .welcome-text h1 {
-                font-size: 40px;
+                font-size: 52px;
             }
             
             .welcome-text p {
-                font-size: 20px;
+                font-size: 24px;
+            }
+            
+            .main-button {
+                max-width: 450px;
+                padding: 30px 70px;
+                font-size: 26px;
+            }
+            
+            .bank-icon {
+                width: 160px;
+                height: 160px;
+                font-size: 65px;
             }
         }
 
-        @media (min-height: 700px) {
+        @media (min-height: 700px) and (max-width: 768px) {
             .main-content {
                 justify-content: center;
             }
@@ -395,6 +429,17 @@
             .footer {
                 border-top-color: #333;
             }
+            
+            @media (min-width: 769px) {
+                body {
+                    background-color: #0d1f0d;
+                }
+                
+                .container {
+                    background-color: #1a2c1a;
+                    border-color: #2e4a2e;
+                }
+            }
         }
     </style>
 </head>
@@ -422,7 +467,7 @@
             <!-- Основная кнопка -->
             <button class="main-button fade-in" onclick="goToCredits()">
                 Просмотреть кредиты
-                <span style="font-size: 20px;">→</span>
+                <span style="font-size: 24px;">→</span>
             </button>
         </div>
 
@@ -491,7 +536,7 @@
                 logo.style.justifyContent = 'center';
                 logo.innerHTML = 'A';
                 logo.style.color = 'white';
-                logo.style.fontSize = '22px';
+                logo.style.fontSize = '28px';
                 logo.style.fontWeight = 'bold';
             };
             
