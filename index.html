@@ -48,23 +48,23 @@
 
         /* Шапка с логотипом */
         .header {
-            padding: 10px 0 40px 0;
+            padding: 10px 0 30px 0;
         }
 
         .logo-container {
             display: flex;
             align-items: center;
-            gap: 18px;
+            gap: 15px;
         }
 
         .logo-placeholder {
-            width: 100px; /* В 2 раза меньше чем 200px */
-            height: 100px; /* В 2 раза меньше чем 200px */
-            border-radius: 20px;
+            width: 100px;
+            height: 100px;
+            border-radius: 18px;
             display: flex;
             align-items: center;
             justify-content: center;
-            box-shadow: 0 6px 15px rgba(46, 125, 50, 0.25);
+            box-shadow: 0 5px 12px rgba(46, 125, 50, 0.2);
             /* Ваше лого из файла */
             background-image: url('logo-removebg-preview.png');
             background-size: cover;
@@ -74,7 +74,7 @@
         }
 
         .bank-name {
-            font-size: 28px;
+            font-size: 26px;
             font-weight: 700;
             color: #2e7d32;
             letter-spacing: -0.5px;
@@ -89,24 +89,23 @@
             align-items: center;
             text-align: center;
             padding: 20px 0;
-            margin-top: 20px;
         }
 
         .welcome-text {
-            margin-bottom: 60px;
-            max-width: 320px;
+            margin-bottom: 50px;
+            max-width: 300px;
         }
 
         .welcome-text h1 {
-            font-size: 32px;
+            font-size: 28px;
             font-weight: 700;
             color: #2e7d32;
-            margin-bottom: 16px;
+            margin-bottom: 12px;
             line-height: 1.2;
         }
 
         .welcome-text p {
-            font-size: 18px;
+            font-size: 16px;
             color: #666666;
             line-height: 1.5;
         }
@@ -116,51 +115,51 @@
             background: linear-gradient(135deg, #4caf50, #2e7d32);
             color: white;
             border: none;
-            border-radius: 16px;
-            padding: 24px 48px;
-            font-size: 22px;
+            border-radius: 14px;
+            padding: 22px 40px;
+            font-size: 20px;
             font-weight: 600;
             cursor: pointer;
             width: 100%;
-            max-width: 320px;
+            max-width: 300px;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 12px;
+            gap: 10px;
             transition: all 0.3s ease;
-            box-shadow: 0 8px 25px rgba(76, 175, 80, 0.3);
+            box-shadow: 0 6px 20px rgba(76, 175, 80, 0.25);
             margin-top: 20px;
         }
 
         .main-button:hover, .main-button:active {
-            transform: translateY(-3px);
-            box-shadow: 0 12px 30px rgba(76, 175, 80, 0.4);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(76, 175, 80, 0.35);
         }
 
         .main-button:active {
-            transform: translateY(-1px);
+            transform: translateY(0);
         }
 
         /* Иконка банка */
         .bank-icon {
-            width: 120px;
-            height: 120px;
+            width: 100px;
+            height: 100px;
             background: linear-gradient(135deg, #e8f5e9, #c8e6c9);
-            border-radius: 30px;
-            margin-bottom: 40px;
+            border-radius: 25px;
+            margin-bottom: 35px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 48px;
-            box-shadow: 0 8px 20px rgba(76, 175, 80, 0.15);
+            font-size: 40px;
+            box-shadow: 0 6px 15px rgba(76, 175, 80, 0.12);
         }
 
         /* Футер */
         .footer {
             text-align: center;
-            padding: 20px 0 10px 0;
+            padding: 15px 0 10px 0;
             color: #999999;
-            font-size: 14px;
+            font-size: 13px;
             border-top: 1px solid #f0f0f0;
             margin-top: auto;
         }
@@ -168,68 +167,101 @@
         /* Адаптивность */
         @media (max-width: 768px) {
             .logo-placeholder {
-                width: 75px; /* В 2 раза меньше чем 150px */
-                height: 75px; /* В 2 раза меньше чем 150px */
-                border-radius: 18px;
+                width: 50px; /* Было 75px - уменьшил в 1.5 раза */
+                height: 50px; /* Было 75px - уменьшил в 1.5 раза */
+                border-radius: 14px;
             }
             
             .bank-name {
-                font-size: 26px;
+                font-size: 22px;
             }
             
             .logo-container {
-                gap: 16px;
+                gap: 12px;
+            }
+            
+            .welcome-text {
+                margin-bottom: 40px;
+                max-width: 280px;
+            }
+            
+            .welcome-text h1 {
+                font-size: 24px;
+            }
+            
+            .welcome-text p {
+                font-size: 15px;
+            }
+            
+            .bank-icon {
+                width: 85px;
+                height: 85px;
+                font-size: 34px;
+                margin-bottom: 30px;
             }
         }
 
         @media (max-width: 480px) {
             .container {
-                padding: 16px;
+                padding: 15px;
             }
             
             .logo-placeholder {
-                width: 60px; /* В 2 раза меньше чем 120px */
-                height: 60px; /* В 2 раза меньше чем 120px */
-                border-radius: 15px;
+                width: 40px; /* Было 60px - уменьшил в 1.5 раза */
+                height: 40px; /* Было 60px - уменьшил в 1.5 раза */
+                border-radius: 12px;
             }
             
             .logo-container {
-                gap: 14px;
+                gap: 10px;
             }
             
             .bank-name {
-                font-size: 24px;
+                font-size: 20px;
+            }
+            
+            .header {
+                padding: 8px 0 25px 0;
             }
             
             .welcome-text h1 {
-                font-size: 28px;
+                font-size: 22px;
             }
             
             .welcome-text p {
-                font-size: 16px;
+                font-size: 14px;
             }
             
             .main-button {
-                padding: 20px 40px;
-                font-size: 20px;
-                max-width: 280px;
+                padding: 18px 32px;
+                font-size: 18px;
+                max-width: 260px;
+                border-radius: 12px;
             }
             
             .bank-icon {
-                width: 100px;
-                height: 100px;
-                font-size: 40px;
+                width: 75px;
+                height: 75px;
+                font-size: 30px;
+                margin-bottom: 25px;
             }
         }
 
         @media (max-width: 360px) {
             .logo-placeholder {
-                width: 50px;
-                height: 50px;
+                width: 35px; /* Еще меньше для очень маленьких экранов */
+                height: 35px;
+                border-radius: 10px;
             }
             
             .bank-name {
-                font-size: 22px;
+                font-size: 18px;
+            }
+            
+            .main-button {
+                padding: 16px 28px;
+                font-size: 16px;
+                max-width: 240px;
             }
         }
 
@@ -239,7 +271,7 @@
             }
             
             .welcome-text {
-                margin-bottom: 80px;
+                margin-bottom: 60px;
             }
         }
 
@@ -247,7 +279,7 @@
         @keyframes fadeInUp {
             from {
                 opacity: 0;
-                transform: translateY(30px);
+                transform: translateY(20px);
             }
             to {
                 opacity: 1;
@@ -256,7 +288,7 @@
         }
 
         .fade-in {
-            animation: fadeInUp 0.6s ease-out forwards;
+            animation: fadeInUp 0.5s ease-out forwards;
         }
 
         /* Dark theme адаптация */
@@ -295,7 +327,7 @@
             <!-- Основная кнопка -->
             <button class="main-button fade-in" onclick="goToCredits()">
                 Просмотреть кредиты
-                <span style="font-size: 24px;">→</span>
+                <span style="font-size: 20px;">→</span>
             </button>
         </div>
 
@@ -364,7 +396,7 @@
                 logo.style.justifyContent = 'center';
                 logo.innerHTML = 'A';
                 logo.style.color = 'white';
-                logo.style.fontSize = '36px'; /* Уменьшил с 72px до 36px */
+                logo.style.fontSize = '24px'; /* Уменьшил для адаптива */
                 logo.style.fontWeight = 'bold';
             };
             
