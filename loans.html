@@ -28,7 +28,7 @@
         }
 
         body {
-            background-color: var(--tg-theme-bg-color, #000000); /* ЧЕРНЫЙ */
+            background-color: var(--tg-theme-bg-color, #000000); /* ЧЕРНЫЙ ФОН ВСЕЙ СТРАНИЦЫ */
             color: var(--tg-theme-text-color, #ffffff);
             line-height: 1.6;
             min-height: 100vh;
@@ -45,17 +45,19 @@
             position: fixed;
             top: 15px;
             left: 15px;
+            right: 15px;
             z-index: 100;
             display: none;
             align-items: center;
             gap: 12px;
             background-color: #000000; /* ЧЕРНЫЙ ФОН */
-            padding: 10px 15px;
+            padding: 12px 15px;
             border-radius: 12px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.7);
             transition: all 0.3s ease;
             opacity: 1;
             transform: translateY(0);
+            border: 1px solid #000000; /* ЧЕРНАЯ ГРАНИЦА */
         }
 
         .mobile-logo.hidden {
@@ -85,7 +87,8 @@
 
         .container {
             width: 100%;
-            padding: 20px 16px 16px 16px; /* Меньший отступ сверху */
+            padding: 90px 16px 16px 16px; /* Увеличенный отступ сверху для фиксированного логотипа */
+            background-color: #000000; /* ЧЕРНЫЙ ФОН КОНТЕЙНЕРА */
         }
 
         .content-header {
@@ -229,7 +232,7 @@
             line-height: 1.5;
         }
 
-        /* Футер - ОБЫЧНЫЙ БЛОК, НЕ АБСОЛЮТНЫЙ */
+        /* Футер */
         .footer {
             text-align: center;
             margin-top: 40px;
@@ -237,6 +240,7 @@
             border-top: 1px solid #333333;
             color: #999999;
             font-size: 14px;
+            background-color: #000000; /* ЧЕРНЫЙ ФОН ФУТЕРА */
         }
 
         .footer strong {
@@ -265,15 +269,17 @@
             box-shadow: 0 6px 18px rgba(64, 167, 227, 0.4);
         }
 
-        /* Адаптивность для мобильных - ЛОГОТИП СКРЫВАЕТСЯ ПРИ СКРОЛЛЕ */
+        /* Адаптивность для мобильных */
         @media (max-width: 768px) {
+            body {
+                background-color: #000000; /* ЧЕРНЫЙ ФОН ВСЕЙ СТРАНИЦЫ */
+            }
+            
             .mobile-logo {
                 display: flex;
-                top: 15px;
-                left: 15px;
-                right: 15px; /* Занимает всю ширину */
                 justify-content: flex-start; /* Логотип слева */
-                background-color: #000000; /* ЧЕРНЫЙ ФОН */
+                background-color: #000000; /* ЧЕРНЫЙ ФОН ЛОГОТИПА */
+                border: 1px solid #000000; /* ЧЕРНАЯ ГРАНИЦА */
             }
             
             .logo-placeholder {
@@ -289,11 +295,13 @@
             }
             
             .container {
-                padding: 20px 12px 12px 12px; /* Меньший отступ сверху */
+                padding: 90px 12px 12px 12px; /* Увеличенный отступ сверху */
+                background-color: #000000; /* ЧЕРНЫЙ ФОН */
             }
             
             .content-header h1 {
                 font-size: 24px;
+                margin-top: 10px; /* Дополнительный отступ сверху */
             }
             
             .content-header p {
@@ -348,6 +356,10 @@
             .tg-button {
                 padding: 12px 20px;
                 font-size: 15px;
+            }
+            
+            .footer {
+                background-color: #000000; /* ЧЕРНЫЙ ФОН ФУТЕРА */
             }
         }
 
@@ -501,6 +513,7 @@
                 padding-top: 25px;
                 border-top: 1px solid #333333;
                 color: #999999;
+                background-color: #000000;
             }
             
             .footer strong {
@@ -807,7 +820,7 @@
             // Логика скрытия/показа логотипа при скролле на мобильных
             let lastScrollTop = 0;
             const mobileLogo = document.querySelector('.mobile-logo');
-            const scrollThreshold = 100; // Порог скролла для скрытия логотипа
+            const scrollThreshold = 50; // Порог скролла для скрытия логотипа
             
             if (mobileLogo) {
                 window.addEventListener('scroll', function() {
