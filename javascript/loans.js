@@ -1,0 +1,182 @@
+// Инициализация Telegram Web App
+        const tg = window.Telegram.WebApp;
+        
+        // Расширяем Web App на весь экран
+        tg.expand();
+        
+        // Настраиваем кнопку "Назад"
+        tg.MainButton.setParams({
+            text: 'НАЗАД',
+            color: '#40a7e3'
+        });
+        
+        // Показываем кнопку назад
+        tg.MainButton.show();
+        tg.MainButton.onClick(function() {
+            // Возвращаемся на главную страницу
+            window.location.href = 'index.html';
+        });
+        
+        // Устанавливаем цвета для темной темы
+        tg.setHeaderColor('#2e7d32');
+        tg.setBackgroundColor('#000000');
+        
+        // Функция выбора кредита
+        function selectCredit(type) {
+            let title = '';
+            let amount = '';
+            
+            switch(type) {
+                case 'consumer':
+                    title = 'Потребительские кредиты';
+                    amount = 'до 50 000 BYN';
+                    break;
+                case 'mortgage':
+                    title = 'Кредиты на недвижимость';
+                    amount = 'до 200 000 BYN';
+                    break;
+                case 'preferential':
+                    title = 'Льготное кредитование';
+                    amount = 'от 4.5% годовых';
+                    break;
+            }
+            
+            // Анимация выбора
+            const card = event.currentTarget;
+            card.style.transform = 'scale(0.97)';
+            card.style.backgroundColor = '#2a2a2a';
+            
+            setTimeout(() => {
+                card.style.transform = '';
+                card.style.backgroundColor = '';
+            }, 150);
+            
+            // Показываем уведомление
+            tg.showAlert(`Вы выбрали: ${title}\n${amount}\n\nМенеджер свяжется с вами для уточнения деталей.`);
+        }
+        
+        // Функция показа информации
+        function showInfo(type) {
+            const item = event.currentTarget;
+            const title = item.querySelector('strong').textContent;
+            
+            // Анимация
+            item.style.transform = 'scale(0.98)';
+            item.style.backgroundColor = '#2a2a2a';
+            
+            setTimeout(() => {
+                item.style.transform = '';
+                item.style.backgroundColor = '';
+            }, 150);
+            
+            // Показываем всплывающее окно
+            tg.showPopup({
+                title: 'Информация',
+                message: title + '\n\nБолее подробную информацию можно получить в отделении банка или на официальном сайте.',
+                buttons: [{
+                    type: 'ok',
+                    text: 'Понятно'
+                }]
+            });
+        }
+        
+        // Функция открытия формы связи
+        function openContactForm() {
+            tg.showPopup({
+                title: 'Связь с менеджером',
+                message: 'Хотите, чтобы менеджер перезвонил вам для консультации?',
+                buttons: [
+                    {
+                        type: 'default',
+                        text: 'Да, перезвоните'
+                    },
+                    {
+                        type: 'cancel',
+                        text: 'Отмена'
+                    }
+                ]
+            }, function(buttonId) {
+                if (buttonId === 'Да, перезвоните') {
+                    tg.showAlert('Спасибо! Менеджер свяжется с вами в ближайшее время.');
+                }
+            });
+        }
+        
+        // Инициализация при загрузке
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Страница кредитов загружена');
+            
+            // Проверяем загрузку логотипа
+            const logos = document.querySelectorAll('.logo-placeholder');
+            
+            logos.forEach(logo => {
+                const logoImg = new Image();
+                logoImg.src = 'logo-removebg-preview.png';
+                
+                logoImg.onerror = function() {
+                    console.log('Ошибка загрузки логотипа, используем fallback');
+                    logo.style.background = 'linear-gradient(135deg, #2e7d32, #4caf50)';
+                    logo.style.display = 'flex';
+                    logo.style.alignItems = 'center';
+                    logo.style.justifyContent = 'center';
+                    logo.innerHTML = 'A';
+                    logo.style.color = 'white';
+                    logo.style.fontSize = '24px';
+                    logo.style.fontWeight = 'bold';
+                };
+                
+                // Делаем логотип кликабельным
+                logo.style.cursor = 'pointer';
+                logo.addEventListener('click', function() {
+                    tg.showAlert('Аурумбанк - Ваш надежный финансовый партнер');
+                });
+            });
+            
+            // Добавляем обработчики клавиатуры
+            const creditCards = document.querySelectorAll('.credit-card');
+            creditCards.forEach(card => {
+                card.setAttribute('tabindex', '0');
+                card.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        this.click();
+                    }
+                });
+            });
+            
+            const infoItems = document.querySelectorAll('.info-item');
+            infoItems.forEach(item => {
+                item.setAttribute('tabindex', '0');
+                item.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        this.click();
+                    }
+                });
+            });
+            
+            // Логика скрытия/показа логотипа при скролле на мобильных
+            let lastScrollTop = 0;
+            const mobileLogo = document.querySelector('.mobile-logo');
+            const scrollThreshold = 50; // Порог скролла для скрытия логотипа
+            
+            if (mobileLogo) {
+                window.addEventListener('scroll', function() {
+                    let scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+                    
+                    if (scrollTop > scrollThreshold) {
+                        // Прокрутили вниз - скрываем логотип
+                        if (scrollTop > lastScrollTop) {
+                            mobileLogo.classList.add('hidden');
+                        } 
+                        // Прокрутили вверх - показываем логотип
+                        else if (scrollTop < lastScrollTop) {
+                            mobileLogo.classList.remove('hidden');
+                        }
+                    } else {
+                        // Вверху страницы - всегда показываем логотип
+                        mobileLogo.classList.remove('hidden');
+                    }
+                    
+                    lastScrollTop = scrollTop;
+                });
+            }
+        });
