@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Кредиты - банковские услуги</title>
+    
+    <!-- Telegram Web App SDK -->
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        :root {
+            --tg-theme-bg-color: #ffffff;
+            --tg-theme-text-color: #000000;
+            --tg-theme-hint-color: #999999;
+            --tg-theme-link-color: #2481cc;
+            --tg-theme-button-color: #40a7e3;
+            --tg-theme-button-text-color: #ffffff;
+            --tg-theme-secondary-bg-color: #f1f1f1;
+        }
+
+        body {
+            background-color: var(--tg-theme-bg-color, #ffffff);
+            color: var(--tg-theme-text-color, #000000);
+            line-height: 1.6;
+            padding: 0;
+            min-height: 100vh;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .container {
+            max-width: 100%;
+            margin: 0 auto;
+            padding: 16px;
+            background-color: var(--tg-theme-bg-color, #ffffff);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 32px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--tg-theme-secondary-bg-color, #e8f5e9);
+        }
+
+        .header h1 {
+            color: var(--tg-theme-text-color, #2e7d32);
+            font-size: 28px;
+            margin-bottom: 8px;
+            font-weight: 700;
+        }
+
+        .header p {
+            color: var(--tg-theme-hint-color, #666666);
+            font-size: 16px;
+            font-weight: 400;
+        }
+
+        /* Горизонтальное расположение кнопок */
+        .credit-options {
+            display: flex;
+            flex-wrap: nowrap;
+            gap: 16px;
+            margin-bottom: 40px;
+            overflow-x: auto;
+            padding: 8px 4px 16px 4px;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+
+        .credit-options::-webkit-scrollbar {
+            display: none;
+        }
+
+        .credit-card {
+            flex: 0 0 auto;
+            width: 300px;
+            min-width: 280px;
+            background-color: var(--tg-theme-secondary-bg-color, #f8fef8);
+            border: 1px solid var(--tg-theme-secondary-bg-color, #e8f5e9);
+            border-radius: 16px;
+            padding: 24px;
+            transition: all 0.2s ease;
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+
+        .credit-card:hover, .credit-card:active {
+            background-color: var(--tg-theme-secondary-bg-color, #f1f8e9);
+            border-color: var(--tg-theme-button-color, #4caf50);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .credit-card h3 {
+            color: var(--tg-theme-text-color, #1b5e20);
+            font-size: 20px;
+            margin-bottom: 12px;
+            font-weight: 600;
+            min-height: 48px;
+        }
+
+        .credit-amount {
+            display: inline-block;
+            background: linear-gradient(135deg, var(--tg-theme-button-color, #4caf50), #2e7d32);
+            color: var(--tg-theme-button-text-color, #ffffff);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            font-size: 18px;
+        }
+
+        .credit-description {
+            color: var(--tg-theme-hint-color, #666666);
+            font-size: 15px;
+            line-height: 1.5;
+            min-height: 70px;
+        }
+
+        /* Разделитель */
+        .divider {
+            height: 1px;
+            background: var(--tg-theme-secondary-bg-color, #e8f5e9);
+            margin: 32px 0;
+        }
+
+        /* Информационная секция */
+        .info-section {
+            margin-top: 32px;
+            padding: 24px;
+            background-color: var(--tg-theme-secondary-bg-color, #f8fef8);
+            border-radius: 16px;
+            border: 1px solid var(--tg-theme-secondary-bg-color, #e8f5e9);
+        }
+
+        .info-section h2 {
+            color: var(--tg-theme-text-color, #2e7d32);
+            font-size: 20px;
+            margin-bottom: 20px;
+            text-align: center;
+            font-weight: 600;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 16px;
+        }
+
+        .info-item {
+            background-color: var(--tg-theme-bg-color, #ffffff);
+            padding: 20px;
+            border-radius: 12px;
+            border-left: 4px solid var(--tg-theme-button-color, #4caf50);
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.03);
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+
+        .info-item:hover, .info-item:active {
+            background-color: var(--tg-theme-secondary-bg-color, #f1f8e9);
+            transform: translateX(4px);
+        }
+
+        .info-item strong {
+            color: var(--tg-theme-text-color, #1b5e20);
+            font-size: 16px;
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        .info-item p {
+            color: var(--tg-theme-hint-color, #666666);
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        /* Футер */
+        .footer {
+            text-align: center;
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid var(--tg-theme-secondary-bg-color, #e8f5e9);
+            color: var(--tg-theme-hint-color, #666666);
+            font-size: 14px;
+        }
+
+        .footer strong {
+            color: var(--tg-theme-text-color, #2e7d32);
+            font-weight: 600;
+        }
+
+        /* Telegram кнопка */
+        .tg-button {
+            background-color: var(--tg-theme-button-color, #40a7e3);
+            color: var(--tg-theme-button-text-color, #ffffff);
+            border: none;
+            border-radius: 12px;
+            padding: 14px 24px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 20px;
+            transition: opacity 0.2s ease;
+        }
+
+        .tg-button:hover, .tg-button:active {
+            opacity: 0.9;
+        }
+
+        /* Адаптивность для Telegram */
+        @media (min-width: 768px) {
+            .container {
+                max-width: 768px;
+                margin: 0 auto;
+            }
+            
+            .info-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        /* Dark theme адаптация */
+        @media (prefers-color-scheme: dark) {
+            .credit-card, .info-section, .info-item {
+                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Кредиты</h1>
+            <p>Выберите подходящий кредитный продукт</p>
+        </div>
+        
+        <!-- Горизонтальные кнопки -->
+        <div class="credit-options">
+            <div class="credit-card" onclick="selectCredit('consumer')">
+                <h3>Потребительские кредиты</h3>
+                <div class="credit-amount">до 50 000 BYN</div>
+                <p class="credit-description">Быстрое решение, минимальный пакет документов для любых целей</p>
+            </div>
+            
+            <div class="credit-card" onclick="selectCredit('mortgage')">
+                <h3>Кредиты на недвижимость</h3>
+                <div class="credit-amount">до 200 000 BYN</div>
+                <p class="credit-description">Ипотека на покупку квартиры, дома или земельного участка</p>
+            </div>
+            
+            <div class="credit-card" onclick="selectCredit('preferential')">
+                <h3>Льготное кредитование</h3>
+                <div class="credit-amount">от 4.5% годовых</div>
+                <p class="credit-description">Специальные программы для предпринимателей и молодых семей</p>
+            </div>
+        </div>
+        
+        <button class="tg-button" onclick="openContactForm()">
+            📞 Связаться с менеджером
+        </button>
+        
+        <div class="divider"></div>
+        
+        <!-- Справочная информация -->
+        <div class="info-section">
+            <h2>Справочная информация для кредитополучателей</h2>
+            <div class="info-grid">
+                <div class="info-item" onclick="showInfo('alert')">
+                    <strong>Будьте бдительны! Не станьте жертвой мошенников</strong>
+                    <p>Никогда не сообщайте посторонним данные карты, коды из SMS и пароли</p>
+                </div>
+                
+                <div class="info-item" onclick="showInfo('notice')">
+                    <strong>Вниманию кредитополучателей</strong>
+                    <p>Ознакомьтесь с условиями кредитования перед подачей заявки</p>
+                </div>
+                
+                <div class="info-item" onclick="showInfo('repayment')">
+                    <strong>Информация по погашению кредитов</strong>
+                    <p>Погашение через отделения банка, банкоматы, интернет-банкинг</p>
+                </div>
+                
+                <div class="info-item" onclick="showInfo('delay')">
+                    <strong>Отсрочка по погашению кредитов</strong>
+                    <p>В случае трудностей обратитесь в банк для реструктуризации</p>
+                </div>
+                
+                <div class="info-item" onclick="showInfo('offers')">
+                    <strong>Публичные оферты ОАО «АСБ Беларусбанк»</strong>
+                    <p>С официальными документами ознакомьтесь на сайте банка</p>
+                </div>
+                
+                <div class="info-item" onclick="showInfo('contacts')">
+                    <strong>Адреса и телефоны ипотечных офисов</strong>
+                    <p>Консультацию можно получить в офисах банка по всей стране</p>
+                </div>
+                
+                <div class="info-item" onclick="showInfo('status')">
+                    <strong>Ход рассмотрения заявки на кредит</strong>
+                    <p>Статус заявки отслеживайте в личном кабинете</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p>Все кредиты предоставляются в <strong>белорусских рублях (BYN)</strong></p>
+            <p style="margin-top: 12px;">© 2023 Кредитный сервис</p>
+        </div>
+    </div>
+
+    <script>
+        // Инициализация Telegram Web App
+        const tg = window.Telegram.WebApp;
+        
+        // Расширяем Web App на весь экран
+        tg.expand();
+        
+        // Устанавливаем цвет кнопки в Telegram
+        tg.MainButton.setParams({
+            text: 'НАЗАД В БОТ',
+            color: '#40a7e3'
+        });
+        
+        // Показываем кнопку назад
+        tg.MainButton.show();
+        tg.MainButton.onClick(function() {
+            // Закрываем Web App и возвращаемся в бота
+            tg.close();
+        });
+        
+        // Устанавливаем цвет фона и текст
+        tg.setHeaderColor('#2e7d32');
+        tg.setBackgroundColor('#ffffff');
+        
+        // Функция выбора кредита
+        function selectCredit(type) {
+            let title = '';
+            let amount = '';
+            
+            switch(type) {
+                case 'consumer':
+                    title = 'Потребительские кредиты';
+                    amount = 'до 50 000 BYN';
+                    break;
+                case 'mortgage':
+                    title = 'Кредиты на недвижимость';
+                    amount = 'до 200 000 BYN';
+                    break;
+                case 'preferential':
+                    title = 'Льготное кредитование';
+                    amount = 'от 4.5% годовых';
+                    break;
+            }
+            
+            // Анимация выбора
+            const card = event.currentTarget;
+            card.style.transform = 'scale(0.97)';
+            card.style.backgroundColor = 'rgba(64, 167, 227, 0.1)';
+            
+            setTimeout(() => {
+                card.style.transform = '';
+                card.style.backgroundColor = '';
+            }, 150);
+            
+            // В реальном приложении здесь можно:
+            // 1. Отправить данные в бота
+            // 2. Открыть форму заявки
+            // 3. Передать данные в основное приложение
+            
+            // Отправляем данные в бота
+            tg.sendData(JSON.stringify({
+                action: 'select_credit',
+                type: type,
+                title: title,
+                amount: amount
+            }));
+            
+            // Показываем уведомление в Telegram
+            tg.showAlert(`Вы выбрали: ${title}\n${amount}\n\nМенеджер свяжется с вами для уточнения деталей.`);
+            
+            // В реальном приложении можно закрыть Web App
+            // setTimeout(() => tg.close(), 2000);
+        }
+        
+        // Функция показа информации
+        function showInfo(type) {
+            const item = event.currentTarget;
+            const title = item.querySelector('strong').textContent;
+            
+            // Анимация
+            item.style.transform = 'scale(0.98)';
+            item.style.backgroundColor = 'rgba(64, 167, 227, 0.1)';
+            
+            setTimeout(() => {
+                item.style.transform = '';
+                item.style.backgroundColor = '';
+            }, 150);
+            
+            // Отправляем данные о просмотре информации
+            tg.sendData(JSON.stringify({
+                action: 'view_info',
+                info_type: type,
+                title: title
+            }));
+            
+            // Показываем всплывающее окно в Telegram
+            tg.showPopup({
+                title: 'Информация',
+                message: title + '\n\nБолее подробную информацию можно получить в отделении банка или на официальном сайте.',
+                buttons: [{
+                    type: 'ok',
+                    text: 'Понятно'
+                }]
+            });
+        }
+        
+        // Функция открытия формы связи
+        function openContactForm() {
+            tg.showPopup({
+                title: 'Связь с менеджером',
+                message: 'Хотите, чтобы менеджер перезвонил вам для консультации?',
+                buttons: [
+                    {
+                        type: 'default',
+                        text: 'Да, перезвоните'
+                    },
+                    {
+                        type: 'cancel',
+                        text: 'Отмена'
+                    }
+                ]
+            }, function(buttonId) {
+                if (buttonId === 'Да, перезвоните') {
+                    // Запрашиваем контактные данные
+                    tg.requestContact(function(contact) {
+                        // Отправляем контакт в бота
+                        tg.sendData(JSON.stringify({
+                            action: 'request_callback',
+                            phone: contact.phone_number,
+                            first_name: contact.first_name,
+                            last_name: contact.last_name
+                        }));
+                        
+                        tg.showAlert('Спасибо! Менеджер свяжется с вами в ближайшее время.');
+                    });
+                }
+            });
+        }
+        
+        // Инициализация при загрузке
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Telegram Web App инициализирован');
+            console.log('Платформа:', tg.platform);
+            console.log('Версия:', tg.version);
+            console.log('Цветовая тема:', tg.colorScheme);
+            console.log('Параметры запуска:', tg.initData);
+            
+            // Устанавливаем тему в зависимости от Telegram
+            if (tg.colorScheme === 'dark') {
+                document.body.classList.add('dark-theme');
+            }
+            
+            // Добавляем обработчики клавиатуры
+            const creditCards = document.querySelectorAll('.credit-card');
+            creditCards.forEach(card => {
+                card.setAttribute('tabindex', '0');
+                card.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        this.click();
+                    }
+                });
+            });
+            
+            const infoItems = document.querySelectorAll('.info-item');
+            infoItems.forEach(item => {
+                item.setAttribute('tabindex', '0');
+                item.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        this.click();
+                    }
+                });
+            });
+            
+            // Горизонтальный скролл для карточек
+            const creditOptions = document.querySelector('.credit-options');
+            if (creditOptions) {
+                let isDown = false;
+                let startX;
+                let scrollLeft;
+                
+                creditOptions.addEventListener('touchstart', (e) => {
+                    startX = e.touches[0].pageX - creditOptions.offsetLeft;
+                    scrollLeft = creditOptions.scrollLeft;
+                });
+                
+                creditOptions.addEventListener('touchmove', (e) => {
+                    if (!isDown) return;
+                    e.preventDefault();
+                    const x = e.touches[0].pageX - creditOptions.offsetLeft;
+                    const walk = (x - startX) * 2;
+                    creditOptions.scrollLeft = scrollLeft - walk;
+                });
+            }
+        });
+        
+        // Обработчик изменения видимости (для паузы/возобновления)
+        document.addEventListener('visibilitychange', function() {
+            if (document.hidden) {
+                console.log('Web App скрыт');
+            } else {
+                console.log('Web App активен');
+            }
+        });
+    </script>
+</body>
+</html>
