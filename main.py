@@ -102,12 +102,10 @@ def send_welcome(message):
 
 Я бот для преддипломной практики БГЭУ.
 
-
 **Команды:**
 /setup - настроить Menu Button
 /webapp - открыть Web App
 /link - получить ссылки
-/status - статус системы
 """
     
     bot.send_message(
@@ -202,50 +200,6 @@ def send_links(message):
         parse_mode='Markdown'
     )
 
-@bot.message_handler(commands=['status'])
-def bot_status(message):
-    """Статус системы"""
-    import requests
-    
-    # Проверяем доступность Web App
-    try:
-        response = requests.get(WEB_APP_URL, timeout=10)
-        if response.status_code == 200:
-            webapp_status = f"✅ **Работает** (код: {response.status_code})"
-        else:
-            webapp_status = f"⚠️ **Доступен, но код: {response.status_code}**"
-    except requests.exceptions.ConnectionError:
-        webapp_status = "❌ **Не доступен** (нет соединения)"
-    except requests.exceptions.Timeout:
-        webapp_status = "⏳ **Таймаут** (слишком долгий ответ)"
-    except Exception as e:
-        webapp_status = f"⚠️ **Ошибка:** {str(e)[:50]}..."
-    
-    status_text = f"""
-📊 **Статус системы BSEU Bot:**
-
-**🤖 Бот:**
-• Имя: @{bot.get_me().username}
-• Статус: ✅ **Активен**
-• Команд: 6 доступных
-
-**🌐 Web App:**
-• URL: `{WEB_APP_URL}`
-• Статус: {webapp_status}
-• Хостинг: Render.com
-
-**🔗 Ссылки:**
-• Web App в Telegram: `{WEB_APP_URL}`
-• Прямая ссылка: `{BOT_LINK}`
-
-**📈 Информация:**
-• Для проверки: /link
-• Для открытия: /webapp
-• Для настроек: /setup
-"""
-    
-    bot.send_message(message.chat.id, status_text, parse_mode='Markdown')
-
 @bot.callback_query_handler(func=lambda call: call.data == "copy_link")
 def copy_link_callback(call):
     """Обработчик кнопки копирования ссылки"""
@@ -321,10 +275,9 @@ def handle_all_messages(message):
         
         btn1 = types.KeyboardButton("🌐 Web App")
         btn2 = types.KeyboardButton("🔗 Ссылка")
-        btn3 = types.KeyboardButton("📊 Статус")
-        btn4 = types.KeyboardButton("❓ Помощь")
+        btn3 = types.KeyboardButton("❓ Помощь")
         
-        markup.add(btn1, btn2, btn3, btn4)
+        markup.add(btn1, btn2, btn3)
         
         help_text = f"""
 💬 Вы написали: `{message.text}`
@@ -342,7 +295,6 @@ def handle_all_messages(message):
 /start - главное меню
 /webapp - открыть Web App
 /link - все ссылки
-/status - статус системы
 /help - помощь
 
 **Ссылка от BotFather:** `{BOT_LINK}`
@@ -356,7 +308,7 @@ def handle_all_messages(message):
         )
 
 # Обработчик reply-кнопок
-@bot.message_handler(func=lambda message: message.text in ["🌐 Web App", "🔗 Ссылка", "📊 Статус", "❓ Помощь"])
+@bot.message_handler(func=lambda message: message.text in ["🌐 Web App", "🔗 Ссылка", "❓ Помощь"])
 def handle_reply_buttons(message):
     """Обработчик reply-кнопок"""
     
@@ -382,9 +334,6 @@ def handle_reply_buttons(message):
             parse_mode='Markdown'
         )
         
-    elif message.text == "📊 Статус":
-        bot_status(message)
-        
     elif message.text == "❓ Помощь":
         bot.send_message(
             message.chat.id,
@@ -395,8 +344,7 @@ def handle_reply_buttons(message):
             "**Команды:**\n"
             "/setup - настроить Menu Button\n"
             "/link - все ссылки\n"
-            "/webapp - быстрое открытие\n"
-            "/status - проверка работы",
+            "/webapp - быстрое открытие",
             parse_mode='Markdown'
         )
 
