@@ -9,7 +9,7 @@ print("🤖 BOT FOR BSEU PRE-GRADUATE PRACTICE")
 print("=" * 60)
 
 # Ваши ссылки
-WEB_APP_URL = "https://bseu-pre-graduate-practice.onrender.com"  # Render хостинг
+WEB_APP_URL = "https://bseu-pre-graduate-practice.onrender.com"  # Render хosting
 BOT_LINK = "t.me/FromForBank_bot/WebApp"  # Ссылка от BotFather
 
 def load_env():
@@ -42,6 +42,21 @@ print(f"✅ Токен получен: {TOKEN[:10]}...")
 print(f"🌐 Web App URL: {WEB_APP_URL}")
 print(f"🔗 Bot Link: {BOT_LINK}")
 
+# ID администратора (твой Telegram ID)
+# Получить можно через бота @userinfobot или @getmyid_bot
+ADMIN_ID = os.getenv('ADMIN_ID')  # Можно задать в .env
+# Или жестко задать ID:
+# ADMIN_ID = 123456789  # Замени на свой ID
+
+# Если нет в .env, спросим при запуске
+if not ADMIN_ID:
+    print("⚠️ ADMIN_ID не найден в .env")
+    ADMIN_ID = input("📝 Введите ваш Telegram ID (можно получить через @getmyid_bot): ").strip()
+
+ADMIN_ID = int(ADMIN_ID) if ADMIN_ID else None
+
+print(f"👑 Администратор: {ADMIN_ID}")
+
 # Создаем бота
 try:
     bot = telebot.TeleBot(TOKEN)
@@ -49,6 +64,10 @@ try:
 except Exception as e:
     print(f"❌ Ошибка создания бота: {e}")
     sys.exit(1)
+
+def is_admin(user_id):
+    """Проверяет, является ли пользователь администратором"""
+    return user_id == ADMIN_ID
 
 def setup_menu_button():
     """Устанавливает Menu Button (кнопку меню) для бота"""
@@ -95,19 +114,22 @@ def send_welcome(message):
     
     markup.add(web_app_btn, direct_link_btn, check_site_btn)
     
+    # Определяем статус пользователя
+    user_status = "👑 Администратор" if is_admin(message.from_user.id) else "👤 Пользователь"
+    
     welcome_text = f"""
 🎓 **BSEU Pre-Graduate Practice Bot**
 
 👋 Привет, {message.from_user.first_name}!
 
+{user_status}
+
 Я бот для преддипломной практики БГЭУ.
 
-
-**Команды:**
-/setup - настроить Menu Button
+**Доступные команды:**
 /webapp - открыть Web App
 /link - получить ссылки
-/status - статус системы
+{'/status - статус системы (только для админа)' if is_admin(message.from_user.id) else ''}
 """
     
     bot.send_message(
@@ -117,7 +139,7 @@ def send_welcome(message):
         parse_mode='Markdown'
     )
     
-    print(f"📨 Приветствие отправлено: {message.from_user.username}")
+    print(f"📨 Приветствие отправлено: {message.from_user.username} (ID: {message.from_user.id})")
 
 @bot.message_handler(commands=['setup'])
 def setup_command(message):
@@ -204,7 +226,21 @@ def send_links(message):
 
 @bot.message_handler(commands=['status'])
 def bot_status(message):
-    """Статус системы"""
+    """Статус системы - только для администратора"""
+    
+    # Проверяем, является ли пользователь администратором
+    if not is_admin(message.from_user.id):
+        bot.reply_to(
+            message,
+            "⛔ **Доступ запрещен!**\n\n"
+            "Эта команда доступна только администратору.\n"
+            f"Ваш ID: `{message.from_user.id}`",
+            parse_mode='Markdown'
+        )
+        print(f"🚫 Попытка доступа к /status от пользователя {message.from_user.id} ({message.from_user.username})")
+        return
+    
+    # Если пользователь администратор - показываем статус
     import requests
     
     # Проверяем доступность Web App
@@ -221,30 +257,73 @@ def bot_status(message):
     except Exception as e:
         webapp_status = f"⚠️ **Ошибка:** {str(e)[:50]}..."
     
+    # Статистика пользователей (пример)
+    user_info = f"""
+👤 **Информация о пользователе:**
+• Имя: {message.from_user.first_name}
+• Фамилия: {message.from_user.last_name or 'Нет'}
+• Username: @{message.from_user.username or 'Нет'}
+• ID: `{message.from_user.id}`
+• Язык: {message.from_user.language_code or 'Не указан'}
+"""
+    
     status_text = f"""
-📊 **Статус системы BSEU Bot:**
+📊 **СТАТУС СИСТЕМЫ BSEU BOT**
+_(только для администратора)_
 
-**🤖 Бот:**
+{user_info}
+
+**🤖 БОТ:**
 • Имя: @{bot.get_me().username}
 • Статус: ✅ **Активен**
-• Команд: 6 доступных
+• Администратор: `{ADMIN_ID}`
 
-**🌐 Web App:**
+**🌐 WEB APP:**
 • URL: `{WEB_APP_URL}`
 • Статус: {webapp_status}
 • Хостинг: Render.com
 
-**🔗 Ссылки:**
+**🔗 ССЫЛКИ:**
 • Web App в Telegram: `{WEB_APP_URL}`
 • Прямая ссылка: `{BOT_LINK}`
 
-**📈 Информация:**
+**⚙️ ДОПОЛНИТЕЛЬНО:**
 • Для проверки: /link
 • Для открытия: /webapp
 • Для настроек: /setup
 """
     
     bot.send_message(message.chat.id, status_text, parse_mode='Markdown')
+    print(f"📊 Статус запрошен администратором: {message.from_user.id}")
+
+@bot.message_handler(commands=['admin'])
+def admin_info(message):
+    """Информация для администратора"""
+    if is_admin(message.from_user.id):
+        admin_text = f"""
+👑 **ПАНЕЛЬ АДМИНИСТРАТОРА**
+
+**Ваш ID:** `{message.from_user.id}`
+**Установленный ADMIN_ID:** `{ADMIN_ID}`
+
+**Доступные команды:**
+/status - полный статус системы
+/admin - эта панель
+
+**Системная информация:**
+• Python: {sys.version.split()[0]}
+• pyTelegramBotAPI: {telebot.__version__}
+"""
+        bot.send_message(message.chat.id, admin_text, parse_mode='Markdown')
+    else:
+        bot.reply_to(
+            message,
+            "⛔ **Доступ запрещен!**\n\n"
+            "Эта команда доступна только администратору.\n"
+            f"Ваш ID: `{message.from_user.id}`\n"
+            f"Администратор: `{ADMIN_ID}`",
+            parse_mode='Markdown'
+        )
 
 @bot.callback_query_handler(func=lambda call: call.data == "copy_link")
 def copy_link_callback(call):
@@ -326,6 +405,9 @@ def handle_all_messages(message):
         
         markup.add(btn1, btn2, btn3, btn4)
         
+        # Определяем доступность статуса
+        status_info = "📊 Статус" if is_admin(message.from_user.id) else "⛔ Статус (только админ)"
+        
         help_text = f"""
 💬 Вы написали: `{message.text}`
 
@@ -342,7 +424,7 @@ def handle_all_messages(message):
 /start - главное меню
 /webapp - открыть Web App
 /link - все ссылки
-/status - статус системы
+{'/status - статус системы' if is_admin(message.from_user.id) else ''}
 /help - помощь
 
 **Ссылка от BotFather:** `{BOT_LINK}`
@@ -356,7 +438,7 @@ def handle_all_messages(message):
         )
 
 # Обработчик reply-кнопок
-@bot.message_handler(func=lambda message: message.text in ["🌐 Web App", "🔗 Ссылка", "📊 Статус", "❓ Помощь"])
+@bot.message_handler(func=lambda message: message.text in ["🌐 Web App", "🔗 Ссылка", "📊 Статус", "❓ Помощь", "⛔ Статус (только админ)"])
 def handle_reply_buttons(message):
     """Обработчик reply-кнопок"""
     
@@ -383,8 +465,18 @@ def handle_reply_buttons(message):
         )
         
     elif message.text == "📊 Статус":
-        bot_status(message)
-        
+        # Проверяем права
+        if is_admin(message.from_user.id):
+            bot_status(message)
+        else:
+            bot.send_message(
+                message.chat.id,
+                "⛔ **Доступ запрещен!**\n\n"
+                "Эта команда доступна только администратору.\n"
+                f"Ваш ID: `{message.from_user.id}`",
+                parse_mode='Markdown'
+            )
+            
     elif message.text == "❓ Помощь":
         bot.send_message(
             message.chat.id,
@@ -396,7 +488,7 @@ def handle_reply_buttons(message):
             "/setup - настроить Menu Button\n"
             "/link - все ссылки\n"
             "/webapp - быстрое открытие\n"
-            "/status - проверка работы",
+            f"{'/status - проверка работы (только админ)' if is_admin(message.from_user.id) else ''}",
             parse_mode='Markdown'
         )
 
@@ -423,6 +515,18 @@ if __name__ == "__main__":
         print(f"❌ Ошибка подключения: {e}")
         sys.exit(1)
     
+    # Проверяем администратора
+    if ADMIN_ID:
+        print(f"✅ Администратор настроен: {ADMIN_ID}")
+        try:
+            # Пробуем получить информацию об администраторе
+            admin_info = bot.get_chat(ADMIN_ID)
+            print(f"👑 Администратор: {admin_info.first_name} (@{admin_info.username})")
+        except:
+            print(f"⚠️ Не удалось получить информацию об администраторе {ADMIN_ID}")
+    else:
+        print("⚠️ Администратор не настроен!")
+    
     # Устанавливаем Menu Button
     print("\n🔄 Установка Menu Button...")
     if setup_menu_button():
@@ -436,6 +540,7 @@ if __name__ == "__main__":
     print(f"🌐 Web App URL: {WEB_APP_URL}")
     print(f"🔗 Bot Link: {BOT_LINK}")
     print(f"🤖 Bot: @{bot_info.username}")
+    print(f"👑 Admin ID: {ADMIN_ID}")
     print("📚 Назначение: Преддипломная практика БГЭУ")
     print("=" * 60)
     
@@ -445,6 +550,7 @@ if __name__ == "__main__":
     print("📱 Отправьте /start в Telegram")
     print("🌐 Используйте /webapp для открытия Web App")
     print("🔗 Используйте /link для получения ссылок")
+    print("👑 Админ команды: /status, /admin")
     print("⏹️  Ctrl+C для остановки")
     print("=" * 60 + "\n")
     
