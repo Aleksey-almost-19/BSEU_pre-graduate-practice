@@ -7,16 +7,27 @@ import os
 import sys
 
 # ===========================================
-# ВАЖНО: ИМПОРТЫ ИЗ ВАШЕГО ПРОЕКТА
+# ИМПОРТЫ ИЗ ПРОЕКТА
 # ===========================================
 sys.path.append(os.path.dirname(__file__))
-from database import async_session_factory  # ← ЭТО КЛЮЧЕВОЙ ИМПОРТ!
-from sqlalchemy import text
+from database import async_session_factory
 
 app = FastAPI()
 
 # ===========================================
-# 1. ОТДАЧА HTML СТРАНИЦ
+# МОДЕЛИ ДАННЫХ
+# ===========================================
+
+class LoanCreate(BaseModel):
+    name: str
+    rate: str
+    term: str
+    amount: str
+    advantage: str
+    details: str
+
+# ===========================================
+# ОТДАЧА HTML СТРАНИЦ
 # ===========================================
 
 @app.get("/")
@@ -35,8 +46,12 @@ async def serve_loans():
 async def serve_consumer_loans():
     return FileResponse("consumer_loans.html")
 
+@app.get("/admin.html")
+async def serve_admin():
+    return FileResponse("admin.html")
+
 # ===========================================
-# 2. СТАТИЧЕСКИЕ ФАЙЛЫ
+# СТАТИЧЕСКИЕ ФАЙЛЫ
 # ===========================================
 
 app.mount("/style", StaticFiles(directory="style"), name="style")
@@ -44,20 +59,39 @@ app.mount("/javascript", StaticFiles(directory="javascript"), name="javascript")
 app.mount("/img", StaticFiles(directory="img"), name="img")
 
 # ===========================================
-# 3. ЭНДПОИНТ ДЛЯ ДОБАВЛЕНИЯ ТЕСТОВЫХ ДАННЫХ
+# УПРАВЛЕНИЕ БАЗОЙ ДАННЫХ
 # ===========================================
+
+@app.get("/api/create-tables")
+async def create_tables():
+    """Создать таблицу consumer_loans"""
+    try:
+        async with async_session_factory() as session:
+            await session.execute(text("""
+                CREATE TABLE IF NOT EXISTS consumer_loans (
+                    id SERIAL PRIMARY KEY,
+                    name VARCHAR(100) NOT NULL,
+                    rate VARCHAR(50) NOT NULL,
+                    term VARCHAR(50) NOT NULL,
+                    amount VARCHAR(50) NOT NULL,
+                    advantage TEXT NOT NULL,
+                    details TEXT NOT NULL
+                )
+            """))
+            await session.commit()
+            return {"status": "success", "message": "✅ Таблица consumer_loans создана!"}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
 
 @app.get("/api/seed-database")
 async def seed_database():
-    """Добавить тестовые кредиты в базу данных"""
+    """Добавить тестовые кредиты"""
     try:
         async with async_session_factory() as session:
-            # Проверяем, есть ли уже данные
             result = await session.execute(text("SELECT COUNT(*) FROM consumer_loans"))
             count = result.scalar()
             
             if count == 0:
-                # Добавляем тестовые кредиты
                 await session.execute(text("""
                     INSERT INTO consumer_loans (name, rate, term, amount, advantage, details) VALUES
                     ('Кредит на любые цели', 'от 11.9%', 'до 7 лет', 'до 15 000 BYN', 
@@ -73,32 +107,20 @@ async def seed_database():
                      'Рефинансирование кредитов других банков. Снижение ежемесячного платежа.')
                 """))
                 await session.commit()
-                return {
-                    "status": "success", 
-                    "message": "✅ Тестовые кредиты успешно добавлены!",
-                    "count": 3
-                }
+                return {"status": "success", "message": "✅ Тестовые кредиты добавлены!", "count": 3}
             else:
-                return {
-                    "status": "info", 
-                    "message": f"ℹ️ В базе уже есть {count} записей",
-                    "count": count
-                }
-                
+                return {"status": "info", "message": f"ℹ️ В базе уже есть {count} записей", "count": count}
     except Exception as e:
-        return {
-            "status": "error", 
-            "message": str(e),
-            "type": type(e).__name__
-        }
+        return {"status": "error", "message": str(e)}
 
 # ===========================================
-# 4. ОСНОВНОЙ API ЭНДПОИНТ ДЛЯ КРЕДИТОВ
+# API ДЛЯ КРЕДИТОВ (CRUD)
 # ===========================================
 
+# ПОЛУЧИТЬ ВСЕ КРЕДИТЫ
 @app.get("/api/consumer-loans")
-async def get_consumer_loans():
-    """Получить все кредиты из базы данных"""
+async def get_all_loans():
+    """Получить все кредиты"""
     try:
         async with async_session_factory() as session:
             result = await session.execute(
@@ -106,18 +128,86 @@ async def get_consumer_loans():
             )
             rows = result.mappings().all()
             return [dict(row) for row in rows]
-            
     except Exception as e:
         print(f"Error: {e}")
         return []
 
+# ПОЛУЧИТЬ КРЕДИТ ПО ID
+@app.get("/api/consumer-loans/{loan_id}")
+async def get_loan(loan_id: int):
+    """Получить кредит по ID"""
+    try:
+        async with async_session_factory() as session:
+            result = await session.execute(
+                text("SELECT * FROM consumer_loans WHERE id = :id"),
+                {"id": loan_id}
+            )
+            loan = result.mappings().first()
+            if not loan:
+                raise HTTPException(status_code=404, detail="Кредит не найден")
+            return dict(loan)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+# ДОБАВИТЬ НОВЫЙ КРЕДИТ
+@app.post("/api/consumer-loans")
+async def create_loan(loan: LoanCreate):
+    """Добавить новый кредит"""
+    try:
+        async with async_session_factory() as session:
+            await session.execute(text("""
+                INSERT INTO consumer_loans (name, rate, term, amount, advantage, details)
+                VALUES (:name, :rate, :term, :amount, :advantage, :details)
+            """), loan.model_dump())
+            await session.commit()
+            return {"status": "success", "message": "✅ Кредит успешно добавлен"}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+# ОБНОВИТЬ КРЕДИТ
+@app.put("/api/consumer-loans/{loan_id}")
+async def update_loan(loan_id: int, loan: LoanCreate):
+    """Обновить существующий кредит"""
+    try:
+        async with async_session_factory() as session:
+            result = await session.execute(text("""
+                UPDATE consumer_loans 
+                SET name = :name, rate = :rate, term = :term, amount = :amount,
+                    advantage = :advantage, details = :details
+                WHERE id = :id
+            """), {**loan.model_dump(), "id": loan_id})
+            await session.commit()
+            
+            if result.rowcount == 0:
+                return {"status": "error", "message": "❌ Кредит не найден"}
+            return {"status": "success", "message": "✅ Кредит обновлен"}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+# УДАЛИТЬ КРЕДИТ
+@app.delete("/api/consumer-loans/{loan_id}")
+async def delete_loan(loan_id: int):
+    """Удалить кредит"""
+    try:
+        async with async_session_factory() as session:
+            result = await session.execute(text("""
+                DELETE FROM consumer_loans WHERE id = :id
+            """), {"id": loan_id})
+            await session.commit()
+            
+            if result.rowcount == 0:
+                return {"status": "error", "message": "❌ Кредит не найден"}
+            return {"status": "success", "message": "✅ Кредит удален"}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
 # ===========================================
-# 5. СТАТУС API
+# СТАТУС API
 # ===========================================
 
 @app.get("/api/status")
 async def api_status():
-    """Проверка статуса API"""
+    """Проверка статуса API и БД"""
     try:
         async with async_session_factory() as session:
             await session.execute(text("SELECT 1"))
@@ -128,127 +218,5 @@ async def api_status():
     return {
         "message": "AurumBank API is working!",
         "database": db_status,
-        "version": "1.0.0"
+        "version": "2.0.0"
     }
-@app.get("/api/create-tables")
-async def create_tables():
-    """Создать таблицу consumer_loans в базе данных"""
-    from sqlalchemy import text
-    
-    try:
-        async with async_session_factory() as session:
-            # SQL для создания таблицы
-            await session.execute(text("""
-                CREATE TABLE IF NOT EXISTS consumer_loans (
-                    id SERIAL PRIMARY KEY,
-                    name VARCHAR(100) NOT NULL,
-                    rate VARCHAR(50) NOT NULL,
-                    term VARCHAR(50) NOT NULL,
-                    amount VARCHAR(50) NOT NULL,
-                    advantage TEXT NOT NULL,
-                    details TEXT NOT NULL
-                )
-            """))
-            await session.commit()
-            
-            return {"status": "success", "message": "✅ Таблица consumer_loans создана!"}
-    except Exception as e:
-        return {"status": "error", "message": str(e), "type": type(e).__name__}
-    
-class LoanCreate(BaseModel):
-    name: str
-    rate: str
-    term: str
-    amount: str
-    advantage: str
-    details: str
-
-
-# 1. ДОБАВИТЬ НОВЫЙ КРЕДИТ
-@app.post("/api/consumer-loans")
-async def add_loan(loan: LoanCreate):
-    try:
-        async with async_session_factory() as session:
-            await session.execute(text("""
-                INSERT INTO consumer_loans (name, rate, term, amount, advantage, details)
-                VALUES (:name, :rate, :term, :amount, :advantage, :details)
-            """), loan.model_dump())
-            await session.commit()
-            return {"status": "success", "message": "✅ Кредит добавлен"}
-    except Exception as e:
-        return {"status": "error", "message": str(e)}
-
-# 2. УДАЛИТЬ КРЕДИТ
-@app.delete("/api/consumer-loans/{loan_id}")
-async def delete_loan(loan_id: int):
-    try:
-        async with async_session_factory() as session:
-            result = await session.execute(text("""
-                DELETE FROM consumer_loans WHERE id = :id
-            """), {"id": loan_id})
-            await session.commit()
-            if result.rowcount == 0:
-                return {"status": "error", "message": "❌ Кредит не найден"}
-            return {"status": "success", "message": "✅ Кредит удален"}
-    except Exception as e:
-        return {"status": "error", "message": str(e)}
-
-# 3. ПОЛУЧИТЬ КРЕДИТ ПО ID (ОПЦИОНАЛЬНО)
-@app.get("/api/consumer-loans/{loan_id}")
-async def get_loan(loan_id: int):
-    async with async_session_factory() as session:
-        result = await session.execute(
-            text("SELECT * FROM consumer_loans WHERE id = :id"),
-            {"id": loan_id}
-        )
-        loan = result.mappings().first()
-        if not loan:
-            return {"status": "error", "message": "❌ Кредит не найден"}
-        return dict(loan)        
-    
-# 1. ДОБАВИТЬ КРЕДИТ (POST)
-@app.post("/api/consumer-loans")
-async def add_loan(loan: LoanCreate):
-    try:
-        async with async_session_factory() as session:
-            await session.execute(text("""
-                INSERT INTO consumer_loans (name, rate, term, amount, advantage, details)
-                VALUES (:name, :rate, :term, :amount, :advantage, :details)
-            """), loan.model_dump())
-            await session.commit()
-            return {"status": "success", "message": "✅ Кредит добавлен"}
-    except Exception as e:
-        return {"status": "error", "message": str(e)}
-
-# 2. УДАЛИТЬ КРЕДИТ (DELETE)
-@app.delete("/api/consumer-loans/{loan_id}")
-async def delete_loan(loan_id: int):
-    try:
-        async with async_session_factory() as session:
-            result = await session.execute(text("""
-                DELETE FROM consumer_loans WHERE id = :id
-            """), {"id": loan_id})
-            await session.commit()
-            
-            if result.rowcount == 0:
-                return {"status": "error", "message": "❌ Кредит не найден"}
-            return {"status": "success", "message": "✅ Кредит удален"}
-    except Exception as e:
-        return {"status": "error", "message": str(e)}
-
-# 3. ПОЛУЧИТЬ ОДИН КРЕДИТ (GET by ID) - опционально
-@app.get("/api/consumer-loans/{loan_id}")
-async def get_loan(loan_id: int):
-    try:
-        async with async_session_factory() as session:
-            result = await session.execute(
-                text("SELECT * FROM consumer_loans WHERE id = :id"),
-                {"id": loan_id}
-            )
-            loan = result.mappings().first()
-            
-            if not loan:
-                return {"status": "error", "message": "❌ Кредит не найден"}
-            return dict(loan)
-    except Exception as e:
-        return {"status": "error", "message": str(e)}
