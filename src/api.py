@@ -205,3 +205,50 @@ async def get_loan(loan_id: int):
         if not loan:
             return {"status": "error", "message": "❌ Кредит не найден"}
         return dict(loan)        
+    
+# 1. ДОБАВИТЬ КРЕДИТ (POST)
+@app.post("/api/consumer-loans")
+async def add_loan(loan: LoanCreate):
+    try:
+        async with async_session_factory() as session:
+            await session.execute(text("""
+                INSERT INTO consumer_loans (name, rate, term, amount, advantage, details)
+                VALUES (:name, :rate, :term, :amount, :advantage, :details)
+            """), loan.model_dump())
+            await session.commit()
+            return {"status": "success", "message": "✅ Кредит добавлен"}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+# 2. УДАЛИТЬ КРЕДИТ (DELETE)
+@app.delete("/api/consumer-loans/{loan_id}")
+async def delete_loan(loan_id: int):
+    try:
+        async with async_session_factory() as session:
+            result = await session.execute(text("""
+                DELETE FROM consumer_loans WHERE id = :id
+            """), {"id": loan_id})
+            await session.commit()
+            
+            if result.rowcount == 0:
+                return {"status": "error", "message": "❌ Кредит не найден"}
+            return {"status": "success", "message": "✅ Кредит удален"}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+# 3. ПОЛУЧИТЬ ОДИН КРЕДИТ (GET by ID) - опционально
+@app.get("/api/consumer-loans/{loan_id}")
+async def get_loan(loan_id: int):
+    try:
+        async with async_session_factory() as session:
+            result = await session.execute(
+                text("SELECT * FROM consumer_loans WHERE id = :id"),
+                {"id": loan_id}
+            )
+            loan = result.mappings().first()
+            
+            if not loan:
+                return {"status": "error", "message": "❌ Кредит не найден"}
+            return dict(loan)
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
