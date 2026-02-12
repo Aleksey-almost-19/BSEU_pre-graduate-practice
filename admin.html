@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Управление кредитами</title>
+    <style>
+        body { font-family: Arial; padding: 20px; background: #f5f7fa; }
+        .container { max-width: 800px; margin: 0 auto; }
+        .form-group { margin-bottom: 15px; }
+        input, textarea { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px; }
+        button { background: #005BFF; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; }
+        .loan-card { background: white; padding: 15px; margin-bottom: 10px; border-radius: 5px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        .delete-btn { background: #dc3545; margin-left: 10px; }
+        .edit-btn { background: #28a745; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🏦 Управление кредитами</h1>
+        
+        <!-- Форма добавления кредита -->
+        <div style="background: white; padding: 20px; border-radius: 10px; margin-bottom: 30px;">
+            <h2>➕ Добавить новый кредит</h2>
+            <form id="addLoanForm">
+                <div class="form-group">
+                    <input type="text" name="name" placeholder="Название кредита" required>
+                </div>
+                <div class="form-group">
+                    <input type="text" name="rate" placeholder="Ставка (например: от 11.9%)" required>
+                </div>
+                <div class="form-group">
+                    <input type="text" name="term" placeholder="Срок (например: до 7 лет)" required>
+                </div>
+                <div class="form-group">
+                    <input type="text" name="amount" placeholder="Сумма (например: до 15 000 BYN)" required>
+                </div>
+                <div class="form-group">
+                    <textarea name="advantage" placeholder="Преимущество" rows="2" required></textarea>
+                </div>
+                <div class="form-group">
+                    <textarea name="details" placeholder="Подробное описание" rows="3" required></textarea>
+                </div>
+                <button type="submit">💾 Добавить кредит</button>
+            </form>
+        </div>
+
+        <!-- Список кредитов -->
+        <h2>📋 Существующие кредиты</h2>
+        <div id="loansList"></div>
+    </div>
+
+    <script>
+        const API_URL = 'https://bseu-pre-graduate-practice.onrender.com';
+
+        // Загрузить все кредиты
+        async function loadLoans() {
+            const res = await fetch(`${API_URL}/api/consumer-loans`);
+            const loans = await res.json();
+            
+            const html = loans.map(loan => `
+                <div class="loan-card">
+                    <h3>${loan.name}</h3>
+                    <p><strong>Ставка:</strong> ${loan.rate}</p>
+                    <p><strong>Срок:</strong> ${loan.term}</p>
+                    <p><strong>Сумма:</strong> ${loan.amount}</p>
+                    <p><strong>Преимущество:</strong> ${loan.advantage}</p>
+                    <p><strong>Описание:</strong> ${loan.details}</p>
+                    <button onclick="deleteLoan(${loan.id})" class="delete-btn">🗑️ Удалить</button>
+                </div>
+            `).join('');
+            
+            document.getElementById('loansList').innerHTML = html;
+        }
+
+        // Добавить кредит
+        document.getElementById('addLoanForm').onsubmit = async (e) => {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            const data = Object.fromEntries(formData);
+            
+            const res = await fetch(`${API_URL}/api/consumer-loans`, {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(data)
+            });
+            
+            const result = await res.json();
+            alert(result.message);
+            e.target.reset();
+            loadLoans();
+        };
+
+        // Удалить кредит
+        async function deleteLoan(id) {
+            if (!confirm('Удалить кредит?')) return;
+            
+            const res = await fetch(`${API_URL}/api/consumer-loans/${id}`, {
+                method: 'DELETE'
+            });
+            
+            const result = await res.json();
+            alert(result.message);
+            loadLoans();
+        }
+
+        // Загрузить кредиты при открытии страницы
+        loadLoans();
+    </script>
+</body>
+</html>

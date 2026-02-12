@@ -1,6 +1,8 @@
 from fastapi import FastAPI, Response, HTTPException
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
+from pydantic import BaseModel
+from sqlalchemy import text
 import os
 import sys
 
@@ -152,3 +154,54 @@ async def create_tables():
             return {"status": "success", "message": "✅ Таблица consumer_loans создана!"}
     except Exception as e:
         return {"status": "error", "message": str(e), "type": type(e).__name__}
+    
+class LoanCreate(BaseModel):
+    name: str
+    rate: str
+    term: str
+    amount: str
+    advantage: str
+    details: str
+
+
+# 1. ДОБАВИТЬ НОВЫЙ КРЕДИТ
+@app.post("/api/consumer-loans")
+async def add_loan(loan: LoanCreate):
+    try:
+        async with async_session_factory() as session:
+            await session.execute(text("""
+                INSERT INTO consumer_loans (name, rate, term, amount, advantage, details)
+                VALUES (:name, :rate, :term, :amount, :advantage, :details)
+            """), loan.model_dump())
+            await session.commit()
+            return {"status": "success", "message": "✅ Кредит добавлен"}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+# 2. УДАЛИТЬ КРЕДИТ
+@app.delete("/api/consumer-loans/{loan_id}")
+async def delete_loan(loan_id: int):
+    try:
+        async with async_session_factory() as session:
+            result = await session.execute(text("""
+                DELETE FROM consumer_loans WHERE id = :id
+            """), {"id": loan_id})
+            await session.commit()
+            if result.rowcount == 0:
+                return {"status": "error", "message": "❌ Кредит не найден"}
+            return {"status": "success", "message": "✅ Кредит удален"}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+# 3. ПОЛУЧИТЬ КРЕДИТ ПО ID (ОПЦИОНАЛЬНО)
+@app.get("/api/consumer-loans/{loan_id}")
+async def get_loan(loan_id: int):
+    async with async_session_factory() as session:
+        result = await session.execute(
+            text("SELECT * FROM consumer_loans WHERE id = :id"),
+            {"id": loan_id}
+        )
+        loan = result.mappings().first()
+        if not loan:
+            return {"status": "error", "message": "❌ Кредит не найден"}
+        return dict(loan)        
