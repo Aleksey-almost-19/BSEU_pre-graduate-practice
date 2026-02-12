@@ -128,3 +128,27 @@ async def api_status():
         "database": db_status,
         "version": "1.0.0"
     }
+@app.get("/api/create-tables")
+async def create_tables():
+    """Создать таблицу consumer_loans в базе данных"""
+    from sqlalchemy import text
+    
+    try:
+        async with async_session_factory() as session:
+            # SQL для создания таблицы
+            await session.execute(text("""
+                CREATE TABLE IF NOT EXISTS consumer_loans (
+                    id SERIAL PRIMARY KEY,
+                    name VARCHAR(100) NOT NULL,
+                    rate VARCHAR(50) NOT NULL,
+                    term VARCHAR(50) NOT NULL,
+                    amount VARCHAR(50) NOT NULL,
+                    advantage TEXT NOT NULL,
+                    details TEXT NOT NULL
+                )
+            """))
+            await session.commit()
+            
+            return {"status": "success", "message": "✅ Таблица consumer_loans создана!"}
+    except Exception as e:
+        return {"status": "error", "message": str(e), "type": type(e).__name__}
