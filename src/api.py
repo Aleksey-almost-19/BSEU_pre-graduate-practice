@@ -43,3 +43,6 @@ async def get_consumer_loans():
 @app.get("/api/status")
 async def api_status():
     return {"message": "AurumBank API is working!"}
+@app.get("/index.html")
+async def serve_index_html():
+    return FileResponse("index.html")
