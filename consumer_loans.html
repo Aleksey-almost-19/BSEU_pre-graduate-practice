@@ -34,6 +34,8 @@
             line-height: 1.6;
             min-height: 100vh;
             -webkit-font-smoothing: antialiased;
+            display: flex;
+            flex-direction: column;
         }
 
         /* Логотип на десктопе - фиксированный в левом верхнем углу, НЕ ПРОКРУЧИВАЕТСЯ */
@@ -88,8 +90,9 @@
 
         .container {
             width: 100%;
-            padding: 90px 16px 16px 16px;
+            padding: 90px 16px 90px 16px; /* Увеличен нижний отступ для кнопки */
             background-color: #000000;
+            flex: 1;
         }
 
         .content-header {
@@ -110,37 +113,6 @@
             color: #cccccc;
             font-size: 16px;
             font-weight: 400;
-        }
-
-        /* Кнопка назад в стиле Telegram */
-        .back-button-tg {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            color: #40a7e3;
-            cursor: pointer;
-            margin-bottom: 20px;
-            font-size: 16px;
-            font-weight: 500;
-            padding: 8px 12px;
-            background: transparent;
-            border-radius: 8px;
-            transition: background 0.2s;
-            -webkit-tap-highlight-color: transparent;
-        }
-
-        .back-button-tg:hover {
-            background: rgba(64, 167, 227, 0.1);
-        }
-
-        .back-button-tg:active {
-            background: rgba(64, 167, 227, 0.2);
-        }
-
-        .back-button-tg svg {
-            width: 20px;
-            height: 20px;
-            fill: currentColor;
         }
 
         /* Горизонтальное расположение кнопок */
@@ -442,7 +414,7 @@
             font-weight: 600;
         }
 
-        /* Telegram кнопка */
+        /* Telegram кнопки */
         .tg-button {
             background: linear-gradient(135deg, #40a7e3, #2481cc);
             color: #ffffff;
@@ -461,6 +433,49 @@
         .tg-button:hover, .tg-button:active {
             transform: translateY(-2px);
             box-shadow: 0 6px 18px rgba(64, 167, 227, 0.4);
+        }
+
+        /* СИНЯЯ КНОПКА НАЗАД НА ВСЮ ШИРИНУ, СНИЗУ */
+        .back-button-bottom {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(135deg, #40a7e3, #2481cc);
+            color: white;
+            text-align: center;
+            padding: 16px 20px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            z-index: 100;
+            box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.3);
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .back-button-bottom:hover {
+            background: linear-gradient(135deg, #2481cc, #1a6db3);
+        }
+
+        .back-button-bottom:active {
+            transform: translateY(2px);
+            box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        .back-button-bottom svg {
+            width: 24px;
+            height: 24px;
+            fill: currentColor;
+        }
+
+        /* Добавляем отступ снизу для контейнера, чтобы контент не перекрывался кнопкой */
+        .with-bottom-button {
+            padding-bottom: 80px;
         }
 
         /* Адаптивность для мобильных */
@@ -489,7 +504,7 @@
             }
             
             .container {
-                padding: 90px 12px 12px 12px;
+                padding: 90px 12px 90px 12px; /* Увеличен нижний отступ для кнопки */
                 background-color: #000000;
             }
             
@@ -571,6 +586,16 @@
             .footer {
                 background-color: #000000;
             }
+            
+            .back-button-bottom {
+                padding: 14px 16px;
+                font-size: 16px;
+            }
+            
+            .back-button-bottom svg {
+                width: 20px;
+                height: 20px;
+            }
         }
 
         /* Для десктопной версии */
@@ -611,7 +636,7 @@
             .container {
                 width: 100%;
                 max-width: 1400px;
-                padding: 0 80px 60px 80px;
+                padding: 0 80px 100px 80px; /* Увеличен нижний отступ */
                 background-color: #000000;
                 min-height: 100vh;
             }
@@ -738,13 +763,24 @@
             .footer strong {
                 color: #4caf50;
             }
+            
+            .back-button-bottom {
+                max-width: 500px;
+                left: 50%;
+                right: auto;
+                transform: translateX(-50%);
+                border-radius: 30px;
+                margin-bottom: 20px;
+                width: 90%;
+                bottom: 20px;
+            }
         }
 
         /* Для очень больших экранов */
         @media (min-width: 1200px) {
             .container {
                 max-width: 1600px;
-                padding: 0 100px 70px 100px;
+                padding: 0 100px 100px 100px;
             }
             
             .desktop-logo {
@@ -801,14 +837,6 @@
             <div class="bank-name">Аурумбанк</div>
         </div>
 
-        <!-- Кнопка назад в стиле Telegram -->
-        <div class="back-button-tg" onclick="window.location.href='loans.html'">
-            <svg viewBox="0 0 24 24">
-                <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/>
-            </svg>
-            Назад к кредитам
-        </div>
-
         <div class="consumer-loans-header">
             <h1>Потребительские кредиты</h1>
             <p>Выберите наиболее подходящий вариант кредитования</p>
@@ -830,6 +858,14 @@
             <p>Все кредиты предоставляются в <strong>белорусских рублях (BYN)</strong></p>
             <p style="margin-top: 15px;">© 2026 Аурумбанк</p>
         </div>
+    </div>
+
+    <!-- СИНЯЯ КНОПКА НАЗАД СНИЗУ -->
+    <div class="back-button-bottom" onclick="window.location.href='loans.html'">
+        <svg viewBox="0 0 24 24">
+            <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/>
+        </svg>
+        Назад к кредитам
     </div>
 
     <script>
