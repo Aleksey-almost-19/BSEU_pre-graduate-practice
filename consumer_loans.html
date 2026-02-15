@@ -202,6 +202,71 @@
             text-decoration: underline;
         }
         
+        /* Мобильный логотип - просто статичный, без скролла */
+        .mobile-logo {
+            display: none; /* Скрыт по умолчанию */
+            align-items: center;
+            gap: 10px;
+            background: white;
+            border-bottom: 1px solid #E5E9F0;
+        }
+        
+        /* Логотип для десктопа */
+        .desktop-logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+        
+        .logo-placeholder {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #005BFF 0%, #0047B3 100%);
+            border-radius: 12px;
+        }
+        
+        .bank-name {
+            font-size: 20px;
+            font-weight: 700;
+            color: #1A2E45;
+        }
+        
+        @media (min-width: 768px) {
+            .loans-grid {
+                display: grid;
+                grid-template-columns: repeat(2, 1fr);
+                gap: 24px;
+            }
+            
+            .modal-content {
+                border-radius: 24px;
+                margin: 50px auto;
+                max-width: 600px;
+            }
+            
+            .mobile-logo {
+                display: none !important; /* На десктопе скрыт всегда */
+            }
+            
+            .desktop-logo {
+                display: flex; /* На десктопе виден */
+            }
+        }
+        
+        @media (max-width: 767px) {
+            .mobile-logo {
+                display: flex; /* На мобильных виден */
+                position: static; /* Не фиксированный, просто в потоке */
+                width: 100%;
+                padding: 15px;
+            }
+            
+            .desktop-logo {
+                display: none; /* На мобильных скрыт */
+            }
+        }
+        
         @media (min-width: 768px) {
             .loans-grid {
                 display: grid;
@@ -218,12 +283,14 @@
     </style>
 </head>
 <body>
+    <!-- Логотип для мобильных - просто статичный, исчезает при скролле (просто уходит вверх) -->
     <div class="mobile-logo">
         <div class="logo-placeholder"></div>
         <div class="bank-name">Аурумбанк</div>
     </div>
 
     <div class="container">
+        <!-- Логотип для десктопа - НЕ фиксированный, прокручивается -->
         <div class="desktop-logo">
             <div class="logo-placeholder"></div>
             <div class="bank-name">Аурумбанк</div>
@@ -263,7 +330,7 @@
         tg.expand();
         tg.ready();
 
-        // API URL - замените на ваш домен при деплое
+        // API URL
         const API_URL = 'https://bseu-pre-graduate-practice.onrender.com';
 
         // Загрузка кредитов при открытии страницы
@@ -405,7 +472,6 @@
 
         // Оформление заявки
         function applyForLoan(loanId) {
-            // Здесь будет переход на форму заявки
             alert('Функция оформления заявки будет доступна позже');
         }
 
@@ -416,16 +482,6 @@
                 closeModal();
             }
         }
-
-        // Скролл для мобильного логотипа
-        window.addEventListener('scroll', function() {
-            const mobileLogo = document.querySelector('.mobile-logo');
-            if (window.scrollY > 10) {
-                mobileLogo.classList.add('scrolled');
-            } else {
-                mobileLogo.classList.remove('scrolled');
-            }
-        });
     </script>
 </body>
 </html>
