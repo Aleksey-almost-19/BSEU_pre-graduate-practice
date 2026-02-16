@@ -11,12 +11,20 @@ import sys
 # ===========================================
 sys.path.append(os.path.dirname(__file__))
 from database import async_session_factory
-
+from fastapi.middleware.cors import CORSMiddleware
 app = FastAPI()
 
 # ===========================================
 # МОДЕЛИ ДАННЫХ
 # ===========================================
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Разрешить все источники
+    allow_credentials=True,
+    allow_methods=["*"],  # Разрешить все методы (GET, POST, DELETE...)
+    allow_headers=["*"],  # Разрешить все заголовки
+)
 
 class LoanCreate(BaseModel):
     name: str
