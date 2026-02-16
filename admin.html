@@ -241,6 +241,7 @@
             <div class="tab active" onclick="switchTab('consumer', this)">💳 Потребительские</div>
             <div class="tab" onclick="switchTab('mortgage', this)">🏠 Ипотечные</div>
             <div class="tab" onclick="switchTab('preferential', this)">🎁 Льготные</div>
+            <div class="tab" onclick="switchTab('contacts', this)">📞 Заявки (новые)</div>  <!-- НОВАЯ -->
         </div>
         
         <!-- Потребительские кредиты -->
@@ -350,6 +351,15 @@
                     <div id="preferentialList">
                         <div class="loading">Загрузка...</div>
                     </div>
+                </div>
+            </div>
+        </div>
+        <!-- Заявки на звонок -->
+        <div id="contacts-tab" class="tab-content">
+            <div class="card">
+                <h2>📞 Заявки на обратный звонок</h2>
+                <div id="contactsList">
+                    <div class="loading">Загрузка...</div>
                 </div>
             </div>
         </div>
@@ -566,10 +576,48 @@
             loadPreferentialLoans();
         }
         
+        // Загрузка заявок
+async function loadContactRequests() {
+    try {
+        const res = await fetch(`${API_URL}/api/contact-requests`);
+        const requests = await res.json();
+        
+        if (requests.length === 0) {
+            document.getElementById('contactsList').innerHTML = '<p style="color: #999; text-align: center;">Нет заявок</p>';
+            return;
+        }
+        
+        document.getElementById('contactsList').innerHTML = requests.map(req => `
+            <div class="loan-card">
+                <h3>📞 Заявка #${req.id}</h3>
+                <div class="loan-details">
+                    <div>🆔 Telegram ID: <strong>${req.telegram_id}</strong></div>
+                    <div>👤 Имя: ${req.first_name || ''} ${req.last_name || ''}</div>
+                    <div>📱 Username: @${req.username || 'нет'}</div>
+                    <div>📅 Дата: ${new Date(req.created_at).toLocaleString()}</div>
+                    <div>📊 Статус: <span style="color: #4caf50;">${req.status}</span></div>
+                </div>
+                <div style="margin-top: 10px;">
+                    <a href="https://t.me/${req.username}" target="_blank" style="color: #4caf50; text-decoration: none;">
+                        📨 Написать в Telegram
+                    </a>
+                </div>
+            </div>
+        `).join('');
+    } catch (error) {
+        document.getElementById('contactsList').innerHTML = '<p style="color: #ff6b6b;">Ошибка загрузки</p>';
+        console.error(error);
+    }
+}
+
+
+
         // Инициализация
         loadConsumerLoans();
         loadMortgageLoans();
         loadPreferentialLoans();
+        loadContactRequests();
+        
     </script>
 </body>
 </html>

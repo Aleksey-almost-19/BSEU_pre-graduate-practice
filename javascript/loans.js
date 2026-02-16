@@ -80,24 +80,68 @@
             });
         }
         
-        // Функция открытия формы связи
+               
         function openContactForm() {
+            // Получаем данные пользователя из Telegram WebApp
+            const user = tg.initDataUnsafe?.user;
+            
+            if (!user) {
+                tg.showPopup({
+                    title: 'Ошибка',
+                    message: 'Не удалось получить данные пользователя. Запустите приложение через Telegram.',
+                    buttons: [{ type: 'ok', text: 'Понятно' }]
+                });
+                return;
+            }
+            
             tg.showPopup({
-                title: 'Связь с менеджером',
-                message: 'Хотите, чтобы менеджер перезвонил вам для консультации?',
+                title: '📞 Связь с менеджером',
+                message: `Хотите, чтобы менеджер связался с вами для консультации?\n\nВаш Telegram ID: ${user.id}\nИмя: ${user.first_name || ''} ${user.last_name || ''}`,
                 buttons: [
                     {
                         type: 'default',
-                        text: 'Да, перезвоните'
+                        text: '✅ Да, жду звонка'
                     },
                     {
                         type: 'cancel',
-                        text: 'Отмена'
+                        text: '❌ Отмена'
                     }
                 ]
-            }, function(buttonId) {
-                if (buttonId === 'Да, перезвоните') {
-                    tg.showAlert('Спасибо! Менеджер свяжется с вами в ближайшее время.');
+            }, async function(buttonId) {
+                if (buttonId === '✅ Да, жду звонка') {
+                    try {
+                        // Показываем индикатор загрузки
+                        tg.showPopup({
+                            title: '⏳ Отправка...',
+                            message: 'Сохраняем вашу заявку',
+                            buttons: []
+                        });
+                        
+                        // Отправляем данные на сервер
+                        const response = await fetch(`${API_URL}/api/contact-request`, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify({
+                                telegram_id: user.id,
+                                username: user.username || '',
+                                first_name: user.first_name || '',
+                                last_name: user.last_name || ''
+                            })
+                        });
+                        
+                        const result = await response.json();
+                        
+                        if (result.status === 'success') {
+                            tg.showAlert('✅ Спасибо! Менеджер свяжется с вами в ближайшее время.');
+                        } else {
+                            tg.showAlert('❌ Ошибка при сохранении заявки. Попробуйте позже.');
+                        }
+                    } catch (error) {
+                        console.error('Error:', error);
+                        tg.showAlert('❌ Ошибка соединения с сервером');
+                    }
                 }
             });
         }

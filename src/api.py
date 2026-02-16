@@ -431,3 +431,81 @@ async def api_status():
         "database": db_status,
         "version": "3.0.0"
     }
+# ===========================================
+# ТАБЛИЦА ДЛЯ ЗАЯВОК С TELEGRAM ID
+# ===========================================
+
+@app.get("/api/create-contacts-table")
+async def create_contacts_table():
+    """Создать таблицу для заявок с Telegram ID"""
+    try:
+        async with async_session_factory() as session:
+            await session.execute(text("""
+                CREATE TABLE IF NOT EXISTS contact_requests (
+                    id SERIAL PRIMARY KEY,
+                    telegram_id BIGINT NOT NULL,
+                    username VARCHAR(255),
+                    first_name VARCHAR(255),
+                    last_name VARCHAR(255),
+                    created_at TIMESTAMP DEFAULT NOW(),
+                    status VARCHAR(50) DEFAULT 'new'
+                )
+            """))
+            await session.commit()
+            return {"status": "success", "message": "✅ Таблица contact_requests создана!"}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+# ===========================================
+# МОДЕЛЬ ДЛЯ ЗАЯВКИ
+# ===========================================
+
+class ContactRequest(BaseModel):
+    telegram_id: int
+    username: str = ""
+    first_name: str = ""
+    last_name: str = ""
+
+# ===========================================
+# СОХРАНЕНИЕ ЗАЯВКИ
+# ===========================================
+
+@app.post("/api/contact-request")
+async def save_contact_request(request: ContactRequest):
+    """Сохранить заявку с Telegram ID"""
+    try:
+        async with async_session_factory() as session:
+            await session.execute(text("""
+                INSERT INTO contact_requests (telegram_id, username, first_name, last_name, status)
+                VALUES (:telegram_id, :username, :first_name, :last_name, 'new')
+            """), {
+                "telegram_id": request.telegram_id,
+                "username": request.username,
+                "first_name": request.first_name,
+                "last_name": request.last_name
+            })
+            await session.commit()
+            
+            return {
+                "status": "success", 
+                "message": "✅ Заявка сохранена! Менеджер свяжется с вами.",
+                "telegram_id": request.telegram_id
+            }
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+# ===========================================
+# ПОЛУЧИТЬ ВСЕ ЗАЯВКИ (ДЛЯ АДМИНКИ)
+# ===========================================
+
+@app.get("/api/contact-requests")
+async def get_contact_requests():
+    """Получить все заявки"""
+    try:
+        async with async_session_factory() as session:
+            result = await session.execute(
+                text("SELECT * FROM contact_requests ORDER BY created_at DESC")
+            )
+            rows = result.mappings().all()
+            return [dict(row) for row in rows]
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
