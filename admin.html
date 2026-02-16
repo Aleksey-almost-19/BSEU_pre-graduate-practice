@@ -9,13 +9,12 @@
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
         }
         
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
-            background: #f5f7fa;
-            color: #1A2E45;
-            line-height: 1.6;
+            background: #000000;
+            color: #ffffff;
             padding: 20px;
         }
         
@@ -30,12 +29,43 @@
             padding: 30px;
             border-radius: 16px;
             margin-bottom: 30px;
-            box-shadow: 0 4px 12px rgba(0,91,255,0.2);
         }
         
-        .header h1 {
-            font-size: 28px;
-            margin-bottom: 10px;
+        h1 { font-size: 28px; margin-bottom: 10px; }
+        
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .tab {
+            background: #1a1a1a;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 30px;
+            cursor: pointer;
+            border: 1px solid #333;
+            transition: all 0.2s;
+            font-weight: 500;
+        }
+        
+        .tab:hover {
+            background: #222;
+        }
+        
+        .tab.active {
+            background: #4caf50;
+            border-color: #4caf50;
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
         }
         
         .grid {
@@ -44,27 +74,16 @@
             gap: 30px;
         }
         
-        @media (max-width: 768px) {
-            .grid {
-                grid-template-columns: 1fr;
-            }
-        }
-        
         .card {
-            background: white;
+            background: #1a1a1a;
             padding: 25px;
             border-radius: 16px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-            border: 1px solid #E5E9F0;
+            border: 1px solid #333;
         }
         
         .card h2 {
-            color: #005BFF;
+            color: #4caf50;
             margin-bottom: 20px;
-            font-size: 22px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
         }
         
         .form-group {
@@ -75,25 +94,23 @@
             display: block;
             margin-bottom: 8px;
             font-weight: 600;
-            color: #1A2E45;
         }
         
         .form-group input,
         .form-group textarea {
             width: 100%;
             padding: 12px;
-            border: 2px solid #E5E9F0;
+            border: 2px solid #333;
             border-radius: 12px;
             font-size: 15px;
-            transition: all 0.3s;
-            font-family: inherit;
+            background: #222;
+            color: white;
         }
         
         .form-group input:focus,
         .form-group textarea:focus {
-            border-color: #005BFF;
+            border-color: #4caf50;
             outline: none;
-            box-shadow: 0 0 0 3px rgba(0,91,255,0.1);
         }
         
         .form-group textarea {
@@ -102,7 +119,7 @@
         }
         
         .btn {
-            background: #005BFF;
+            background: #4caf50;
             color: white;
             border: none;
             padding: 14px 28px;
@@ -110,68 +127,51 @@
             font-size: 16px;
             font-weight: 600;
             cursor: pointer;
-            transition: all 0.3s;
             width: 100%;
+            transition: all 0.2s;
         }
         
         .btn:hover {
-            background: #0047B3;
+            background: #45a049;
             transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0,91,255,0.3);
         }
         
         .loan-card {
-            background: #F8FAFD;
+            background: #222;
             border-radius: 12px;
             padding: 20px;
             margin-bottom: 15px;
-            border-left: 4px solid #005BFF;
+            border-left: 4px solid #4caf50;
         }
         
         .loan-card h3 {
-            color: #1A2E45;
+            color: #4caf50;
             margin-bottom: 10px;
-            font-size: 18px;
         }
         
         .loan-details {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 15px;
-            margin: 15px 0;
-            padding: 15px 0;
-            border-top: 1px solid #E5E9F0;
-            border-bottom: 1px solid #E5E9F0;
-        }
-        
-        .loan-detail {
-            display: flex;
-            flex-direction: column;
-        }
-        
-        .loan-detail .label {
-            font-size: 12px;
-            color: #5A6B7A;
-        }
-        
-        .loan-detail .value {
-            font-size: 16px;
-            font-weight: 700;
-            color: #005BFF;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin: 10px 0;
+            padding: 10px 0;
+            border-top: 1px solid #333;
+            border-bottom: 1px solid #333;
         }
         
         .loan-advantage {
-            background: #E3F2FD;
-            padding: 12px;
+            background: #1a1a1a;
+            padding: 10px;
             border-radius: 8px;
-            margin: 15px 0;
+            margin: 10px 0;
             font-style: italic;
+            color: #ccc;
         }
         
         .loan-actions {
             display: flex;
             gap: 10px;
-            margin-top: 15px;
+            margin-top: 10px;
         }
         
         .btn-delete {
@@ -183,24 +183,15 @@
             background: #c82333;
         }
         
-        .btn-edit {
-            background: #28a745;
-            flex: 1;
-        }
-        
-        .btn-edit:hover {
-            background: #218838;
-        }
-        
         .loading {
             text-align: center;
             padding: 40px;
-            color: #5A6B7A;
+            color: #999;
         }
         
         .success-message {
-            background: #D4EDDA;
-            color: #155724;
+            background: #1e3a1e;
+            color: #4caf50;
             padding: 12px;
             border-radius: 8px;
             margin-bottom: 20px;
@@ -208,8 +199,8 @@
         }
         
         .error-message {
-            background: #F8D7DA;
-            color: #721C24;
+            background: #3a1e1e;
+            color: #ff6b6b;
             padding: 12px;
             border-radius: 8px;
             margin-bottom: 20px;
@@ -219,13 +210,19 @@
         .back-link {
             display: inline-block;
             margin-top: 20px;
-            color: #005BFF;
+            color: #4caf50;
             text-decoration: none;
-            font-weight: 600;
         }
         
-        .back-link:hover {
-            text-decoration: underline;
+        @media (max-width: 768px) {
+            .grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .tab {
+                padding: 10px 16px;
+                font-size: 14px;
+            }
         }
     </style>
 </head>
@@ -233,56 +230,126 @@
     <div class="container">
         <div class="header">
             <h1>🏦 Аурумбанк - Админ-панель</h1>
-            <p>Управление кредитными продуктами</p>
+            <p>Управление всеми кредитными продуктами</p>
         </div>
         
         <div id="successMessage" class="success-message"></div>
         <div id="errorMessage" class="error-message"></div>
         
-        <div class="grid">
-            <!-- Форма добавления кредита -->
-            <div class="card">
-                <h2>➕ Добавить новый кредит</h2>
-                <form id="addLoanForm">
-                    <div class="form-group">
-                        <label>Название кредита</label>
-                        <input type="text" name="name" placeholder="Например: Кредит на любые цели" required>
+        <!-- Вкладки -->
+        <div class="tabs">
+            <div class="tab active" onclick="switchTab('consumer')">💳 Потребительские</div>
+            <div class="tab" onclick="switchTab('mortgage')">🏠 Ипотечные</div>
+            <div class="tab" onclick="switchTab('preferential')">🎁 Льготные</div>
+        </div>
+        
+        <!-- Потребительские кредиты -->
+        <div id="consumer-tab" class="tab-content active">
+            <div class="grid">
+                <div class="card">
+                    <h2>➕ Добавить потребительский кредит</h2>
+                    <form id="addConsumerForm">
+                        <div class="form-group">
+                            <input type="text" name="name" placeholder="Название кредита" required>
+                        </div>
+                        <div class="form-group">
+                            <input type="text" name="rate" placeholder="Ставка (например: от 11.9%)" required>
+                        </div>
+                        <div class="form-group">
+                            <input type="text" name="term" placeholder="Срок (например: до 7 лет)" required>
+                        </div>
+                        <div class="form-group">
+                            <input type="text" name="amount" placeholder="Сумма (например: до 15 000 BYN)" required>
+                        </div>
+                        <div class="form-group">
+                            <textarea name="advantage" placeholder="Преимущество" required></textarea>
+                        </div>
+                        <div class="form-group">
+                            <textarea name="details" placeholder="Подробное описание" required></textarea>
+                        </div>
+                        <button type="submit" class="btn">💾 Добавить</button>
+                    </form>
+                </div>
+                
+                <div class="card">
+                    <h2>📋 Список потребительских кредитов</h2>
+                    <div id="consumerList">
+                        <div class="loading">Загрузка...</div>
                     </div>
-                    
-                    <div class="form-group">
-                        <label>Процентная ставка</label>
-                        <input type="text" name="rate" placeholder="Например: от 11.9%" required>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label>Срок кредита</label>
-                        <input type="text" name="term" placeholder="Например: до 7 лет" required>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label>Максимальная сумма</label>
-                        <input type="text" name="amount" placeholder="Например: до 15 000 BYN" required>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label>Преимущество</label>
-                        <textarea name="advantage" placeholder="Краткое описание преимущества" required></textarea>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label>Подробное описание</label>
-                        <textarea name="details" placeholder="Полное описание условий кредита" required></textarea>
-                    </div>
-                    
-                    <button type="submit" class="btn">💾 Сохранить кредит</button>
-                </form>
+                </div>
             </div>
-            
-            <!-- Список существующих кредитов -->
-            <div class="card">
-                <h2>📋 Текущие кредиты</h2>
-                <div id="loansList">
-                    <div class="loading">Загрузка кредитов...</div>
+        </div>
+        
+        <!-- Ипотечные кредиты -->
+        <div id="mortgage-tab" class="tab-content">
+            <div class="grid">
+                <div class="card">
+                    <h2>➕ Добавить ипотечный кредит</h2>
+                    <form id="addMortgageForm">
+                        <div class="form-group">
+                            <input type="text" name="name" placeholder="Название кредита" required>
+                        </div>
+                        <div class="form-group">
+                            <input type="text" name="rate" placeholder="Ставка" required>
+                        </div>
+                        <div class="form-group">
+                            <input type="text" name="term" placeholder="Срок" required>
+                        </div>
+                        <div class="form-group">
+                            <input type="text" name="amount" placeholder="Сумма" required>
+                        </div>
+                        <div class="form-group">
+                            <textarea name="advantage" placeholder="Преимущество" required></textarea>
+                        </div>
+                        <div class="form-group">
+                            <textarea name="details" placeholder="Подробное описание" required></textarea>
+                        </div>
+                        <button type="submit" class="btn">💾 Добавить</button>
+                    </form>
+                </div>
+                
+                <div class="card">
+                    <h2>📋 Список ипотечных кредитов</h2>
+                    <div id="mortgageList">
+                        <div class="loading">Загрузка...</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Льготные кредиты -->
+        <div id="preferential-tab" class="tab-content">
+            <div class="grid">
+                <div class="card">
+                    <h2>➕ Добавить льготный кредит</h2>
+                    <form id="addPreferentialForm">
+                        <div class="form-group">
+                            <input type="text" name="name" placeholder="Название кредита" required>
+                        </div>
+                        <div class="form-group">
+                            <input type="text" name="rate" placeholder="Ставка" required>
+                        </div>
+                        <div class="form-group">
+                            <input type="text" name="term" placeholder="Срок" required>
+                        </div>
+                        <div class="form-group">
+                            <input type="text" name="amount" placeholder="Сумма" required>
+                        </div>
+                        <div class="form-group">
+                            <textarea name="advantage" placeholder="Преимущество" required></textarea>
+                        </div>
+                        <div class="form-group">
+                            <textarea name="details" placeholder="Подробное описание" required></textarea>
+                        </div>
+                        <button type="submit" class="btn">💾 Добавить</button>
+                    </form>
+                </div>
+                
+                <div class="card">
+                    <h2>📋 Список льготных кредитов</h2>
+                    <div id="preferentialList">
+                        <div class="loading">Загрузка...</div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -292,8 +359,17 @@
 
     <script>
         const API_URL = 'https://bseu-pre-graduate-practice.onrender.com';
-
-        // Показать сообщение
+        
+        function switchTab(tabName) {
+            // Скрыть все вкладки
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.tab').forEach(el => el.classList.remove('active'));
+            
+            // Показать выбранную
+            document.getElementById(tabName + '-tab').classList.add('active');
+            event.target.classList.add('active');
+        }
+        
         function showMessage(type, text) {
             const successEl = document.getElementById('successMessage');
             const errorEl = document.getElementById('errorMessage');
@@ -302,114 +378,194 @@
                 successEl.textContent = text;
                 successEl.style.display = 'block';
                 errorEl.style.display = 'none';
-                setTimeout(() => { successEl.style.display = 'none'; }, 3000);
+                setTimeout(() => successEl.style.display = 'none', 3000);
             } else {
                 errorEl.textContent = text;
                 errorEl.style.display = 'block';
                 successEl.style.display = 'none';
-                setTimeout(() => { errorEl.style.display = 'none'; }, 3000);
+                setTimeout(() => errorEl.style.display = 'none', 3000);
             }
         }
-
-        // Загрузить все кредиты
-        async function loadLoans() {
+        
+        // Загрузка потребительских кредитов
+        async function loadConsumerLoans() {
             try {
                 const res = await fetch(`${API_URL}/api/consumer-loans`);
-                if (!res.ok) throw new Error('Ошибка загрузки');
-                
                 const loans = await res.json();
                 
                 if (loans.length === 0) {
-                    document.getElementById('loansList').innerHTML = '<p style="color: #5A6B7A; text-align: center;">Нет кредитов. Добавьте первый кредит!</p>';
+                    document.getElementById('consumerList').innerHTML = '<p>Нет кредитов</p>';
                     return;
                 }
                 
-                const html = loans.map(loan => `
+                document.getElementById('consumerList').innerHTML = loans.map(loan => `
                     <div class="loan-card">
                         <h3>${loan.name}</h3>
                         <div class="loan-details">
-                            <div class="loan-detail">
-                                <span class="label">Ставка</span>
-                                <span class="value">${loan.rate}</span>
-                            </div>
-                            <div class="loan-detail">
-                                <span class="label">Срок</span>
-                                <span class="value">${loan.term}</span>
-                            </div>
-                            <div class="loan-detail">
-                                <span class="label">Сумма</span>
-                                <span class="value">${loan.amount}</span>
-                            </div>
+                            <div>💰 ${loan.amount}</div>
+                            <div>📊 ${loan.rate}</div>
+                            <div>⏱️ ${loan.term}</div>
                         </div>
-                        <div class="loan-advantage">
-                            ✨ ${loan.advantage}
-                        </div>
-                        <p style="color: #1A2E45; margin-bottom: 15px;">${loan.details}</p>
+                        <div class="loan-advantage">✨ ${loan.advantage}</div>
                         <div class="loan-actions">
-                            <button onclick="deleteLoan(${loan.id})" class="btn btn-delete">🗑️ Удалить</button>
+                            <button onclick="deleteConsumerLoan(${loan.id})" class="btn btn-delete">🗑️ Удалить</button>
                         </div>
                     </div>
                 `).join('');
-                
-                document.getElementById('loansList').innerHTML = html;
             } catch (error) {
-                console.error('Error:', error);
-                document.getElementById('loansList').innerHTML = '<p style="color: #dc3545; text-align: center;">❌ Ошибка загрузки кредитов</p>';
+                console.error(error);
             }
         }
-
-        // Добавить кредит
-        document.getElementById('addLoanForm').onsubmit = async (e) => {
+        
+        // Загрузка ипотечных кредитов
+        async function loadMortgageLoans() {
+            try {
+                const res = await fetch(`${API_URL}/api/mortgage-loans`);
+                const loans = await res.json();
+                
+                if (loans.length === 0) {
+                    document.getElementById('mortgageList').innerHTML = '<p>Нет кредитов</p>';
+                    return;
+                }
+                
+                document.getElementById('mortgageList').innerHTML = loans.map(loan => `
+                    <div class="loan-card">
+                        <h3>${loan.name}</h3>
+                        <div class="loan-details">
+                            <div>💰 ${loan.amount}</div>
+                            <div>📊 ${loan.rate}</div>
+                            <div>⏱️ ${loan.term}</div>
+                        </div>
+                        <div class="loan-advantage">✨ ${loan.advantage}</div>
+                        <div class="loan-actions">
+                            <button onclick="deleteMortgageLoan(${loan.id})" class="btn btn-delete">🗑️ Удалить</button>
+                        </div>
+                    </div>
+                `).join('');
+            } catch (error) {
+                console.error(error);
+            }
+        }
+        
+        // Загрузка льготных кредитов
+        async function loadPreferentialLoans() {
+            try {
+                const res = await fetch(`${API_URL}/api/preferential-loans`);
+                const loans = await res.json();
+                
+                if (loans.length === 0) {
+                    document.getElementById('preferentialList').innerHTML = '<p>Нет кредитов</p>';
+                    return;
+                }
+                
+                document.getElementById('preferentialList').innerHTML = loans.map(loan => `
+                    <div class="loan-card">
+                        <h3>${loan.name}</h3>
+                        <div class="loan-details">
+                            <div>💰 ${loan.amount}</div>
+                            <div>📊 ${loan.rate}</div>
+                            <div>⏱️ ${loan.term}</div>
+                        </div>
+                        <div class="loan-advantage">✨ ${loan.advantage}</div>
+                        <div class="loan-actions">
+                            <button onclick="deletePreferentialLoan(${loan.id})" class="btn btn-delete">🗑️ Удалить</button>
+                        </div>
+                    </div>
+                `).join('');
+            } catch (error) {
+                console.error(error);
+            }
+        }
+        
+        // Добавление потребительского кредита
+        document.getElementById('addConsumerForm').onsubmit = async (e) => {
             e.preventDefault();
-            
             const formData = new FormData(e.target);
             const data = Object.fromEntries(formData);
             
-            try {
-                const res = await fetch(`${API_URL}/api/consumer-loans`, {
-                    method: 'POST',
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify(data)
-                });
-                
-                const result = await res.json();
-                
-                if (result.status === 'success') {
-                    showMessage('success', '✅ Кредит успешно добавлен!');
-                    e.target.reset();
-                    loadLoans();
-                } else {
-                    showMessage('error', '❌ ' + result.message);
-                }
-            } catch (error) {
-                showMessage('error', '❌ Ошибка соединения с сервером');
+            const res = await fetch(`${API_URL}/api/consumer-loans`, {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(data)
+            });
+            
+            const result = await res.json();
+            showMessage(result.status, result.message);
+            if (result.status === 'success') {
+                e.target.reset();
+                loadConsumerLoans();
             }
         };
-
-        // Удалить кредит
-        async function deleteLoan(id) {
-            if (!confirm('Вы уверены, что хотите удалить этот кредит?')) return;
+        
+        // Добавление ипотечного кредита
+        document.getElementById('addMortgageForm').onsubmit = async (e) => {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            const data = Object.fromEntries(formData);
             
-            try {
-                const res = await fetch(`${API_URL}/api/consumer-loans/${id}`, {
-                    method: 'DELETE'
-                });
-                
-                const result = await res.json();
-                
-                if (result.status === 'success') {
-                    showMessage('success', '✅ Кредит удален');
-                    loadLoans();
-                } else {
-                    showMessage('error', '❌ ' + result.message);
-                }
-            } catch (error) {
-                showMessage('error', '❌ Ошибка соединения с сервером');
+            const res = await fetch(`${API_URL}/api/mortgage-loans`, {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(data)
+            });
+            
+            const result = await res.json();
+            showMessage(result.status, result.message);
+            if (result.status === 'success') {
+                e.target.reset();
+                loadMortgageLoans();
             }
+        };
+        
+        // Добавление льготного кредита
+        document.getElementById('addPreferentialForm').onsubmit = async (e) => {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            const data = Object.fromEntries(formData);
+            
+            const res = await fetch(`${API_URL}/api/preferential-loans`, {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(data)
+            });
+            
+            const result = await res.json();
+            showMessage(result.status, result.message);
+            if (result.status === 'success') {
+                e.target.reset();
+                loadPreferentialLoans();
+            }
+        };
+        
+        // Удаление кредитов
+        async function deleteConsumerLoan(id) {
+            if (!confirm('Удалить кредит?')) return;
+            const res = await fetch(`${API_URL}/api/consumer-loans/${id}`, {method: 'DELETE'});
+            const result = await res.json();
+            showMessage(result.status, result.message);
+            loadConsumerLoans();
         }
-
-        // Загрузить кредиты при открытии страницы
-        loadLoans();
+        
+        async function deleteMortgageLoan(id) {
+            if (!confirm('Удалить кредит?')) return;
+            const res = await fetch(`${API_URL}/api/mortgage-loans/${id}`, {method: 'DELETE'});
+            const result = await res.json();
+            showMessage(result.status, result.message);
+            loadMortgageLoans();
+        }
+        
+        async function deletePreferentialLoan(id) {
+            if (!confirm('Удалить кредит?')) return;
+            const res = await fetch(`${API_URL}/api/preferential-loans/${id}`, {method: 'DELETE'});
+            const result = await res.json();
+            showMessage(result.status, result.message);
+            loadPreferentialLoans();
+        }
+        
+        // Инициализация
+        loadConsumerLoans();
+        loadMortgageLoans();
+        loadPreferentialLoans();
     </script>
 </body>
 </html>
