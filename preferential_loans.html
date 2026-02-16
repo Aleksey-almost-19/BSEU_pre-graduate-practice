@@ -449,7 +449,39 @@
             initLogoClick();
         });
 
-        // Функции initMobileLogoScroll и initLogoClick такие же как в mortgage_loans.html
+        function initMobileLogoScroll() {
+            let lastScrollTop = 0;
+            const scrollThreshold = 50;
+            const mobileLogo = document.querySelector('.mobile-logo');
+            
+            if (!mobileLogo) return;
+            
+            window.addEventListener('scroll', function() {
+                let scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+                
+                if (scrollTop > scrollThreshold) {
+                    if (scrollTop > lastScrollTop) {
+                        mobileLogo.classList.add('hidden');
+                    } else if (scrollTop < lastScrollTop) {
+                        mobileLogo.classList.remove('hidden');
+                    }
+                } else {
+                    mobileLogo.classList.remove('hidden');
+                }
+                
+                lastScrollTop = scrollTop;
+            });
+        }
+
+        function initLogoClick() {
+            const logos = document.querySelectorAll('.logo-placeholder');
+            logos.forEach(logo => {
+                logo.style.cursor = 'pointer';
+                logo.addEventListener('click', function() {
+                    tg.showAlert('Аурумбанк - Ваш надежный финансовый партнер');
+                });
+            });
+        }
 
         async function loadPreferentialLoans() {  // ← ИЗМЕНЕНО
             const container = document.getElementById('loans-container');
