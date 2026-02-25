@@ -201,8 +201,12 @@ async def seed_mortgage():
     """Добавить тестовые ипотечные кредиты с JSONB"""
     try:
         async with async_session_factory() as session:
+            # 1. Выполняем запрос и ПОЛНОСТЬЮ загружаем результат в переменную count
             result = await session.execute(text("SELECT COUNT(*) FROM mortgage_loans"))
-            if result.scalar() == 0:
+            count = result.scalar()  # <--- ИЗВЛЕКАЕМ ДАННЫЕ ЗДЕСЬ, ПОКА СЕССИЯ ОТКРЫТА
+            
+            if count == 0:
+                # Вставляем данные с JSONB
                 await session.execute(text("""
                     INSERT INTO mortgage_loans (name, rate, term, amount, advantage, details) VALUES
                     ('Ипотека на новостройку', 'от 12.5%', 'до 20 лет', 'до 200 000 BYN', 
@@ -223,10 +227,14 @@ async def seed_mortgage():
                     "adv3": json.dumps(["С возможностью покупки участка", "Длительный срок", "Индивидуальные условия"])
                 })
                 await session.commit()
+                # 2. Данные уже извлечены, можно смешно возвращать результат
                 return {"status": "success", "message": "✅ Тестовые ипотечные кредиты добавлены с JSONB!", "count": 3}
             else:
-                return {"status": "info", "message": f"ℹ️ В таблице уже есть {result.scalar()} записей"}
+                # 3. Данные (count) уже извлечены и доступны
+                return {"status": "info", "message": f"ℹ️ В таблице уже есть {count} записей"}
     except Exception as e:
+        # Логируем ошибку для отладки
+        print(f"Error in seed_mortgage: {e}")
         return {"status": "error", "message": str(e)}
 
 @app.get("/api/seed-preferential")
@@ -234,8 +242,11 @@ async def seed_preferential():
     """Добавить тестовые льготные кредиты с JSONB"""
     try:
         async with async_session_factory() as session:
+            # 1. Извлекаем результат ДО закрытия сессии
             result = await session.execute(text("SELECT COUNT(*) FROM preferential_loans"))
-            if result.scalar() == 0:
+            count = result.scalar()
+            
+            if count == 0:
                 await session.execute(text("""
                     INSERT INTO preferential_loans (name, rate, term, amount, advantage, details) VALUES
                     ('Для молодых семей', 'от 4.5%', 'до 10 лет', 'до 70 000 BYN', 
@@ -263,10 +274,10 @@ async def seed_preferential():
                 await session.commit()
                 return {"status": "success", "message": "✅ Тестовые льготные кредиты добавлены с JSONB!", "count": 4}
             else:
-                return {"status": "info", "message": f"ℹ️ В таблице уже есть {result.scalar()} записей"}
+                return {"status": "info", "message": f"ℹ️ В таблице уже есть {count} записей"}
     except Exception as e:
+        print(f"Error in seed_preferential: {e}")
         return {"status": "error", "message": str(e)}
-
 # ===========================================
 # API ДЛЯ ПОТРЕБИТЕЛЬСКИХ КРЕДИТОВ
 # ===========================================
