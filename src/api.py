@@ -1,41 +1,52 @@
 from fastapi import FastAPI, Response, HTTPException
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from sqlalchemy import text
 import os
 import sys
+import json
 
 # ===========================================
 # ИМПОРТЫ ИЗ ПРОЕКТА
 # ===========================================
 sys.path.append(os.path.dirname(__file__))
 from database import async_session_factory
-from fastapi.middleware.cors import CORSMiddleware
+
 app = FastAPI()
+
+# ===========================================
+# НАСТРОЙКА CORS
+# ===========================================
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 # ===========================================
 # МОДЕЛИ ДАННЫХ
 # ===========================================
-
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],  # Разрешить все источники
-    allow_credentials=True,
-    allow_methods=["*"],  # Разрешить все методы (GET, POST, DELETE...)
-    allow_headers=["*"],  # Разрешить все заголовки
-)
 
 class LoanCreate(BaseModel):
     name: str
     rate: str
     term: str
     amount: str
-    advantage: str
+    advantage: list[str]  # ИЗМЕНЕНО: теперь список строк
     details: str
 
+class ContactRequest(BaseModel):
+    telegram_id: int
+    username: str = ""
+    first_name: str = ""
+    last_name: str = ""
+
 # ===========================================
-# ОТДАЧА HTML СТРАНИЦ (ВСЕ СТРАНИЦЫ)
+# ОТДАЧА HTML СТРАНИЦ
 # ===========================================
 
 @app.get("/")
@@ -75,69 +86,74 @@ app.mount("/javascript", StaticFiles(directory="javascript"), name="javascript")
 app.mount("/img", StaticFiles(directory="img"), name="img")
 
 # ===========================================
+# ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ
+# ===========================================
+
+async def create_loan_table(table_name: str):
+    """Общая функция для создания таблиц с JSONB полем advantage"""
+    async with async_session_factory() as session:
+        await session.execute(text(f"""
+            CREATE TABLE IF NOT EXISTS {table_name} (
+                id SERIAL PRIMARY KEY,
+                name VARCHAR(100) NOT NULL,
+                rate VARCHAR(50) NOT NULL,
+                term VARCHAR(50) NOT NULL,
+                amount VARCHAR(50) NOT NULL,
+                advantage JSONB NOT NULL DEFAULT '[]'::jsonb,
+                details TEXT NOT NULL
+            )
+        """))
+        await session.commit()
+
+# ===========================================
 # УПРАВЛЕНИЕ БАЗОЙ ДАННЫХ (СОЗДАНИЕ ТАБЛИЦ)
 # ===========================================
 
 @app.get("/api/create-tables")
 async def create_tables():
-    """Создать таблицу consumer_loans"""
+    """Создать таблицу consumer_loans с JSONB"""
     try:
-        async with async_session_factory() as session:
-            await session.execute(text("""
-                CREATE TABLE IF NOT EXISTS consumer_loans (
-                    id SERIAL PRIMARY KEY,
-                    name VARCHAR(100) NOT NULL,
-                    rate VARCHAR(50) NOT NULL,
-                    term VARCHAR(50) NOT NULL,
-                    amount VARCHAR(50) NOT NULL,
-                    advantage TEXT NOT NULL,
-                    details TEXT NOT NULL
-                )
-            """))
-            await session.commit()
-            return {"status": "success", "message": "✅ Таблица consumer_loans создана!"}
+        await create_loan_table("consumer_loans")
+        return {"status": "success", "message": "✅ Таблица consumer_loans создана с поддержкой JSONB!"}
     except Exception as e:
         return {"status": "error", "message": str(e)}
 
 @app.get("/api/create-mortgage-table")
 async def create_mortgage_table():
-    """Создать таблицу для ипотечных кредитов"""
+    """Создать таблицу mortgage_loans с JSONB"""
     try:
-        async with async_session_factory() as session:
-            await session.execute(text("""
-                CREATE TABLE IF NOT EXISTS mortgage_loans (
-                    id SERIAL PRIMARY KEY,
-                    name VARCHAR(100) NOT NULL,
-                    rate VARCHAR(50) NOT NULL,
-                    term VARCHAR(50) NOT NULL,
-                    amount VARCHAR(50) NOT NULL,
-                    advantage TEXT NOT NULL,
-                    details TEXT NOT NULL
-                )
-            """))
-            await session.commit()
-            return {"status": "success", "message": "✅ Таблица mortgage_loans создана!"}
+        await create_loan_table("mortgage_loans")
+        return {"status": "success", "message": "✅ Таблица mortgage_loans создана с поддержкой JSONB!"}
     except Exception as e:
         return {"status": "error", "message": str(e)}
 
 @app.get("/api/create-preferential-table")
 async def create_preferential_table():
-    """Создать таблицу для льготных кредитов"""
+    """Создать таблицу preferential_loans с JSONB"""
+    try:
+        await create_loan_table("preferential_loans")
+        return {"status": "success", "message": "✅ Таблица preferential_loans создана с поддержкой JSONB!"}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@app.get("/api/create-contacts-table")
+async def create_contacts_table():
+    """Создать таблицу для заявок"""
     try:
         async with async_session_factory() as session:
             await session.execute(text("""
-                CREATE TABLE IF NOT EXISTS preferential_loans (
+                CREATE TABLE IF NOT EXISTS contact_requests (
                     id SERIAL PRIMARY KEY,
-                    name VARCHAR(100) NOT NULL,
-                    rate VARCHAR(50) NOT NULL,
-                    term VARCHAR(50) NOT NULL,
-                    amount VARCHAR(50) NOT NULL,
-                    advantage TEXT NOT NULL,
-                    details TEXT NOT NULL
+                    telegram_id BIGINT NOT NULL,
+                    username VARCHAR(255),
+                    first_name VARCHAR(255),
+                    last_name VARCHAR(255),
+                    created_at TIMESTAMP DEFAULT NOW(),
+                    status VARCHAR(50) DEFAULT 'new'
                 )
             """))
             await session.commit()
-            return {"status": "success", "message": "✅ Таблица preferential_loans создана!"}
+            return {"status": "success", "message": "✅ Таблица contact_requests создана!"}
     except Exception as e:
         return {"status": "error", "message": str(e)}
 
@@ -147,7 +163,7 @@ async def create_preferential_table():
 
 @app.get("/api/seed-database")
 async def seed_database():
-    """Добавить тестовые потребительские кредиты"""
+    """Добавить тестовые потребительские кредиты с JSONB"""
     try:
         async with async_session_factory() as session:
             result = await session.execute(text("SELECT COUNT(*) FROM consumer_loans"))
@@ -157,19 +173,24 @@ async def seed_database():
                 await session.execute(text("""
                     INSERT INTO consumer_loans (name, rate, term, amount, advantage, details) VALUES
                     ('Кредит на любые цели', 'от 11.9%', 'до 7 лет', 'до 15 000 BYN', 
-                     'Без справок о доходах, решение за 15 минут', 
+                     :adv1::jsonb, 
                      'Кредит без залога и поручителей. Минимальный пакет документов — только паспорт.'),
                     
                     ('Кредит для зарплатных клиентов', 'от 10.5%', 'до 5 лет', 'до 20 000 BYN', 
-                     'Специальные условия для зарплатных клиентов', 
+                     :adv2::jsonb, 
                      'Для клиентов, получающих зарплату на карту Аурумбанка. Сниженная процентная ставка.'),
                     
                     ('Рефинансирование кредитов', 'от 11.5%', 'до 10 лет', 'до 50 000 BYN', 
-                     'Объедините несколько кредитов в один', 
+                     :adv3::jsonb, 
                      'Рефинансирование кредитов других банков. Снижение ежемесячного платежа.')
-                """))
+                """),
+                {
+                    "adv1": json.dumps(["Без справок о доходах", "Решение за 15 минут", "Онлайн-оформление"]),
+                    "adv2": json.dumps(["Специальные условия", "Сниженная ставка", "Быстрое одобрение"]),
+                    "adv3": json.dumps(["Объедините несколько кредитов", "Снижение платежа", "Увеличение срока"])
+                })
                 await session.commit()
-                return {"status": "success", "message": "✅ Тестовые потребительские кредиты добавлены!", "count": 3}
+                return {"status": "success", "message": "✅ Тестовые потребительские кредиты добавлены с JSONB!", "count": 3}
             else:
                 return {"status": "info", "message": f"ℹ️ В таблице уже есть {count} записей", "count": count}
     except Exception as e:
@@ -177,7 +198,7 @@ async def seed_database():
 
 @app.get("/api/seed-mortgage")
 async def seed_mortgage():
-    """Добавить тестовые ипотечные кредиты"""
+    """Добавить тестовые ипотечные кредиты с JSONB"""
     try:
         async with async_session_factory() as session:
             result = await session.execute(text("SELECT COUNT(*) FROM mortgage_loans"))
@@ -185,16 +206,24 @@ async def seed_mortgage():
                 await session.execute(text("""
                     INSERT INTO mortgage_loans (name, rate, term, amount, advantage, details) VALUES
                     ('Ипотека на новостройку', 'от 12.5%', 'до 20 лет', 'до 200 000 BYN', 
-                     'Первоначальный взнос от 10%', 'Покупка квартиры в новостройке от застройщиков-партнеров'),
+                     :adv1::jsonb, 
+                     'Покупка квартиры в новостройке от застройщиков-партнеров'),
                     
                     ('Ипотека на вторичное жилье', 'от 13.9%', 'до 15 лет', 'до 150 000 BYN', 
-                     'Быстрое оформление', 'Покупка готовой квартиры или дома на вторичном рынке'),
+                     :adv2::jsonb, 
+                     'Покупка готовой квартиры или дома на вторичном рынке'),
                     
                     ('Ипотека на дом с участком', 'от 14.5%', 'до 20 лет', 'до 250 000 BYN', 
-                     'С возможностью покупки земельного участка', 'Кредит на строительство или покупку частного дома')
-                """))
+                     :adv3::jsonb, 
+                     'Кредит на строительство или покупку частного дома')
+                """),
+                {
+                    "adv1": json.dumps(["Первоначальный взнос от 10%", "Господдержка", "Страхование опционально"]),
+                    "adv2": json.dumps(["Быстрое оформление", "Без скрытых комиссий", "Оценка бесплатно"]),
+                    "adv3": json.dumps(["С возможностью покупки участка", "Длительный срок", "Индивидуальные условия"])
+                })
                 await session.commit()
-                return {"status": "success", "message": "✅ Тестовые ипотечные кредиты добавлены!", "count": 3}
+                return {"status": "success", "message": "✅ Тестовые ипотечные кредиты добавлены с JSONB!", "count": 3}
             else:
                 return {"status": "info", "message": f"ℹ️ В таблице уже есть {result.scalar()} записей"}
     except Exception as e:
@@ -202,7 +231,7 @@ async def seed_mortgage():
 
 @app.get("/api/seed-preferential")
 async def seed_preferential():
-    """Добавить тестовые льготные кредиты"""
+    """Добавить тестовые льготные кредиты с JSONB"""
     try:
         async with async_session_factory() as session:
             result = await session.execute(text("SELECT COUNT(*) FROM preferential_loans"))
@@ -210,19 +239,29 @@ async def seed_preferential():
                 await session.execute(text("""
                     INSERT INTO preferential_loans (name, rate, term, amount, advantage, details) VALUES
                     ('Для молодых семей', 'от 4.5%', 'до 10 лет', 'до 70 000 BYN', 
-                     'Господдержка для молодых семей', 'Специальные условия при рождении ребенка. Первоначальный взнос от 5%'),
+                     :adv1::jsonb, 
+                     'Специальные условия при рождении ребенка. Первоначальный взнос от 5%'),
                     
                     ('Для предпринимателей', 'от 5.9%', 'до 5 лет', 'до 50 000 BYN', 
-                     'На развитие бизнеса', 'Для ИП и владельцев малого бизнеса. Без залога при сумме до 30 000 BYN'),
+                     :adv2::jsonb, 
+                     'Для ИП и владельцев малого бизнеса. Без залога при сумме до 30 000 BYN'),
                     
                     ('Для пенсионеров', 'от 6.5%', 'до 3 лет', 'до 10 000 BYN', 
-                     'Льготные условия для пожилых', 'С пониженной процентной ставкой и упрощенным оформлением'),
+                     :adv3::jsonb, 
+                     'С пониженной процентной ставкой и упрощенным оформлением'),
                     
                     ('Для многодетных семей', 'от 3.9%', 'до 15 лет', 'до 100 000 BYN', 
-                     'Государственная поддержка', 'Специальная программа для семей с тремя и более детьми')
-                """))
+                     :adv4::jsonb, 
+                     'Специальная программа для семей с тремя и более детьми')
+                """),
+                {
+                    "adv1": json.dumps(["Господдержка", "Льготная ставка", "Отсрочка платежа"]),
+                    "adv2": json.dumps(["На развитие бизнеса", "Без залога", "Быстрое решение"]),
+                    "adv3": json.dumps(["Льготные условия", "Упрощенное оформление", "Пониженная ставка"]),
+                    "adv4": json.dumps(["Государственная поддержка", "Длительный срок", "Субсидии"])
+                })
                 await session.commit()
-                return {"status": "success", "message": "✅ Тестовые льготные кредиты добавлены!", "count": 4}
+                return {"status": "success", "message": "✅ Тестовые льготные кредиты добавлены с JSONB!", "count": 4}
             else:
                 return {"status": "info", "message": f"ℹ️ В таблице уже есть {result.scalar()} записей"}
     except Exception as e:
@@ -241,7 +280,8 @@ async def get_all_consumer_loans():
                 text("SELECT id, name, rate, term, amount, advantage, details FROM consumer_loans ORDER BY id")
             )
             rows = result.mappings().all()
-            return [dict(row) for row in rows]
+            # Преобразуем JSONB в список
+            return [{**dict(row), "advantage": json.loads(row.advantage)} for row in rows]
     except Exception as e:
         print(f"Error: {e}")
         return []
@@ -258,7 +298,7 @@ async def get_consumer_loan(loan_id: int):
             loan = result.mappings().first()
             if not loan:
                 raise HTTPException(status_code=404, detail="Кредит не найден")
-            return dict(loan)
+            return {**dict(loan), "advantage": json.loads(loan.advantage)}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -269,8 +309,15 @@ async def create_consumer_loan(loan: LoanCreate):
         async with async_session_factory() as session:
             await session.execute(text("""
                 INSERT INTO consumer_loans (name, rate, term, amount, advantage, details)
-                VALUES (:name, :rate, :term, :amount, :advantage, :details)
-            """), loan.model_dump())
+                VALUES (:name, :rate, :term, :amount, :advantage::jsonb, :details)
+            """), {
+                "name": loan.name,
+                "rate": loan.rate,
+                "term": loan.term,
+                "amount": loan.amount,
+                "advantage": json.dumps(loan.advantage, ensure_ascii=False),
+                "details": loan.details
+            })
             await session.commit()
             return {"status": "success", "message": "✅ Потребительский кредит успешно добавлен"}
     except Exception as e:
@@ -305,7 +352,7 @@ async def get_all_mortgage_loans():
                 text("SELECT id, name, rate, term, amount, advantage, details FROM mortgage_loans ORDER BY id")
             )
             rows = result.mappings().all()
-            return [dict(row) for row in rows]
+            return [{**dict(row), "advantage": json.loads(row.advantage)} for row in rows]
     except Exception as e:
         print(f"Error: {e}")
         return []
@@ -322,7 +369,7 @@ async def get_mortgage_loan(loan_id: int):
             loan = result.mappings().first()
             if not loan:
                 raise HTTPException(status_code=404, detail="Кредит не найден")
-            return dict(loan)
+            return {**dict(loan), "advantage": json.loads(loan.advantage)}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -333,8 +380,15 @@ async def create_mortgage_loan(loan: LoanCreate):
         async with async_session_factory() as session:
             await session.execute(text("""
                 INSERT INTO mortgage_loans (name, rate, term, amount, advantage, details)
-                VALUES (:name, :rate, :term, :amount, :advantage, :details)
-            """), loan.model_dump())
+                VALUES (:name, :rate, :term, :amount, :advantage::jsonb, :details)
+            """), {
+                "name": loan.name,
+                "rate": loan.rate,
+                "term": loan.term,
+                "amount": loan.amount,
+                "advantage": json.dumps(loan.advantage, ensure_ascii=False),
+                "details": loan.details
+            })
             await session.commit()
             return {"status": "success", "message": "✅ Ипотечный кредит успешно добавлен"}
     except Exception as e:
@@ -369,7 +423,7 @@ async def get_all_preferential_loans():
                 text("SELECT id, name, rate, term, amount, advantage, details FROM preferential_loans ORDER BY id")
             )
             rows = result.mappings().all()
-            return [dict(row) for row in rows]
+            return [{**dict(row), "advantage": json.loads(row.advantage)} for row in rows]
     except Exception as e:
         print(f"Error: {e}")
         return []
@@ -386,7 +440,7 @@ async def get_preferential_loan(loan_id: int):
             loan = result.mappings().first()
             if not loan:
                 raise HTTPException(status_code=404, detail="Кредит не найден")
-            return dict(loan)
+            return {**dict(loan), "advantage": json.loads(loan.advantage)}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -397,8 +451,15 @@ async def create_preferential_loan(loan: LoanCreate):
         async with async_session_factory() as session:
             await session.execute(text("""
                 INSERT INTO preferential_loans (name, rate, term, amount, advantage, details)
-                VALUES (:name, :rate, :term, :amount, :advantage, :details)
-            """), loan.model_dump())
+                VALUES (:name, :rate, :term, :amount, :advantage::jsonb, :details)
+            """), {
+                "name": loan.name,
+                "rate": loan.rate,
+                "term": loan.term,
+                "amount": loan.amount,
+                "advantage": json.dumps(loan.advantage, ensure_ascii=False),
+                "details": loan.details
+            })
             await session.commit()
             return {"status": "success", "message": "✅ Льготный кредит успешно добавлен"}
     except Exception as e:
@@ -421,60 +482,7 @@ async def delete_preferential_loan(loan_id: int):
         return {"status": "error", "message": str(e)}
 
 # ===========================================
-# СТАТУС API
-# ===========================================
-
-@app.get("/api/status")
-async def api_status():
-    """Проверка статуса API и БД"""
-    try:
-        async with async_session_factory() as session:
-            await session.execute(text("SELECT 1"))
-            db_status = "connected"
-    except Exception as e:
-        db_status = f"disconnected: {type(e).__name__}"
-    
-    return {
-        "message": "AurumBank API is working!",
-        "database": db_status,
-        "version": "3.0.0"
-    }
-# ===========================================
-# ТАБЛИЦА ДЛЯ ЗАЯВОК С TELEGRAM ID
-# ===========================================
-
-@app.get("/api/create-contacts-table")
-async def create_contacts_table():
-    """Создать таблицу для заявок с Telegram ID"""
-    try:
-        async with async_session_factory() as session:
-            await session.execute(text("""
-                CREATE TABLE IF NOT EXISTS contact_requests (
-                    id SERIAL PRIMARY KEY,
-                    telegram_id BIGINT NOT NULL,
-                    username VARCHAR(255),
-                    first_name VARCHAR(255),
-                    last_name VARCHAR(255),
-                    created_at TIMESTAMP DEFAULT NOW(),
-                    status VARCHAR(50) DEFAULT 'new'
-                )
-            """))
-            await session.commit()
-            return {"status": "success", "message": "✅ Таблица contact_requests создана!"}
-    except Exception as e:
-        return {"status": "error", "message": str(e)}
-# ===========================================
-# МОДЕЛЬ ДЛЯ ЗАЯВКИ
-# ===========================================
-
-class ContactRequest(BaseModel):
-    telegram_id: int
-    username: str = ""
-    first_name: str = ""
-    last_name: str = ""
-
-# ===========================================
-# СОХРАНЕНИЕ ЗАЯВКИ
+# API ДЛЯ ЗАЯВОК
 # ===========================================
 
 @app.post("/api/contact-request")
@@ -501,10 +509,6 @@ async def save_contact_request(request: ContactRequest):
     except Exception as e:
         return {"status": "error", "message": str(e)}
 
-# ===========================================
-# ПОЛУЧИТЬ ВСЕ ЗАЯВКИ (ДЛЯ АДМИНКИ)
-# ===========================================
-
 @app.get("/api/contact-requests")
 async def get_contact_requests():
     """Получить все заявки"""
@@ -517,3 +521,23 @@ async def get_contact_requests():
             return [dict(row) for row in rows]
     except Exception as e:
         return {"status": "error", "message": str(e)}
+
+# ===========================================
+# СТАТУС API
+# ===========================================
+
+@app.get("/api/status")
+async def api_status():
+    """Проверка статуса API и БД"""
+    try:
+        async with async_session_factory() as session:
+            await session.execute(text("SELECT 1"))
+            db_status = "connected"
+    except Exception as e:
+        db_status = f"disconnected: {type(e).__name__}"
+    
+    return {
+        "message": "AurumBank API is working!",
+        "database": db_status,
+        "version": "4.0.0"
+    }

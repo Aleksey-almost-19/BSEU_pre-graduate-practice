@@ -114,8 +114,64 @@
         }
         
         .form-group textarea {
-            min-height: 100px;
+            min-height: 80px;
             resize: vertical;
+        }
+        
+        .advantages-container {
+            background: #222;
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 15px;
+            border: 1px solid #333;
+        }
+        
+        .advantage-item {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+            align-items: center;
+        }
+        
+        .advantage-item input {
+            flex: 1;
+            margin-bottom: 0;
+        }
+        
+        .remove-advantage {
+            background: #dc3545;
+            color: white;
+            border: none;
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+        
+        .remove-advantage:hover {
+            background: #c82333;
+        }
+        
+        .add-advantage {
+            background: #4caf50;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            margin-top: 10px;
+            transition: all 0.2s;
+        }
+        
+        .add-advantage:hover {
+            background: #45a049;
         }
         
         .btn {
@@ -159,13 +215,19 @@
             border-bottom: 1px solid #333;
         }
         
-        .loan-advantage {
+        .loan-advantages {
+            margin: 15px 0;
+        }
+        
+        .advantage-badge {
+            display: inline-block;
             background: #1a1a1a;
-            padding: 10px;
-            border-radius: 8px;
-            margin: 10px 0;
-            font-style: italic;
-            color: #ccc;
+            color: #4caf50;
+            padding: 6px 12px;
+            border-radius: 20px;
+            margin: 0 5px 5px 0;
+            font-size: 13px;
+            border: 1px solid #4caf50;
         }
         
         .loan-actions {
@@ -236,39 +298,48 @@
         <div id="successMessage" class="success-message"></div>
         <div id="errorMessage" class="error-message"></div>
         
-        <!-- ВКЛАДКИ - ТЕПЕРЬ ОНИ БУДУТ ВИДНЫ -->
+        <!-- ВКЛАДКИ -->
         <div class="tabs">
             <div class="tab active" onclick="switchTab('consumer', this)">💳 Потребительские</div>
             <div class="tab" onclick="switchTab('mortgage', this)">🏠 Ипотечные</div>
             <div class="tab" onclick="switchTab('preferential', this)">🎁 Льготные</div>
-            <div class="tab" onclick="switchTab('contacts', this)">📞 Заявки (новые)</div>  <!-- НОВАЯ -->
+            <div class="tab" onclick="switchTab('contacts', this)">📞 Заявки</div>
         </div>
         
-        <!-- Потребительские кредиты -->
+        <!-- ПОТРЕБИТЕЛЬСКИЕ КРЕДИТЫ -->
         <div id="consumer-tab" class="tab-content active">
             <div class="grid">
                 <div class="card">
                     <h2>➕ Добавить потребительский кредит</h2>
                     <form id="addConsumerForm">
                         <div class="form-group">
-                            <input type="text" name="name" placeholder="Название кредита" required>
+                            <input type="text" id="consumer_name" placeholder="Название кредита" required>
                         </div>
                         <div class="form-group">
-                            <input type="text" name="rate" placeholder="Ставка (например: от 11.9%)" required>
+                            <input type="text" id="consumer_rate" placeholder="Ставка (например: от 11.9%)" required>
                         </div>
                         <div class="form-group">
-                            <input type="text" name="term" placeholder="Срок (например: до 7 лет)" required>
+                            <input type="text" id="consumer_term" placeholder="Срок (например: до 7 лет)" required>
                         </div>
                         <div class="form-group">
-                            <input type="text" name="amount" placeholder="Сумма (например: до 15 000 BYN)" required>
+                            <input type="text" id="consumer_amount" placeholder="Сумма (например: до 15 000 BYN)" required>
                         </div>
+                        
+                        <div class="advantages-container">
+                            <label>Преимущества:</label>
+                            <div id="consumer_advantages">
+                                <div class="advantage-item">
+                                    <input type="text" class="consumer_adv" placeholder="Преимущество 1" required>
+                                </div>
+                            </div>
+                            <button type="button" class="add-advantage" onclick="addAdvantage('consumer')">➕ Добавить преимущество</button>
+                        </div>
+                        
                         <div class="form-group">
-                            <textarea name="advantage" placeholder="Преимущество" required></textarea>
+                            <textarea id="consumer_details" placeholder="Подробное описание" rows="4" required></textarea>
                         </div>
-                        <div class="form-group">
-                            <textarea name="details" placeholder="Подробное описание" required></textarea>
-                        </div>
-                        <button type="submit" class="btn">💾 Добавить</button>
+                        
+                        <button type="submit" class="btn">💾 Добавить кредит</button>
                     </form>
                 </div>
                 
@@ -281,31 +352,40 @@
             </div>
         </div>
         
-        <!-- Ипотечные кредиты -->
+        <!-- ИПОТЕЧНЫЕ КРЕДИТЫ -->
         <div id="mortgage-tab" class="tab-content">
             <div class="grid">
                 <div class="card">
                     <h2>➕ Добавить ипотечный кредит</h2>
                     <form id="addMortgageForm">
                         <div class="form-group">
-                            <input type="text" name="name" placeholder="Название кредита" required>
+                            <input type="text" id="mortgage_name" placeholder="Название кредита" required>
                         </div>
                         <div class="form-group">
-                            <input type="text" name="rate" placeholder="Ставка (например: от 12.5%)" required>
+                            <input type="text" id="mortgage_rate" placeholder="Ставка (например: от 12.5%)" required>
                         </div>
                         <div class="form-group">
-                            <input type="text" name="term" placeholder="Срок (например: до 20 лет)" required>
+                            <input type="text" id="mortgage_term" placeholder="Срок (например: до 20 лет)" required>
                         </div>
                         <div class="form-group">
-                            <input type="text" name="amount" placeholder="Сумма (например: до 200 000 BYN)" required>
+                            <input type="text" id="mortgage_amount" placeholder="Сумма (например: до 200 000 BYN)" required>
                         </div>
+                        
+                        <div class="advantages-container">
+                            <label>Преимущества:</label>
+                            <div id="mortgage_advantages">
+                                <div class="advantage-item">
+                                    <input type="text" class="mortgage_adv" placeholder="Преимущество 1" required>
+                                </div>
+                            </div>
+                            <button type="button" class="add-advantage" onclick="addAdvantage('mortgage')">➕ Добавить преимущество</button>
+                        </div>
+                        
                         <div class="form-group">
-                            <textarea name="advantage" placeholder="Преимущество" required></textarea>
+                            <textarea id="mortgage_details" placeholder="Подробное описание" rows="4" required></textarea>
                         </div>
-                        <div class="form-group">
-                            <textarea name="details" placeholder="Подробное описание" required></textarea>
-                        </div>
-                        <button type="submit" class="btn">💾 Добавить</button>
+                        
+                        <button type="submit" class="btn">💾 Добавить кредит</button>
                     </form>
                 </div>
                 
@@ -318,31 +398,40 @@
             </div>
         </div>
         
-        <!-- Льготные кредиты -->
+        <!-- ЛЬГОТНЫЕ КРЕДИТЫ -->
         <div id="preferential-tab" class="tab-content">
             <div class="grid">
                 <div class="card">
                     <h2>➕ Добавить льготный кредит</h2>
                     <form id="addPreferentialForm">
                         <div class="form-group">
-                            <input type="text" name="name" placeholder="Название кредита" required>
+                            <input type="text" id="preferential_name" placeholder="Название кредита" required>
                         </div>
                         <div class="form-group">
-                            <input type="text" name="rate" placeholder="Ставка (например: от 4.5%)" required>
+                            <input type="text" id="preferential_rate" placeholder="Ставка (например: от 4.5%)" required>
                         </div>
                         <div class="form-group">
-                            <input type="text" name="term" placeholder="Срок (например: до 10 лет)" required>
+                            <input type="text" id="preferential_term" placeholder="Срок (например: до 10 лет)" required>
                         </div>
                         <div class="form-group">
-                            <input type="text" name="amount" placeholder="Сумма (например: до 70 000 BYN)" required>
+                            <input type="text" id="preferential_amount" placeholder="Сумма (например: до 70 000 BYN)" required>
                         </div>
+                        
+                        <div class="advantages-container">
+                            <label>Преимущества:</label>
+                            <div id="preferential_advantages">
+                                <div class="advantage-item">
+                                    <input type="text" class="preferential_adv" placeholder="Преимущество 1" required>
+                                </div>
+                            </div>
+                            <button type="button" class="add-advantage" onclick="addAdvantage('preferential')">➕ Добавить преимущество</button>
+                        </div>
+                        
                         <div class="form-group">
-                            <textarea name="advantage" placeholder="Преимущество" required></textarea>
+                            <textarea id="preferential_details" placeholder="Подробное описание" rows="4" required></textarea>
                         </div>
-                        <div class="form-group">
-                            <textarea name="details" placeholder="Подробное описание" required></textarea>
-                        </div>
-                        <button type="submit" class="btn">💾 Добавить</button>
+                        
+                        <button type="submit" class="btn">💾 Добавить кредит</button>
                     </form>
                 </div>
                 
@@ -354,7 +443,8 @@
                 </div>
             </div>
         </div>
-        <!-- Заявки на звонок -->
+        
+        <!-- ЗАЯВКИ -->
         <div id="contacts-tab" class="tab-content">
             <div class="card">
                 <h2>📞 Заявки на обратный звонок</h2>
@@ -372,13 +462,22 @@
         
         // Функция переключения вкладок
         function switchTab(tabName, element) {
-            // Скрыть все вкладки
             document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
             document.querySelectorAll('.tab').forEach(el => el.classList.remove('active'));
-            
-            // Показать выбранную
             document.getElementById(tabName + '-tab').classList.add('active');
             element.classList.add('active');
+        }
+        
+        // Функция добавления поля для преимущества
+        function addAdvantage(type) {
+            const container = document.getElementById(`${type}_advantages`);
+            const newItem = document.createElement('div');
+            newItem.className = 'advantage-item';
+            newItem.innerHTML = `
+                <input type="text" class="${type}_adv" placeholder="Преимущество ${container.children.length + 1}" required>
+                <button type="button" class="remove-advantage" onclick="this.parentElement.remove()">×</button>
+            `;
+            container.appendChild(newItem);
         }
         
         function showMessage(type, text) {
@@ -398,18 +497,18 @@
             }
         }
         
-        // Загрузка потребительских кредитов
-        async function loadConsumerLoans() {
+        // Универсальная функция загрузки кредитов
+        async function loadLoans(type, listId) {
             try {
-                const res = await fetch(`${API_URL}/api/consumer-loans`);
+                const res = await fetch(`${API_URL}/api/${type}-loans`);
                 const loans = await res.json();
                 
                 if (loans.length === 0) {
-                    document.getElementById('consumerList').innerHTML = '<p style="color: #999; text-align: center; padding: 20px;">Нет кредитов</p>';
+                    document.getElementById(listId).innerHTML = '<p style="color: #999; text-align: center; padding: 20px;">Нет кредитов</p>';
                     return;
                 }
                 
-                document.getElementById('consumerList').innerHTML = loans.map(loan => `
+                document.getElementById(listId).innerHTML = loans.map(loan => `
                     <div class="loan-card">
                         <h3>${loan.name}</h3>
                         <div class="loan-details">
@@ -417,87 +516,42 @@
                             <div>📊 ${loan.rate}</div>
                             <div>⏱️ ${loan.term}</div>
                         </div>
-                        <div class="loan-advantage">✨ ${loan.advantage}</div>
+                        <div class="loan-advantages">
+                            ${Array.isArray(loan.advantage) ? loan.advantage.map(adv => 
+                                `<span class="advantage-badge">✨ ${adv}</span>`
+                            ).join('') : `<span class="advantage-badge">✨ ${loan.advantage}</span>`}
+                        </div>
                         <div class="loan-actions">
-                            <button onclick="deleteConsumerLoan(${loan.id})" class="btn btn-delete">🗑️ Удалить</button>
+                            <button onclick="deleteLoan('${type}', ${loan.id})" class="btn btn-delete">🗑️ Удалить</button>
                         </div>
                     </div>
                 `).join('');
             } catch (error) {
-                document.getElementById('consumerList').innerHTML = '<p style="color: #ff6b6b; text-align: center;">Ошибка загрузки</p>';
+                document.getElementById(listId).innerHTML = '<p style="color: #ff6b6b; text-align: center;">Ошибка загрузки</p>';
                 console.error(error);
             }
         }
         
-        // Загрузка ипотечных кредитов
-        async function loadMortgageLoans() {
-            try {
-                const res = await fetch(`${API_URL}/api/mortgage-loans`);
-                const loans = await res.json();
-                
-                if (loans.length === 0) {
-                    document.getElementById('mortgageList').innerHTML = '<p style="color: #999; text-align: center; padding: 20px;">Нет кредитов</p>';
-                    return;
-                }
-                
-                document.getElementById('mortgageList').innerHTML = loans.map(loan => `
-                    <div class="loan-card">
-                        <h3>${loan.name}</h3>
-                        <div class="loan-details">
-                            <div>💰 ${loan.amount}</div>
-                            <div>📊 ${loan.rate}</div>
-                            <div>⏱️ ${loan.term}</div>
-                        </div>
-                        <div class="loan-advantage">✨ ${loan.advantage}</div>
-                        <div class="loan-actions">
-                            <button onclick="deleteMortgageLoan(${loan.id})" class="btn btn-delete">🗑️ Удалить</button>
-                        </div>
-                    </div>
-                `).join('');
-            } catch (error) {
-                document.getElementById('mortgageList').innerHTML = '<p style="color: #ff6b6b; text-align: center;">Ошибка загрузки</p>';
-                console.error(error);
-            }
-        }
-        
-        // Загрузка льготных кредитов
-        async function loadPreferentialLoans() {
-            try {
-                const res = await fetch(`${API_URL}/api/preferential-loans`);
-                const loans = await res.json();
-                
-                if (loans.length === 0) {
-                    document.getElementById('preferentialList').innerHTML = '<p style="color: #999; text-align: center; padding: 20px;">Нет кредитов</p>';
-                    return;
-                }
-                
-                document.getElementById('preferentialList').innerHTML = loans.map(loan => `
-                    <div class="loan-card">
-                        <h3>${loan.name}</h3>
-                        <div class="loan-details">
-                            <div>💰 ${loan.amount}</div>
-                            <div>📊 ${loan.rate}</div>
-                            <div>⏱️ ${loan.term}</div>
-                        </div>
-                        <div class="loan-advantage">✨ ${loan.advantage}</div>
-                        <div class="loan-actions">
-                            <button onclick="deletePreferentialLoan(${loan.id})" class="btn btn-delete">🗑️ Удалить</button>
-                        </div>
-                    </div>
-                `).join('');
-            } catch (error) {
-                document.getElementById('preferentialList').innerHTML = '<p style="color: #ff6b6b; text-align: center;">Ошибка загрузки</p>';
-                console.error(error);
-            }
-        }
-        
-        // Добавление потребительского кредита
-        document.getElementById('addConsumerForm').onsubmit = async (e) => {
-            e.preventDefault();
-            const formData = new FormData(e.target);
-            const data = Object.fromEntries(formData);
+        // Универсальная функция добавления кредита
+        async function addLoan(type, event) {
+            event.preventDefault();
             
-            const res = await fetch(`${API_URL}/api/consumer-loans`, {
+            // Собираем преимущества
+            const advantages = [];
+            document.querySelectorAll(`.${type}_adv`).forEach(input => {
+                if (input.value.trim()) advantages.push(input.value.trim());
+            });
+            
+            const data = {
+                name: document.getElementById(`${type}_name`).value,
+                rate: document.getElementById(`${type}_rate`).value,
+                term: document.getElementById(`${type}_term`).value,
+                amount: document.getElementById(`${type}_amount`).value,
+                advantage: advantages,
+                details: document.getElementById(`${type}_details`).value
+            };
+            
+            const res = await fetch(`${API_URL}/api/${type}-loans`, {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify(data)
@@ -505,119 +559,83 @@
             
             const result = await res.json();
             showMessage(result.status, result.message);
+            
             if (result.status === 'success') {
-                e.target.reset();
-                loadConsumerLoans();
+                // Очищаем форму
+                document.getElementById(`${type}_name`).value = '';
+                document.getElementById(`${type}_rate`).value = '';
+                document.getElementById(`${type}_term`).value = '';
+                document.getElementById(`${type}_amount`).value = '';
+                document.getElementById(`${type}_details`).value = '';
+                
+                // Очищаем преимущества (оставляем одно пустое)
+                const container = document.getElementById(`${type}_advantages`);
+                container.innerHTML = `
+                    <div class="advantage-item">
+                        <input type="text" class="${type}_adv" placeholder="Преимущество 1" required>
+                    </div>
+                `;
+                
+                // Перезагружаем список
+                loadLoans(type, `${type}List`);
             }
-        };
-        
-        // Добавление ипотечного кредита
-        document.getElementById('addMortgageForm').onsubmit = async (e) => {
-            e.preventDefault();
-            const formData = new FormData(e.target);
-            const data = Object.fromEntries(formData);
-            
-            const res = await fetch(`${API_URL}/api/mortgage-loans`, {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify(data)
-            });
-            
-            const result = await res.json();
-            showMessage(result.status, result.message);
-            if (result.status === 'success') {
-                e.target.reset();
-                loadMortgageLoans();
-            }
-        };
-        
-        // Добавление льготного кредита
-        document.getElementById('addPreferentialForm').onsubmit = async (e) => {
-            e.preventDefault();
-            const formData = new FormData(e.target);
-            const data = Object.fromEntries(formData);
-            
-            const res = await fetch(`${API_URL}/api/preferential-loans`, {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify(data)
-            });
-            
-            const result = await res.json();
-            showMessage(result.status, result.message);
-            if (result.status === 'success') {
-                e.target.reset();
-                loadPreferentialLoans();
-            }
-        };
-        
-        // Удаление кредитов
-        async function deleteConsumerLoan(id) {
-            if (!confirm('Удалить кредит?')) return;
-            const res = await fetch(`${API_URL}/api/consumer-loans/${id}`, {method: 'DELETE'});
-            const result = await res.json();
-            showMessage(result.status, result.message);
-            loadConsumerLoans();
         }
         
-        async function deleteMortgageLoan(id) {
+        // Универсальная функция удаления кредита
+        async function deleteLoan(type, id) {
             if (!confirm('Удалить кредит?')) return;
-            const res = await fetch(`${API_URL}/api/mortgage-loans/${id}`, {method: 'DELETE'});
+            const res = await fetch(`${API_URL}/api/${type}-loans/${id}`, {method: 'DELETE'});
             const result = await res.json();
             showMessage(result.status, result.message);
-            loadMortgageLoans();
-        }
-        
-        async function deletePreferentialLoan(id) {
-            if (!confirm('Удалить кредит?')) return;
-            const res = await fetch(`${API_URL}/api/preferential-loans/${id}`, {method: 'DELETE'});
-            const result = await res.json();
-            showMessage(result.status, result.message);
-            loadPreferentialLoans();
+            loadLoans(type, `${type}List`);
         }
         
         // Загрузка заявок
-async function loadContactRequests() {
-    try {
-        const res = await fetch(`${API_URL}/api/contact-requests`);
-        const requests = await res.json();
-        
-        if (requests.length === 0) {
-            document.getElementById('contactsList').innerHTML = '<p style="color: #999; text-align: center;">Нет заявок</p>';
-            return;
+        async function loadContactRequests() {
+            try {
+                const res = await fetch(`${API_URL}/api/contact-requests`);
+                const requests = await res.json();
+                
+                if (requests.length === 0) {
+                    document.getElementById('contactsList').innerHTML = '<p style="color: #999; text-align: center;">Нет заявок</p>';
+                    return;
+                }
+                
+                document.getElementById('contactsList').innerHTML = requests.map(req => `
+                    <div class="loan-card">
+                        <h3>📞 Заявка #${req.id}</h3>
+                        <div class="loan-details">
+                            <div>🆔 Telegram ID: <strong>${req.telegram_id}</strong></div>
+                            <div>👤 Имя: ${req.first_name || ''} ${req.last_name || ''}</div>
+                            <div>📱 Username: ${req.username ? '@' + req.username : 'нет'}</div>
+                            <div>📅 Дата: ${new Date(req.created_at).toLocaleString()}</div>
+                            <div>📊 Статус: <span style="color: #4caf50;">${req.status}</span></div>
+                        </div>
+                        ${req.username ? `
+                        <div style="margin-top: 10px;">
+                            <a href="https://t.me/${req.username}" target="_blank" style="color: #4caf50; text-decoration: none;">
+                                📨 Написать в Telegram
+                            </a>
+                        </div>
+                        ` : ''}
+                    </div>
+                `).join('');
+            } catch (error) {
+                document.getElementById('contactsList').innerHTML = '<p style="color: #ff6b6b;">Ошибка загрузки</p>';
+                console.error(error);
+            }
         }
         
-        document.getElementById('contactsList').innerHTML = requests.map(req => `
-            <div class="loan-card">
-                <h3>📞 Заявка #${req.id}</h3>
-                <div class="loan-details">
-                    <div>🆔 Telegram ID: <strong>${req.telegram_id}</strong></div>
-                    <div>👤 Имя: ${req.first_name || ''} ${req.last_name || ''}</div>
-                    <div>📱 Username: @${req.username || 'нет'}</div>
-                    <div>📅 Дата: ${new Date(req.created_at).toLocaleString()}</div>
-                    <div>📊 Статус: <span style="color: #4caf50;">${req.status}</span></div>
-                </div>
-                <div style="margin-top: 10px;">
-                    <a href="https://t.me/${req.username}" target="_blank" style="color: #4caf50; text-decoration: none;">
-                        📨 Написать в Telegram
-                    </a>
-                </div>
-            </div>
-        `).join('');
-    } catch (error) {
-        document.getElementById('contactsList').innerHTML = '<p style="color: #ff6b6b;">Ошибка загрузки</p>';
-        console.error(error);
-    }
-}
-
-
-
-        // Инициализация
-        loadConsumerLoans();
-        loadMortgageLoans();
-        loadPreferentialLoans();
-        loadContactRequests();
+        // Назначаем обработчики форм
+        document.getElementById('addConsumerForm').onsubmit = (e) => addLoan('consumer', e);
+        document.getElementById('addMortgageForm').onsubmit = (e) => addLoan('mortgage', e);
+        document.getElementById('addPreferentialForm').onsubmit = (e) => addLoan('preferential', e);
         
+        // Инициализация
+        loadLoans('consumer', 'consumerList');
+        loadLoans('mortgage', 'mortgageList');
+        loadLoans('preferential', 'preferentialList');
+        loadContactRequests();
     </script>
 </body>
 </html>
