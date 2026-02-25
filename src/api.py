@@ -318,20 +318,24 @@ async def create_consumer_loan(loan: LoanCreate):
     """Добавить новый потребительский кредит"""
     try:
         async with async_session_factory() as session:
+            # Преобразуем список преимуществ в JSON-строку
+            advantages_json = json.dumps(loan.advantage, ensure_ascii=False)
+            
             await session.execute(text("""
                 INSERT INTO consumer_loans (name, rate, term, amount, advantage, details)
-                VALUES (:name, :rate, :term, :amount, :advantage::jsonb, :details)
+                VALUES (:name, :rate, :term, :amount, :advantage, :details)
             """), {
                 "name": loan.name,
                 "rate": loan.rate,
                 "term": loan.term,
                 "amount": loan.amount,
-                "advantage": json.dumps(loan.advantage, ensure_ascii=False),
+                "advantage": advantages_json,
                 "details": loan.details
             })
             await session.commit()
             return {"status": "success", "message": "✅ Потребительский кредит успешно добавлен"}
     except Exception as e:
+        print(f"Error in create_consumer_loan: {e}")
         return {"status": "error", "message": str(e)}
 
 @app.delete("/api/consumer-loans/{loan_id}")
@@ -389,20 +393,24 @@ async def create_mortgage_loan(loan: LoanCreate):
     """Добавить новый ипотечный кредит"""
     try:
         async with async_session_factory() as session:
+            # Преобразуем список преимуществ в JSON-строку
+            advantages_json = json.dumps(loan.advantage, ensure_ascii=False)
+            
             await session.execute(text("""
                 INSERT INTO mortgage_loans (name, rate, term, amount, advantage, details)
-                VALUES (:name, :rate, :term, :amount, :advantage::jsonb, :details)
+                VALUES (:name, :rate, :term, :amount, :advantage, :details)
             """), {
                 "name": loan.name,
                 "rate": loan.rate,
                 "term": loan.term,
                 "amount": loan.amount,
-                "advantage": json.dumps(loan.advantage, ensure_ascii=False),
+                "advantage": advantages_json,
                 "details": loan.details
             })
             await session.commit()
             return {"status": "success", "message": "✅ Ипотечный кредит успешно добавлен"}
     except Exception as e:
+        print(f"Error in create_mortgage_loan: {e}")
         return {"status": "error", "message": str(e)}
 
 @app.delete("/api/mortgage-loans/{loan_id}")
@@ -460,20 +468,24 @@ async def create_preferential_loan(loan: LoanCreate):
     """Добавить новый льготный кредит"""
     try:
         async with async_session_factory() as session:
+            # Преобразуем список преимуществ в JSON-строку
+            advantages_json = json.dumps(loan.advantage, ensure_ascii=False)
+            
             await session.execute(text("""
                 INSERT INTO preferential_loans (name, rate, term, amount, advantage, details)
-                VALUES (:name, :rate, :term, :amount, :advantage::jsonb, :details)
+                VALUES (:name, :rate, :term, :amount, :advantage, :details)
             """), {
                 "name": loan.name,
                 "rate": loan.rate,
                 "term": loan.term,
                 "amount": loan.amount,
-                "advantage": json.dumps(loan.advantage, ensure_ascii=False),
+                "advantage": advantages_json,
                 "details": loan.details
             })
             await session.commit()
             return {"status": "success", "message": "✅ Льготный кредит успешно добавлен"}
     except Exception as e:
+        print(f"Error in create_preferential_loan: {e}")
         return {"status": "error", "message": str(e)}
 
 @app.delete("/api/preferential-loans/{loan_id}")
