@@ -12,22 +12,21 @@
         /* Дополнительные стили для кнопок */
         .buttons-container {
             display: flex;
-            flex-direction: column;
             gap: 16px;
             margin: 30px 0 20px;
             width: 100%;
-            max-width: 400px;
+            max-width: 600px;
             margin-left: auto;
             margin-right: auto;
         }
         
         .action-button {
-            width: 100%;
+            flex: 1;
             background: linear-gradient(135deg, #4caf50 0%, #2e7d32 100%);
             color: white;
             border: none;
             border-radius: 16px;
-            padding: 18px 24px;
+            padding: 20px 24px;
             font-size: 18px;
             font-weight: 600;
             cursor: pointer;
@@ -59,15 +58,72 @@
             transform: translateX(6px);
         }
         
-        /* Адаптация для маленьких экранов */
-        @media (max-width: 480px) {
+        /* МОБИЛЬНАЯ ВЕРСИЯ (до 768px) */
+        @media (max-width: 768px) {
+            .buttons-container {
+                flex-direction: column;  /* Вертикально на мобильных */
+                gap: 12px;
+                max-width: 400px;
+            }
+            
             .action-button {
-                padding: 16px 20px;
-                font-size: 16px;
+                padding: 16px 20px;     /* Уменьшенные отступы */
+                font-size: 16px;         /* Уменьшенный шрифт */
+                width: 100%;
             }
             
             .action-button span {
-                font-size: 22px;
+                font-size: 20px;         /* Уменьшенная стрелка */
+            }
+            
+            /* Фикс для футера на мобильных */
+            .footer {
+                margin-top: 20px;
+                padding: 15px 0;
+                position: relative;
+                bottom: auto;
+            }
+        }
+        
+        /* ДЕСКТОПНАЯ ВЕРСИЯ (от 769px) */
+        @media (min-width: 769px) {
+            .buttons-container {
+                flex-direction: row;      /* Горизонтально на десктопе */
+                gap: 20px;
+                max-width: 800px;
+            }
+            
+            .action-button {
+                padding: 22px 28px;      /* Чуть крупнее на десктопе */
+                font-size: 20px;
+            }
+            
+            /* Контейнер для контента, чтобы прижать футер */
+            body {
+                display: flex;
+                flex-direction: column;
+                min-height: 100vh;
+            }
+            
+            .container {
+                flex: 1 0 auto;           /* Контент занимает всё доступное место */
+                display: flex;
+                flex-direction: column;
+            }
+            
+            .main-content {
+                flex: 1 0 auto;           /* Контент расширяется */
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+            }
+            
+            .footer {
+                flex-shrink: 0;            /* Футер не сжимается */
+                margin-top: 40px;
+                padding: 20px 0;
+                position: relative;
+                bottom: auto;
             }
         }
         
@@ -77,12 +133,55 @@
                 padding: 14px 16px;
                 font-size: 15px;
             }
+            
+            .action-button span {
+                font-size: 18px;
+            }
         }
         
         .fade-in {
             opacity: 0;
             transform: translateY(20px);
             transition: opacity 0.5s ease, transform 0.5s ease;
+        }
+        
+        /* Убедимся, что контент правильно выравнивается */
+        .main-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+        }
+        
+        .bank-icon {
+            font-size: 80px;
+            margin-bottom: 20px;
+        }
+        
+        .welcome-text {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .welcome-text h1 {
+            color: #4caf50;
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+        
+        .welcome-text p {
+            color: #cccccc;
+            font-size: 16px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .footer {
+            text-align: center;
+            color: #999;
+            font-size: 14px;
+            border-top: 1px solid #333;
+            width: 100%;
         }
     </style>
 </head>
@@ -107,7 +206,7 @@
                 <p>Надежные банковские услуги для вашего комфорта и успеха</p>
             </div>
 
-            <!-- Контейнер с кнопками (вертикально) -->
+            <!-- Контейнер с кнопками (адаптивный) -->
             <div class="buttons-container fade-in">
                 <button class="action-button" onclick="goToCredits()">
                     <span>📋 Просмотреть кредиты</span>
@@ -154,6 +253,21 @@
                 }, index * 150);
             });
         });
+
+        // Дополнительная проверка для десктопа
+        function adjustFooter() {
+            const footer = document.querySelector('.footer');
+            const windowHeight = window.innerHeight;
+            const bodyHeight = document.body.scrollHeight;
+            
+            if (window.innerWidth > 768 && bodyHeight < windowHeight) {
+                // Если контента мало, футер и так прижат flex'ом
+                console.log('Desktop view - footer adjusted');
+            }
+        }
+
+        window.addEventListener('load', adjustFooter);
+        window.addEventListener('resize', adjustFooter);
     </script>
     
     <script src="javascript/script.js"></script>
