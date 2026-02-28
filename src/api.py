@@ -172,7 +172,7 @@ async def create_contacts_table():
         return {"status": "error", "message": str(e)}
 
 # ===========================================
-# ТЕСТОВЫЕ ДАННЫЕ
+# ТЕСТОВЫЕ ДАННЫЕ (БЕЗ ::jsonb)
 # ===========================================
 
 @app.get("/api/seed-database")
@@ -336,7 +336,7 @@ async def get_loan_by_id(table_name: str, loan_id: int):
         raise HTTPException(status_code=500, detail=str(e))
 
 # ===========================================
-# API ДЛЯ ПОТРЕБИТЕЛЬСКИХ КРЕДИТОВ
+# API ДЛЯ ПОТРЕБИТЕЛЬСКИХ КРЕДИТОВ (БЕЗ ::jsonb)
 # ===========================================
 
 @app.get("/api/consumer-loans")
@@ -360,9 +360,10 @@ async def create_consumer_loan(loan: LoanCreate):
             # Преобразуем список преимуществ в JSON-строку
             advantages_json = json.dumps(loan.advantage, ensure_ascii=False)
             
+            # УБИРАЕМ ::jsonb ИЗ ЗАПРОСА!
             await session.execute(text("""
                 INSERT INTO consumer_loans (name, rate, term, amount, advantage, details)
-                VALUES (:name, :rate, :term, :amount, :advantage::jsonb, :details)
+                VALUES (:name, :rate, :term, :amount, :advantage, :details)
             """), {
                 "name": loan.name,
                 "rate": loan.rate,
@@ -396,7 +397,7 @@ async def delete_consumer_loan(loan_id: int):
         return {"status": "error", "message": str(e)}
 
 # ===========================================
-# API ДЛЯ ИПОТЕЧНЫХ КРЕДИТОВ
+# API ДЛЯ ИПОТЕЧНЫХ КРЕДИТОВ (БЕЗ ::jsonb)
 # ===========================================
 
 @app.get("/api/mortgage-loans")
@@ -419,9 +420,10 @@ async def create_mortgage_loan(loan: LoanCreate):
         async with async_session_factory() as session:
             advantages_json = json.dumps(loan.advantage, ensure_ascii=False)
             
+            # УБИРАЕМ ::jsonb ИЗ ЗАПРОСА!
             await session.execute(text("""
                 INSERT INTO mortgage_loans (name, rate, term, amount, advantage, details)
-                VALUES (:name, :rate, :term, :amount, :advantage::jsonb, :details)
+                VALUES (:name, :rate, :term, :amount, :advantage, :details)
             """), {
                 "name": loan.name,
                 "rate": loan.rate,
@@ -455,7 +457,7 @@ async def delete_mortgage_loan(loan_id: int):
         return {"status": "error", "message": str(e)}
 
 # ===========================================
-# API ДЛЯ ЛЬГОТНЫХ КРЕДИТОВ
+# API ДЛЯ ЛЬГОТНЫХ КРЕДИТОВ (БЕЗ ::jsonb)
 # ===========================================
 
 @app.get("/api/preferential-loans")
@@ -478,9 +480,10 @@ async def create_preferential_loan(loan: LoanCreate):
         async with async_session_factory() as session:
             advantages_json = json.dumps(loan.advantage, ensure_ascii=False)
             
+            # УБИРАЕМ ::jsonb ИЗ ЗАПРОСА!
             await session.execute(text("""
                 INSERT INTO preferential_loans (name, rate, term, amount, advantage, details)
-                VALUES (:name, :rate, :term, :amount, :advantage::jsonb, :details)
+                VALUES (:name, :rate, :term, :amount, :advantage, :details)
             """), {
                 "name": loan.name,
                 "rate": loan.rate,
