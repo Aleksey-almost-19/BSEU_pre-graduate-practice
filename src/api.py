@@ -40,6 +40,16 @@ class LoanCreate(BaseModel):
     advantage: list[str]
     details: str
 
+class DepositCreate(BaseModel):
+    name: str
+    rate: str
+    term: str
+    min_amount: str
+    max_amount: str
+    capitalization: str = "Ежемесячно"
+    advantage: str
+    details: str
+
 class ContactRequest(BaseModel):
     telegram_id: int
     username: str = ""
@@ -73,6 +83,10 @@ async def serve_mortgage_loans():
 @app.get("/preferential_loans.html")
 async def serve_preferential_loans():
     return FileResponse("preferential_loans.html")
+
+@app.get("/deposits.html")
+async def serve_deposits():
+    return FileResponse("deposits.html")
 
 @app.get("/admin.html")
 async def serve_admin():
@@ -150,6 +164,29 @@ async def create_preferential_table():
     except Exception as e:
         return {"status": "error", "message": str(e)}
 
+@app.get("/api/create-deposits-table")
+async def create_deposits_table():
+    """Создать таблицу для вкладов"""
+    try:
+        async with async_session_factory() as session:
+            await session.execute(text("""
+                CREATE TABLE IF NOT EXISTS deposits (
+                    id SERIAL PRIMARY KEY,
+                    name VARCHAR(100) NOT NULL,
+                    rate VARCHAR(50) NOT NULL,
+                    term VARCHAR(50) NOT NULL,
+                    min_amount VARCHAR(50) NOT NULL,
+                    max_amount VARCHAR(50) NOT NULL,
+                    capitalization VARCHAR(50) DEFAULT 'Ежемесячно',
+                    advantage TEXT NOT NULL,
+                    details TEXT NOT NULL
+                )
+            """))
+            await session.commit()
+            return {"status": "success", "message": "✅ Таблица deposits создана!"}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
 @app.get("/api/create-contacts-table")
 async def create_contacts_table():
     """Создать таблицу для заявок"""
@@ -172,7 +209,7 @@ async def create_contacts_table():
         return {"status": "error", "message": str(e)}
 
 # ===========================================
-# ТЕСТОВЫЕ ДАННЫЕ (БЕЗ ::jsonb)
+# ТЕСТОВЫЕ ДАННЫЕ
 # ===========================================
 
 @app.get("/api/seed-database")
@@ -291,6 +328,38 @@ async def seed_preferential():
         traceback.print_exc()
         return {"status": "error", "message": str(e)}
 
+@app.get("/api/seed-deposits")
+async def seed_deposits():
+    """Добавить тестовые вклады"""
+    try:
+        async with async_session_factory() as session:
+            result = await session.execute(text("SELECT COUNT(*) FROM deposits"))
+            count = result.scalar()
+            
+            if count == 0:
+                await session.execute(text("""
+                    INSERT INTO deposits (name, rate, term, min_amount, max_amount, capitalization, advantage, details) VALUES
+                    ('Доходный', '12.5%', '1 год', '100 BYN', '50 000 BYN', 'Ежемесячно', 
+                     'Высокая доходность', 'Вклад с максимальной процентной ставкой. Пополнение возможно.'),
+                    
+                    ('Накопительный', '9.5%', '3-6 месяцев', '50 BYN', '25 000 BYN', 'В конце срока', 
+                     'Краткосрочный вклад', 'Идеально для временного хранения средств. Частичное снятие без потери процентов.'),
+                    
+                    ('Пенсионный', '10.5%', '2 года', '10 BYN', '100 000 BYN', 'Ежемесячно', 
+                     'Для пенсионеров', 'Специальные условия для пенсионеров. Возможность ежемесячной выплаты процентов.'),
+                    
+                    ('Сберегательный', '11%', '1.5 года', '500 BYN', '75 000 BYN', 'Ежемесячно', 
+                     'Оптимальный выбор', 'Сбалансированные условия. Возможно пополнение и частичное снятие.')
+                """))
+                await session.commit()
+                return {"status": "success", "message": "✅ Тестовые вклады добавлены!", "count": 4}
+            else:
+                return {"status": "info", "message": f"ℹ️ В таблице уже есть {count} записей"}
+    except Exception as e:
+        print(f"Error in seed_deposits: {e}")
+        traceback.print_exc()
+        return {"status": "error", "message": str(e)}
+
 # ===========================================
 # ВСПОМОГАТЕЛЬНАЯ ФУНКЦИЯ ДЛЯ ПОЛУЧЕНИЯ КРЕДИТОВ
 # ===========================================
@@ -336,7 +405,7 @@ async def get_loan_by_id(table_name: str, loan_id: int):
         raise HTTPException(status_code=500, detail=str(e))
 
 # ===========================================
-# API ДЛЯ ПОТРЕБИТЕЛЬСКИХ КРЕДИТОВ (БЕЗ ::jsonb)
+# API ДЛЯ ПОТРЕБИТЕЛЬСКИХ КРЕДИТОВ
 # ===========================================
 
 @app.get("/api/consumer-loans")
@@ -357,10 +426,8 @@ async def create_consumer_loan(loan: LoanCreate):
     """Добавить новый потребительский кредит"""
     try:
         async with async_session_factory() as session:
-            # Преобразуем список преимуществ в JSON-строку
             advantages_json = json.dumps(loan.advantage, ensure_ascii=False)
             
-            # УБИРАЕМ ::jsonb ИЗ ЗАПРОСА!
             await session.execute(text("""
                 INSERT INTO consumer_loans (name, rate, term, amount, advantage, details)
                 VALUES (:name, :rate, :term, :amount, :advantage, :details)
@@ -397,7 +464,7 @@ async def delete_consumer_loan(loan_id: int):
         return {"status": "error", "message": str(e)}
 
 # ===========================================
-# API ДЛЯ ИПОТЕЧНЫХ КРЕДИТОВ (БЕЗ ::jsonb)
+# API ДЛЯ ИПОТЕЧНЫХ КРЕДИТОВ
 # ===========================================
 
 @app.get("/api/mortgage-loans")
@@ -420,7 +487,6 @@ async def create_mortgage_loan(loan: LoanCreate):
         async with async_session_factory() as session:
             advantages_json = json.dumps(loan.advantage, ensure_ascii=False)
             
-            # УБИРАЕМ ::jsonb ИЗ ЗАПРОСА!
             await session.execute(text("""
                 INSERT INTO mortgage_loans (name, rate, term, amount, advantage, details)
                 VALUES (:name, :rate, :term, :amount, :advantage, :details)
@@ -453,11 +519,10 @@ async def delete_mortgage_loan(loan_id: int):
                 return {"status": "error", "message": "❌ Кредит не найден"}
             return {"status": "success", "message": "✅ Кредит удален"}
     except Exception as e:
-        print(f"Error in delete_mortgage_loan: {e}")
         return {"status": "error", "message": str(e)}
 
 # ===========================================
-# API ДЛЯ ЛЬГОТНЫХ КРЕДИТОВ (БЕЗ ::jsonb)
+# API ДЛЯ ЛЬГОТНЫХ КРЕДИТОВ
 # ===========================================
 
 @app.get("/api/preferential-loans")
@@ -480,7 +545,6 @@ async def create_preferential_loan(loan: LoanCreate):
         async with async_session_factory() as session:
             advantages_json = json.dumps(loan.advantage, ensure_ascii=False)
             
-            # УБИРАЕМ ::jsonb ИЗ ЗАПРОСА!
             await session.execute(text("""
                 INSERT INTO preferential_loans (name, rate, term, amount, advantage, details)
                 VALUES (:name, :rate, :term, :amount, :advantage, :details)
@@ -513,7 +577,73 @@ async def delete_preferential_loan(loan_id: int):
                 return {"status": "error", "message": "❌ Кредит не найден"}
             return {"status": "success", "message": "✅ Кредит удален"}
     except Exception as e:
-        print(f"Error in delete_preferential_loan: {e}")
+        return {"status": "error", "message": str(e)}
+
+# ===========================================
+# API ДЛЯ ВКЛАДОВ
+# ===========================================
+
+@app.get("/api/deposits")
+async def get_all_deposits():
+    """Получить все вклады"""
+    try:
+        async with async_session_factory() as session:
+            result = await session.execute(
+                text("SELECT * FROM deposits ORDER BY id")
+            )
+            rows = result.mappings().all()
+            return [dict(row) for row in rows]
+    except Exception as e:
+        print(f"Error in get_all_deposits: {e}")
+        return []
+
+@app.get("/api/deposits/{deposit_id}")
+async def get_deposit(deposit_id: int):
+    """Получить вклад по ID"""
+    try:
+        async with async_session_factory() as session:
+            result = await session.execute(
+                text("SELECT * FROM deposits WHERE id = :id"),
+                {"id": deposit_id}
+            )
+            deposit = result.mappings().first()
+            if not deposit:
+                raise HTTPException(status_code=404, detail="Вклад не найден")
+            return dict(deposit)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.post("/api/deposits")
+async def create_deposit(deposit: DepositCreate):
+    """Добавить новый вклад"""
+    try:
+        async with async_session_factory() as session:
+            await session.execute(text("""
+                INSERT INTO deposits (name, rate, term, min_amount, max_amount, capitalization, advantage, details)
+                VALUES (:name, :rate, :term, :min_amount, :max_amount, :capitalization, :advantage, :details)
+            """), deposit.model_dump())
+            await session.commit()
+            return {"status": "success", "message": "✅ Вклад успешно добавлен"}
+    except Exception as e:
+        print(f"Error in create_deposit: {e}")
+        traceback.print_exc()
+        return {"status": "error", "message": str(e)}
+
+@app.delete("/api/deposits/{deposit_id}")
+async def delete_deposit(deposit_id: int):
+    """Удалить вклад"""
+    try:
+        async with async_session_factory() as session:
+            result = await session.execute(text("""
+                DELETE FROM deposits WHERE id = :id
+            """), {"id": deposit_id})
+            await session.commit()
+            
+            if result.rowcount == 0:
+                return {"status": "error", "message": "❌ Вклад не найден"}
+            return {"status": "success", "message": "✅ Вклад удален"}
+    except Exception as e:
+        print(f"Error in delete_deposit: {e}")
         return {"status": "error", "message": str(e)}
 
 # ===========================================

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Админ-панель - Управление кредитами</title>
+    <title>Админ-панель - Управление кредитами и вкладами</title>
     <style>
         * {
             margin: 0;
@@ -215,6 +215,16 @@
             border-bottom: 1px solid #333;
         }
         
+        .deposit-details {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin: 10px 0;
+            padding: 10px 0;
+            border-top: 1px solid #333;
+            border-bottom: 1px solid #333;
+        }
+        
         .loan-advantages {
             margin: 15px 0;
         }
@@ -285,6 +295,10 @@
                 padding: 10px 16px;
                 font-size: 14px;
             }
+            
+            .deposit-details {
+                grid-template-columns: repeat(2, 1fr);
+            }
         }
     </style>
 </head>
@@ -292,7 +306,7 @@
     <div class="container">
         <div class="header">
             <h1>🏦 Аурумбанк - Админ-панель</h1>
-            <p>Управление всеми кредитными продуктами</p>
+            <p>Управление кредитными продуктами и вкладами</p>
         </div>
         
         <div id="successMessage" class="success-message"></div>
@@ -303,6 +317,7 @@
             <div class="tab active" onclick="switchTab('consumer', this)">💳 Потребительские</div>
             <div class="tab" onclick="switchTab('mortgage', this)">🏠 Ипотечные</div>
             <div class="tab" onclick="switchTab('preferential', this)">🎁 Льготные</div>
+            <div class="tab" onclick="switchTab('deposits', this)">💰 Вклады</div>
             <div class="tab" onclick="switchTab('contacts', this)">📞 Заявки</div>
         </div>
         
@@ -444,6 +459,50 @@
             </div>
         </div>
         
+        <!-- ВКЛАДЫ -->
+        <div id="deposits-tab" class="tab-content">
+            <div class="grid">
+                <div class="card">
+                    <h2>➕ Добавить вклад</h2>
+                    <form id="addDepositForm">
+                        <div class="form-group">
+                            <input type="text" id="deposit_name" placeholder="Название вклада" required>
+                        </div>
+                        <div class="form-group">
+                            <input type="text" id="deposit_rate" placeholder="Ставка (например: 12.5%)" required>
+                        </div>
+                        <div class="form-group">
+                            <input type="text" id="deposit_term" placeholder="Срок (например: 1 год)" required>
+                        </div>
+                        <div class="form-group">
+                            <input type="text" id="deposit_min_amount" placeholder="Мин. сумма (например: 100 BYN)" required>
+                        </div>
+                        <div class="form-group">
+                            <input type="text" id="deposit_max_amount" placeholder="Макс. сумма (например: 50 000 BYN)" required>
+                        </div>
+                        <div class="form-group">
+                            <input type="text" id="deposit_capitalization" placeholder="Капитализация (Ежемесячно/В конце срока)" value="Ежемесячно" required>
+                        </div>
+                        <div class="form-group">
+                            <textarea id="deposit_advantage" placeholder="Преимущество (кратко)" rows="2" required></textarea>
+                        </div>
+                        <div class="form-group">
+                            <textarea id="deposit_details" placeholder="Подробное описание" rows="4" required></textarea>
+                        </div>
+                        
+                        <button type="submit" class="btn">💾 Добавить вклад</button>
+                    </form>
+                </div>
+                
+                <div class="card">
+                    <h2>📋 Список вкладов</h2>
+                    <div id="depositsList">
+                        <div class="loading">Загрузка...</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
         <!-- ЗАЯВКИ -->
         <div id="contacts-tab" class="tab-content">
             <div class="card">
@@ -468,7 +527,7 @@
             element.classList.add('active');
         }
         
-        // Функция добавления поля для преимущества
+        // Функция добавления поля для преимущества (для кредитов)
         function addAdvantage(type) {
             const container = document.getElementById(`${type}_advantages`);
             const newItem = document.createElement('div');
@@ -532,6 +591,43 @@
             }
         }
         
+        // Функция загрузки вкладов
+        async function loadDeposits() {
+            try {
+                const res = await fetch(`${API_URL}/api/deposits`);
+                const deposits = await res.json();
+                
+                if (deposits.length === 0) {
+                    document.getElementById('depositsList').innerHTML = '<p style="color: #999; text-align: center; padding: 20px;">Нет вкладов</p>';
+                    return;
+                }
+                
+                document.getElementById('depositsList').innerHTML = deposits.map(deposit => `
+                    <div class="loan-card">
+                        <h3>💰 ${deposit.name}</h3>
+                        <div class="deposit-details">
+                            <div>📊 Ставка: <strong>${deposit.rate}</strong></div>
+                            <div>⏱️ Срок: <strong>${deposit.term}</strong></div>
+                            <div>📉 Мин: <strong>${deposit.min_amount}</strong></div>
+                            <div>📈 Макс: <strong>${deposit.max_amount}</strong></div>
+                        </div>
+                        <div style="margin: 10px 0; color: #ccc;">
+                            <span style="color: #4caf50;">Капитализация:</span> ${deposit.capitalization || 'Ежемесячно'}
+                        </div>
+                        <div class="loan-advantage" style="background: #222; padding: 10px; border-radius: 8px; margin: 10px 0;">
+                            ✨ ${deposit.advantage}
+                        </div>
+                        <div class="loan-actions">
+                            <button onclick="deleteDeposit(${deposit.id})" class="btn btn-delete">🗑️ Удалить</button>
+                        </div>
+                    </div>
+                `).join('');
+            } catch (error) {
+                document.getElementById('depositsList').innerHTML = '<p style="color: #ff6b6b; text-align: center;">Ошибка загрузки</p>';
+                console.error(error);
+            }
+        }
+        
         // Универсальная функция добавления кредита
         async function addLoan(type, event) {
             event.preventDefault();
@@ -581,6 +677,46 @@
             }
         }
         
+        // Функция добавления вклада
+        async function addDeposit(event) {
+            event.preventDefault();
+            
+            const data = {
+                name: document.getElementById('deposit_name').value,
+                rate: document.getElementById('deposit_rate').value,
+                term: document.getElementById('deposit_term').value,
+                min_amount: document.getElementById('deposit_min_amount').value,
+                max_amount: document.getElementById('deposit_max_amount').value,
+                capitalization: document.getElementById('deposit_capitalization').value,
+                advantage: document.getElementById('deposit_advantage').value,
+                details: document.getElementById('deposit_details').value
+            };
+            
+            const res = await fetch(`${API_URL}/api/deposits`, {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(data)
+            });
+            
+            const result = await res.json();
+            showMessage(result.status, result.message);
+            
+            if (result.status === 'success') {
+                // Очищаем форму
+                document.getElementById('deposit_name').value = '';
+                document.getElementById('deposit_rate').value = '';
+                document.getElementById('deposit_term').value = '';
+                document.getElementById('deposit_min_amount').value = '';
+                document.getElementById('deposit_max_amount').value = '';
+                document.getElementById('deposit_capitalization').value = 'Ежемесячно';
+                document.getElementById('deposit_advantage').value = '';
+                document.getElementById('deposit_details').value = '';
+                
+                // Перезагружаем список
+                loadDeposits();
+            }
+        }
+        
         // Универсальная функция удаления кредита
         async function deleteLoan(type, id) {
             if (!confirm('Удалить кредит?')) return;
@@ -588,6 +724,15 @@
             const result = await res.json();
             showMessage(result.status, result.message);
             loadLoans(type, `${type}List`);
+        }
+        
+        // Функция удаления вклада
+        async function deleteDeposit(id) {
+            if (!confirm('Удалить вклад?')) return;
+            const res = await fetch(`${API_URL}/api/deposits/${id}`, {method: 'DELETE'});
+            const result = await res.json();
+            showMessage(result.status, result.message);
+            loadDeposits();
         }
         
         // Загрузка заявок
@@ -630,11 +775,13 @@
         document.getElementById('addConsumerForm').onsubmit = (e) => addLoan('consumer', e);
         document.getElementById('addMortgageForm').onsubmit = (e) => addLoan('mortgage', e);
         document.getElementById('addPreferentialForm').onsubmit = (e) => addLoan('preferential', e);
+        document.getElementById('addDepositForm').onsubmit = (e) => addDeposit(e);
         
         // Инициализация
         loadLoans('consumer', 'consumerList');
         loadLoans('mortgage', 'mortgageList');
         loadLoans('preferential', 'preferentialList');
+        loadDeposits();
         loadContactRequests();
     </script>
 </body>
