@@ -341,7 +341,7 @@
                         </div>
                         
                         <div class="advantages-container">
-                            <label>Преимущества:</label>
+                            <label>✨ Преимущества:</label>
                             <div id="consumer_advantages">
                                 <div class="advantage-item">
                                     <input type="text" class="consumer_adv" placeholder="Преимущество 1" required>
@@ -387,7 +387,7 @@
                         </div>
                         
                         <div class="advantages-container">
-                            <label>Преимущества:</label>
+                            <label>✨ Преимущества:</label>
                             <div id="mortgage_advantages">
                                 <div class="advantage-item">
                                     <input type="text" class="mortgage_adv" placeholder="Преимущество 1" required>
@@ -433,7 +433,7 @@
                         </div>
                         
                         <div class="advantages-container">
-                            <label>Преимущества:</label>
+                            <label>✨ Преимущества:</label>
                             <div id="preferential_advantages">
                                 <div class="advantage-item">
                                     <input type="text" class="preferential_adv" placeholder="Преимущество 1" required>
@@ -483,9 +483,18 @@
                         <div class="form-group">
                             <input type="text" id="deposit_capitalization" placeholder="Капитализация (Ежемесячно/В конце срока)" value="Ежемесячно" required>
                         </div>
-                        <div class="form-group">
-                            <textarea id="deposit_advantage" placeholder="Преимущество (кратко)" rows="2" required></textarea>
+                        
+                        <!-- Преимущества (как у кредитов) -->
+                        <div class="advantages-container">
+                            <label>✨ Преимущества:</label>
+                            <div id="deposit_advantages">
+                                <div class="advantage-item">
+                                    <input type="text" class="deposit_adv" placeholder="Преимущество 1" required>
+                                </div>
+                            </div>
+                            <button type="button" class="add-advantage" onclick="addDepositAdvantage()">➕ Добавить преимущество</button>
                         </div>
+                        
                         <div class="form-group">
                             <textarea id="deposit_details" placeholder="Подробное описание" rows="4" required></textarea>
                         </div>
@@ -534,6 +543,18 @@
             newItem.className = 'advantage-item';
             newItem.innerHTML = `
                 <input type="text" class="${type}_adv" placeholder="Преимущество ${container.children.length + 1}" required>
+                <button type="button" class="remove-advantage" onclick="this.parentElement.remove()">×</button>
+            `;
+            container.appendChild(newItem);
+        }
+        
+        // Функция добавления поля для преимущества вклада
+        function addDepositAdvantage() {
+            const container = document.getElementById('deposit_advantages');
+            const newItem = document.createElement('div');
+            newItem.className = 'advantage-item';
+            newItem.innerHTML = `
+                <input type="text" class="deposit_adv" placeholder="Преимущество ${container.children.length + 1}" required>
                 <button type="button" class="remove-advantage" onclick="this.parentElement.remove()">×</button>
             `;
             container.appendChild(newItem);
@@ -614,8 +635,10 @@
                         <div style="margin: 10px 0; color: #ccc;">
                             <span style="color: #4caf50;">Капитализация:</span> ${deposit.capitalization || 'Ежемесячно'}
                         </div>
-                        <div class="loan-advantage" style="background: #222; padding: 10px; border-radius: 8px; margin: 10px 0;">
-                            ✨ ${deposit.advantage}
+                        <div class="loan-advantages">
+                            ${Array.isArray(deposit.advantage) ? deposit.advantage.map(adv => 
+                                `<span class="advantage-badge">✨ ${adv}</span>`
+                            ).join('') : `<span class="advantage-badge">✨ ${deposit.advantage}</span>`}
                         </div>
                         <div class="loan-actions">
                             <button onclick="deleteDeposit(${deposit.id})" class="btn btn-delete">🗑️ Удалить</button>
@@ -681,6 +704,12 @@
         async function addDeposit(event) {
             event.preventDefault();
             
+            // Собираем преимущества
+            const advantages = [];
+            document.querySelectorAll('.deposit_adv').forEach(input => {
+                if (input.value.trim()) advantages.push(input.value.trim());
+            });
+            
             const data = {
                 name: document.getElementById('deposit_name').value,
                 rate: document.getElementById('deposit_rate').value,
@@ -688,7 +717,7 @@
                 min_amount: document.getElementById('deposit_min_amount').value,
                 max_amount: document.getElementById('deposit_max_amount').value,
                 capitalization: document.getElementById('deposit_capitalization').value,
-                advantage: document.getElementById('deposit_advantage').value,
+                advantage: advantages,
                 details: document.getElementById('deposit_details').value
             };
             
@@ -709,8 +738,15 @@
                 document.getElementById('deposit_min_amount').value = '';
                 document.getElementById('deposit_max_amount').value = '';
                 document.getElementById('deposit_capitalization').value = 'Ежемесячно';
-                document.getElementById('deposit_advantage').value = '';
                 document.getElementById('deposit_details').value = '';
+                
+                // Очищаем преимущества (оставляем одно пустое)
+                const container = document.getElementById('deposit_advantages');
+                container.innerHTML = `
+                    <div class="advantage-item">
+                        <input type="text" class="deposit_adv" placeholder="Преимущество 1" required>
+                    </div>
+                `;
                 
                 // Перезагружаем список
                 loadDeposits();
@@ -753,7 +789,7 @@
                             <div>🆔 Telegram ID: <strong>${req.telegram_id}</strong></div>
                             <div>👤 Имя: ${req.first_name || ''} ${req.last_name || ''}</div>
                             <div>📱 Username: ${req.username ? '@' + req.username : 'нет'}</div>
-                            <div>📅 Дата: ${new Date(req.created_at).toLocaleString()}</div>
+                            <div>📅 Дата: ${new Date(req.created_at).toLocaleString('ru-RU')}</div>
                             <div>📊 Статус: <span style="color: #4caf50;">${req.status}</span></div>
                         </div>
                         ${req.username ? `

@@ -47,7 +47,7 @@ class DepositCreate(BaseModel):
     min_amount: str
     max_amount: str
     capitalization: str = "Ежемесячно"
-    advantage: str
+    advantage: list[str]  # JSONB поле
     details: str
 
 class ContactRequest(BaseModel):
@@ -166,7 +166,7 @@ async def create_preferential_table():
 
 @app.get("/api/create-deposits-table")
 async def create_deposits_table():
-    """Создать таблицу для вкладов"""
+    """Создать таблицу для вкладов с JSONB полем advantage"""
     try:
         async with async_session_factory() as session:
             await session.execute(text("""
@@ -178,12 +178,12 @@ async def create_deposits_table():
                     min_amount VARCHAR(50) NOT NULL,
                     max_amount VARCHAR(50) NOT NULL,
                     capitalization VARCHAR(50) DEFAULT 'Ежемесячно',
-                    advantage TEXT NOT NULL,
+                    advantage JSONB NOT NULL DEFAULT '[]'::jsonb,
                     details TEXT NOT NULL
                 )
             """))
             await session.commit()
-            return {"status": "success", "message": "✅ Таблица deposits создана!"}
+            return {"status": "success", "message": "✅ Таблица deposits создана с JSONB!"}
     except Exception as e:
         return {"status": "error", "message": str(e)}
 
@@ -330,7 +330,7 @@ async def seed_preferential():
 
 @app.get("/api/seed-deposits")
 async def seed_deposits():
-    """Добавить тестовые вклады"""
+    """Добавить тестовые вклады с JSONB преимуществами"""
     try:
         async with async_session_factory() as session:
             result = await session.execute(text("SELECT COUNT(*) FROM deposits"))
@@ -340,19 +340,29 @@ async def seed_deposits():
                 await session.execute(text("""
                     INSERT INTO deposits (name, rate, term, min_amount, max_amount, capitalization, advantage, details) VALUES
                     ('Доходный', '12.5%', '1 год', '100 BYN', '50 000 BYN', 'Ежемесячно', 
-                     'Высокая доходность', 'Вклад с максимальной процентной ставкой. Пополнение возможно.'),
+                     :adv1, 
+                     'Вклад с максимальной процентной ставкой. Пополнение возможно.'),
                     
                     ('Накопительный', '9.5%', '3-6 месяцев', '50 BYN', '25 000 BYN', 'В конце срока', 
-                     'Краткосрочный вклад', 'Идеально для временного хранения средств. Частичное снятие без потери процентов.'),
+                     :adv2, 
+                     'Идеально для временного хранения средств. Частичное снятие без потери процентов.'),
                     
                     ('Пенсионный', '10.5%', '2 года', '10 BYN', '100 000 BYN', 'Ежемесячно', 
-                     'Для пенсионеров', 'Специальные условия для пенсионеров. Возможность ежемесячной выплаты процентов.'),
+                     :adv3, 
+                     'Специальные условия для пенсионеров. Возможность ежемесячной выплаты процентов.'),
                     
                     ('Сберегательный', '11%', '1.5 года', '500 BYN', '75 000 BYN', 'Ежемесячно', 
-                     'Оптимальный выбор', 'Сбалансированные условия. Возможно пополнение и частичное снятие.')
-                """))
+                     :adv4, 
+                     'Сбалансированные условия. Возможно пополнение и частичное снятие.')
+                """),
+                {
+                    "adv1": json.dumps(["Высокая доходность", "Пополнение возможно", "Частичное снятие"]),
+                    "adv2": json.dumps(["Краткосрочный", "Быстрый доход", "Гибкие условия"]),
+                    "adv3": json.dumps(["Для пенсионеров", "Ежемесячные выплаты", "Льготная ставка"]),
+                    "adv4": json.dumps(["Оптимальный выбор", "Сбалансированные условия", "Надежность"])
+                })
                 await session.commit()
-                return {"status": "success", "message": "✅ Тестовые вклады добавлены!", "count": 4}
+                return {"status": "success", "message": "✅ Тестовые вклады добавлены с JSONB!", "count": 4}
             else:
                 return {"status": "info", "message": f"ℹ️ В таблице уже есть {count} записей"}
     except Exception as e:
@@ -585,14 +595,33 @@ async def delete_preferential_loan(loan_id: int):
 
 @app.get("/api/deposits")
 async def get_all_deposits():
-    """Получить все вклады"""
+    """Получить все вклады с JSONB преимуществами"""
     try:
         async with async_session_factory() as session:
             result = await session.execute(
                 text("SELECT * FROM deposits ORDER BY id")
             )
             rows = result.mappings().all()
-            return [dict(row) for row in rows]
+            
+            deposits = []
+            for row in rows:
+                deposit_dict = dict(row)
+                # Парсим JSONB поле advantage
+                if deposit_dict.get('advantage'):
+                    try:
+                        if isinstance(deposit_dict['advantage'], str):
+                            deposit_dict['advantage'] = json.loads(deposit_dict['advantage'])
+                        elif isinstance(deposit_dict['advantage'], list):
+                            pass
+                        else:
+                            deposit_dict['advantage'] = [str(deposit_dict['advantage'])]
+                    except:
+                        deposit_dict['advantage'] = [str(deposit_dict['advantage'])]
+                else:
+                    deposit_dict['advantage'] = []
+                deposits.append(deposit_dict)
+            
+            return deposits
     except Exception as e:
         print(f"Error in get_all_deposits: {e}")
         return []
@@ -606,22 +635,45 @@ async def get_deposit(deposit_id: int):
                 text("SELECT * FROM deposits WHERE id = :id"),
                 {"id": deposit_id}
             )
-            deposit = result.mappings().first()
-            if not deposit:
+            row = result.mappings().first()
+            if not row:
                 raise HTTPException(status_code=404, detail="Вклад не найден")
-            return dict(deposit)
+            
+            deposit_dict = dict(row)
+            # Парсим JSONB поле advantage
+            if deposit_dict.get('advantage'):
+                try:
+                    if isinstance(deposit_dict['advantage'], str):
+                        deposit_dict['advantage'] = json.loads(deposit_dict['advantage'])
+                except:
+                    deposit_dict['advantage'] = [str(deposit_dict['advantage'])]
+            else:
+                deposit_dict['advantage'] = []
+            
+            return deposit_dict
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
 @app.post("/api/deposits")
 async def create_deposit(deposit: DepositCreate):
-    """Добавить новый вклад"""
+    """Добавить новый вклад с JSONB преимуществами"""
     try:
         async with async_session_factory() as session:
+            advantages_json = json.dumps(deposit.advantage, ensure_ascii=False)
+            
             await session.execute(text("""
                 INSERT INTO deposits (name, rate, term, min_amount, max_amount, capitalization, advantage, details)
                 VALUES (:name, :rate, :term, :min_amount, :max_amount, :capitalization, :advantage, :details)
-            """), deposit.model_dump())
+            """), {
+                "name": deposit.name,
+                "rate": deposit.rate,
+                "term": deposit.term,
+                "min_amount": deposit.min_amount,
+                "max_amount": deposit.max_amount,
+                "capitalization": deposit.capitalization,
+                "advantage": advantages_json,
+                "details": deposit.details
+            })
             await session.commit()
             return {"status": "success", "message": "✅ Вклад успешно добавлен"}
     except Exception as e:
@@ -706,5 +758,5 @@ async def api_status():
     return {
         "message": "AurumBank API is working!",
         "database": db_status,
-        "version": "5.0.0"
+        "version": "6.0.0"
     }
