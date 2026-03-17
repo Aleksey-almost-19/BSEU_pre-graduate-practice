@@ -4,7 +4,7 @@
         tg.ready();
 
         // API URL
-        const API_URL = 'https://bseu-pre-graduate-practice.onrender.com';
+        const API_URL = 'http://localhost:8000';
 
         // Загрузка кредитов при открытии страницы
         document.addEventListener('DOMContentLoaded', async () => {

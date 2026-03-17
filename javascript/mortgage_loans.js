@@ -2,7 +2,7 @@ const tg = window.Telegram.WebApp;
         tg.expand();
         tg.ready();
 
-        const API_URL = 'https://bseu-pre-graduate-practice.onrender.com';
+        const API_URL = 'http://localhost:8000';
 
         document.addEventListener('DOMContentLoaded', async () => {
             await loadMortgageLoans();

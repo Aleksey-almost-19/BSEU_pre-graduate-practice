@@ -8,6 +8,7 @@ import os
 import sys
 import json
 import traceback
+import uvicorn
 
 # ===========================================
 # ИМПОРТЫ ИЗ ПРОЕКТА
@@ -760,3 +761,12 @@ async def api_status():
         "database": db_status,
         "version": "6.0.0"
     }
+
+if __name__ == "__main__":
+    print("=" * 60)
+    print("🚀 ЗАПУСК AURUMBANK API")
+    print("=" * 60)
+    print(f"📡 Сервер запускается на http://localhost:8000")
+    print(f"📊 Документация: http://localhost:8000/docs")
+    print("=" * 60)
+    uvicorn.run("api:app", host="0.0.0.0", port=8000, reload=True)
