@@ -2,7 +2,9 @@ const tg = window.Telegram.WebApp;
         tg.expand();
         tg.ready();
 
-        const API_URL = 'http://localhost:8000';
+        // Автоматическое определение API URL
+const API_URL = window.location.origin;
+console.log('API URL:', API_URL); // для отладки
 
         document.addEventListener('DOMContentLoaded', async () => {
             await loadMortgageLoans();
