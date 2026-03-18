@@ -66,3 +66,39 @@
                 tg.showAlert('Аурумбанк - Ваш надежный финансовый партнер');
             });
         });
+        // Функция перехода на страницу кредитов
+        function goToCredits() {
+            window.location.href = 'loans.html';
+        }
+
+        // Функция перехода на страницу вкладов (создадим позже)
+        function goToDeposits() {
+            
+             window.location.href = 'deposits.html';
+        }
+
+        // Анимация появления
+        document.addEventListener('DOMContentLoaded', function() {
+            const elements = document.querySelectorAll('.fade-in');
+            elements.forEach((el, index) => {
+                setTimeout(() => {
+                    el.style.opacity = '1';
+                    el.style.transform = 'translateY(0)';
+                }, index * 150);
+            });
+        });
+
+        // Дополнительная проверка для десктопа
+        function adjustFooter() {
+            const footer = document.querySelector('.footer');
+            const windowHeight = window.innerHeight;
+            const bodyHeight = document.body.scrollHeight;
+            
+            if (window.innerWidth > 768 && bodyHeight < windowHeight) {
+                // Если контента мало, футер и так прижат flex'ом
+                console.log('Desktop view - footer adjusted');
+            }
+        }
+
+        window.addEventListener('load', adjustFooter);
+        window.addEventListener('resize', adjustFooter);
