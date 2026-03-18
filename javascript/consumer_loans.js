@@ -3,8 +3,9 @@
         tg.expand();
         tg.ready();
 
-        // API URL
-        const API_URL = 'http://localhost:8000';
+        // Автоматическое определение API URL
+        const API_URL = window.location.origin;
+        console.log('API URL:', API_URL); // для отладки
 
         // Загрузка кредитов при открытии страницы
         document.addEventListener('DOMContentLoaded', async () => {
@@ -95,6 +96,7 @@
             const container = document.getElementById('loans-container');
             
             try {
+
                 const response = await fetch(`${API_URL}/api/consumer-loans`);
                 
                 if (!response.ok) {

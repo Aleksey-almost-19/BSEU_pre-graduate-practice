@@ -10,7 +10,7 @@ print("🤖 BOT FOR BSEU PRE-GRADUATE PRACTICE")
 print("=" * 60)
 
 # Ваши ссылки
-WEB_APP_URL = "https://bseu-pre-graduate-practice.onrender.com"  # Render хостинг
+WEB_APP_URL = "https://tambra-vitrifiable-jonnie.ngrok-free.dev/"
 ADMIN_URL = "https://bseu-pre-graduate-practice.onrender.com/admin.html"  # Админка
 BOT_LINK = "t.me/FromForBank_bot/WebApp"  # Ссылка от BotFather
 

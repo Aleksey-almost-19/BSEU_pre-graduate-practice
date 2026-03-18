@@ -3,8 +3,8 @@ const tg = window.Telegram.WebApp;
         tg.ready();
 
         // Автоматическое определение API URL
-const API_URL = window.location.origin;
-console.log('API URL:', API_URL); // для отладки
+        const API_URL = window.location.origin;
+        console.log('API URL:', API_URL); // для отладки
 
         document.addEventListener('DOMContentLoaded', async () => {
             await loadMortgageLoans();

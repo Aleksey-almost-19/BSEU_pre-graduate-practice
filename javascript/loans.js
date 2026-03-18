@@ -21,9 +21,6 @@ tg.MainButton.onClick(function() {
 tg.setHeaderColor('#2e7d32');
 tg.setBackgroundColor('#000000');
 
-// API URL для локальной разработки
-const API_URL = 'http://localhost:8000';
-
 // Функция выбора кредита
 function selectCredit(type) {
     let title = '';
@@ -99,6 +96,7 @@ function openContactForm() {
         return;
     }
     
+    // ПЕРВОЕ ОКНО - ПОДТВЕРЖДЕНИЕ
     tg.showPopup({
         title: '📞 Связь с менеджером',
         message: `Хотите, чтобы менеджер связался с вами?\n\nВаш ID: ${user.id}\nИмя: ${user.first_name || ''}`,
@@ -115,15 +113,20 @@ function openContactForm() {
     }, async function(buttonId) {
         if (buttonId === '✅ Да, жду звонка') {
             try {
-                // Показываем сообщение о загрузке
+                // ВТОРОЕ ОКНО - УСПЕХ (появляется сразу после нажатия)
                 tg.showPopup({
-                    title: '⏳ Отправка...',
-                    message: 'Сохраняем вашу заявку',
-                    buttons: []
+                    title: '✅ Заявка принята',
+                    message: 'Спасибо! Менеджер свяжется с вами в течение 10 минут.',
+                    buttons: [{
+                        type: 'ok',
+                        text: 'Хорошо'
+                    }]
                 });
                 
-                // Отправляем запрос на сервер
-                const response = await fetch(`${API_URL}/api/contact-request`, {
+                // Отправка данных на сервер (в фоне)
+                const apiUrl = window.location.origin; // Автоматически определяет текущий домен
+                
+                const response = await fetch(`${apiUrl}/api/contact-request`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -138,14 +141,20 @@ function openContactForm() {
                 
                 const result = await response.json();
                 
-                if (result.status === 'success') {
-                    tg.showAlert('✅ Спасибо! Менеджер свяжется с вами в ближайшее время.');
-                } else {
-                    tg.showAlert('❌ Ошибка: ' + (result.message || 'Неизвестная ошибка'));
+                if (result.status !== 'success') {
+                    console.error('Ошибка сохранения заявки:', result.message);
                 }
             } catch (error) {
                 console.error('Ошибка:', error);
-                tg.showAlert('❌ Ошибка соединения с сервером. Проверьте интернет.');
+                // Если ошибка, показываем уведомление
+                tg.showPopup({
+                    title: '⚠️ Внимание',
+                    message: 'Заявка принята, но возникла проблема с отправкой данных. Менеджер свяжется с вами в любом случае.',
+                    buttons: [{
+                        type: 'ok',
+                        text: 'Понятно'
+                    }]
+                });
             }
         }
     });
@@ -181,7 +190,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
     
-    // Добавляем обработчики клавиатуры для доступности
+    // Добавляем обработчики клавиатуры
     const creditCards = document.querySelectorAll('.credit-card');
     creditCards.forEach(card => {
         card.setAttribute('tabindex', '0');
