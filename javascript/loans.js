@@ -13,7 +13,6 @@ tg.MainButton.setParams({
 // Показываем кнопку назад
 tg.MainButton.show();
 tg.MainButton.onClick(function() {
-    // Возвращаемся на главную страницу
     window.location.href = 'index.html';
 });
 
@@ -41,7 +40,6 @@ function selectCredit(type) {
             break;
     }
     
-    // Анимация выбора
     const card = event.currentTarget;
     card.style.transform = 'scale(0.97)';
     card.style.backgroundColor = '#2a2a2a';
@@ -51,7 +49,6 @@ function selectCredit(type) {
         card.style.backgroundColor = '';
     }, 150);
     
-    // Показываем уведомление
     tg.showAlert(`Вы выбрали: ${title}\n${amount}\n\nМенеджер свяжется с вами для уточнения деталей.`);
 }
 
@@ -60,7 +57,6 @@ function showInfo(type) {
     const item = event.currentTarget;
     const title = item.querySelector('strong').textContent;
     
-    // Анимация
     item.style.transform = 'scale(0.98)';
     item.style.backgroundColor = '#2a2a2a';
     
@@ -69,102 +65,57 @@ function showInfo(type) {
         item.style.backgroundColor = '';
     }, 150);
     
-    // Показываем всплывающее окно
-    tg.showPopup({
-        title: 'Информация',
-        message: title + '\n\nБолее подробную информацию можно получить в отделении банка или на официальном сайте.',
-        buttons: [{
-            type: 'ok',
-            text: 'Понятно'
-        }]
-    });
+    // Используем showAlert вместо showPopup
+    tg.showAlert(title + '\n\nБолее подробную информацию можно получить в отделении банка или на официальном сайте.');
 }
 
-// Функция открытия формы связи (ИСПРАВЛЕННАЯ)
+// Функция открытия формы связи (ИСПРАВЛЕННАЯ - БЕЗ showPopup)
 function openContactForm() {
-    console.log('Кнопка нажата'); // Для отладки
+    console.log('Кнопка нажата');
     
-    // Получаем данные пользователя из Telegram WebApp
     const user = tg.initDataUnsafe?.user;
     
     if (!user) {
-        tg.showPopup({
-            title: 'Ошибка',
-            message: 'Не удалось получить данные пользователя. Запустите приложение через Telegram.',
-            buttons: [{ type: 'ok', text: 'Понятно' }]
-        });
+        tg.showAlert('Не удалось получить данные пользователя. Запустите приложение через Telegram.');
         return;
     }
     
-    // ПЕРВОЕ ОКНО - ПОДТВЕРЖДЕНИЕ
-    tg.showPopup({
-        title: '📞 Связь с менеджером',
-        message: `Хотите, чтобы менеджер связался с вами?\n\nВаш ID: ${user.id}\nИмя: ${user.first_name || ''}`,
-        buttons: [
-            {
-                type: 'default',
-                text: '✅ Да, жду звонка'
+    // Используем стандартный confirm браузера
+    if (confirm(`Хотите, чтобы менеджер связался с вами?\n\nВаш ID: ${user.id}\nИмя: ${user.first_name || ''}`)) {
+        // Отправка данных на сервер
+        const apiUrl = window.location.origin;
+        
+        fetch(`${apiUrl}/api/contact-request`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
             },
-            {
-                type: 'cancel',
-                text: '❌ Отмена'
+            body: JSON.stringify({
+                telegram_id: user.id,
+                username: user.username || '',
+                first_name: user.first_name || '',
+                last_name: user.last_name || ''
+            })
+        })
+        .then(async response => {
+            const result = await response.json();
+            if (result.status === 'success') {
+                tg.showAlert('✅ Спасибо! Менеджер свяжется с вами в течение 10 минут.');
+            } else {
+                tg.showAlert('❌ Ошибка при отправке заявки. Попробуйте позже.');
             }
-        ]
-    }, async function(buttonId) {
-        if (buttonId === '✅ Да, жду звонка') {
-            try {
-                // ВТОРОЕ ОКНО - УСПЕХ (появляется сразу после нажатия)
-                tg.showPopup({
-                    title: '✅ Заявка принята',
-                    message: 'Спасибо! Менеджер свяжется с вами в течение 10 минут.',
-                    buttons: [{
-                        type: 'ok',
-                        text: 'Хорошо'
-                    }]
-                });
-                
-                // Отправка данных на сервер (в фоне)
-                const apiUrl = window.location.origin; // Автоматически определяет текущий домен
-                
-                const response = await fetch(`${apiUrl}/api/contact-request`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        telegram_id: user.id,
-                        username: user.username || '',
-                        first_name: user.first_name || '',
-                        last_name: user.last_name || ''
-                    })
-                });
-                
-                const result = await response.json();
-                
-                if (result.status !== 'success') {
-                    console.error('Ошибка сохранения заявки:', result.message);
-                }
-            } catch (error) {
-                console.error('Ошибка:', error);
-                // Если ошибка, показываем уведомление
-                tg.showPopup({
-                    title: '⚠️ Внимание',
-                    message: 'Заявка принята, но возникла проблема с отправкой данных. Менеджер свяжется с вами в любом случае.',
-                    buttons: [{
-                        type: 'ok',
-                        text: 'Понятно'
-                    }]
-                });
-            }
-        }
-    });
+        })
+        .catch(error => {
+            console.error('Ошибка:', error);
+            tg.showAlert('❌ Ошибка соединения с сервером');
+        });
+    }
 }
 
 // Инициализация при загрузке
 document.addEventListener('DOMContentLoaded', function() {
     console.log('Страница кредитов загружена');
     
-    // Проверяем загрузку логотипа
     const logos = document.querySelectorAll('.logo-placeholder');
     
     logos.forEach(logo => {
@@ -183,14 +134,12 @@ document.addEventListener('DOMContentLoaded', function() {
             logo.style.fontWeight = 'bold';
         };
         
-        // Делаем логотип кликабельным
         logo.style.cursor = 'pointer';
         logo.addEventListener('click', function() {
             tg.showAlert('Аурумбанк - Ваш надежный финансовый партнер');
         });
     });
     
-    // Добавляем обработчики клавиатуры
     const creditCards = document.querySelectorAll('.credit-card');
     creditCards.forEach(card => {
         card.setAttribute('tabindex', '0');
@@ -211,7 +160,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
     
-    // Логика скрытия/показа логотипа при скролле на мобильных
     let lastScrollTop = 0;
     const mobileLogo = document.querySelector('.mobile-logo');
     const scrollThreshold = 50;

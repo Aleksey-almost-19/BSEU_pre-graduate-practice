@@ -307,7 +307,8 @@
         tg.ready();
 
         // API URL
-        const API_URL = 'https://bseu-pre-graduate-practice.onrender.com';
+        const API_URL = window.location.origin;
+        console.log('API URL:', API_URL); // для отладки
 
         // Загрузка вкладов при открытии страницы
         document.addEventListener('DOMContentLoaded', async () => {
