@@ -5,16 +5,13 @@ tg.ready();
 
 // Автоматическое определение API URL
 const API_URL = window.location.origin;
-console.log('API URL:', API_URL); // для отладки
+console.log('API URL:', API_URL);
 
 // Загрузка кредитов при открытии страницы
 document.addEventListener('DOMContentLoaded', async () => {
     await loadConsumerLoans();
-    
-    // Инициализация скролла для мобильного логотипа
     initMobileLogoScroll();
     
-    // Проверяем загрузку логотипа
     const logos = document.querySelectorAll('.logo-placeholder');
     
     logos.forEach(logo => {
@@ -33,14 +30,12 @@ document.addEventListener('DOMContentLoaded', async () => {
             logo.style.fontWeight = 'bold';
         };
         
-        // Делаем логотип кликабельным
         logo.style.cursor = 'pointer';
         logo.addEventListener('click', function() {
-            tg.showAlert('Аурумбанк - Ваш надежный финансовый партнер');
+            alert('Аурумбанк - Ваш надежный финансовый партнер');
         });
     });
     
-    // Добавляем обработчики клавиатуры для доступности
     const creditCards = document.querySelectorAll('.credit-card');
     creditCards.forEach(card => {
         card.setAttribute('tabindex', '0');
@@ -62,7 +57,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
 });
 
-// Функция для скролла мобильного логотипа
 function initMobileLogoScroll() {
     let lastScrollTop = 0;
     const scrollThreshold = 50;
@@ -87,7 +81,6 @@ function initMobileLogoScroll() {
     });
 }
 
-// Функция загрузки кредитов из PostgreSQL
 async function loadConsumerLoans() {
     const container = document.getElementById('loans-container');
     
@@ -105,7 +98,6 @@ async function loadConsumerLoans() {
             return;
         }
         
-        // Отображаем кредиты
         container.innerHTML = `
             <div class="loans-grid">
                 ${loans.map(loan => createLoanCard(loan)).join('')}
@@ -123,7 +115,6 @@ async function loadConsumerLoans() {
     }
 }
 
-// Создание HTML для карточки кредита
 function createLoanCard(loan) {
     return `
         <div class="loan-card">
@@ -154,7 +145,6 @@ function createLoanCard(loan) {
     `;
 }
 
-// Показать детальную информацию о кредите
 async function showLoanDetails(loanId) {
     const modal = document.getElementById('loanModal');
     const modalContent = document.getElementById('modalContent');
@@ -215,19 +205,13 @@ async function showLoanDetails(loanId) {
         
     } catch (error) {
         console.error('Error loading loan details:', error);
-        tg.showAlert('Не удалось загрузить информацию о кредите');
+        alert('Не удалось загрузить информацию о кредите');
     }
 }
 
-// Функция для отображения формы с ФИО и телефоном
 function showApplicationForm(loanId) {
-    // Получаем данные пользователя из Telegram
-    const user = tg.initDataUnsafe?.user;
-    
-    // Закрываем предыдущее модальное окно
     closeModal();
     
-    // Создаем HTML для формы заявки
     const formHtml = `
         <div style="padding: 20px;">
             <h3 style="color: #4caf50; margin-bottom: 20px; text-align: center; font-size: 22px;">Оформление заявки</h3>
@@ -257,7 +241,6 @@ function showApplicationForm(loanId) {
         </div>
     `;
     
-    // Создаем новое модальное окно для формы
     const formModal = document.createElement('div');
     formModal.id = 'formModal';
     formModal.style.cssText = `
@@ -291,39 +274,28 @@ function showApplicationForm(loanId) {
     document.body.appendChild(formModal);
 }
 
-// Функция отправки заявки
 async function submitApplication(loanId) {
     const fullname = document.getElementById('fullname').value.trim();
     const phone = document.getElementById('phone').value.trim();
     
-    // Валидация
     if (!fullname) {
-        tg.showAlert('Пожалуйста, введите ваше ФИО');
+        alert('Пожалуйста, введите ваше ФИО');
         return;
     }
     
     if (!phone) {
-        tg.showAlert('Пожалуйста, введите номер телефона');
+        alert('Пожалуйста, введите номер телефона');
         return;
     }
     
     if (phone.length < 5) {
-        tg.showAlert('Пожалуйста, введите корректный номер телефона');
+        alert('Пожалуйста, введите корректный номер телефона');
         return;
     }
     
-    // Получаем данные пользователя из Telegram
     const user = tg.initDataUnsafe?.user;
     
     try {
-        // Показываем индикатор загрузки
-        tg.showPopup({
-            title: '⏳ Отправка',
-            message: 'Отправляем вашу заявку...',
-            buttons: []
-        });
-        
-        // Отправляем данные на сервер
         const response = await fetch(`${API_URL}/api/contact-request`, {
             method: 'POST',
             headers: {
@@ -342,31 +314,21 @@ async function submitApplication(loanId) {
         
         const result = await response.json();
         
-        // Закрываем форму
         closeFormModal();
         
-        // Показываем результат
         if (result.status === 'success') {
-            tg.showPopup({
-                title: '✅ Заявка отправлена',
-                message: 'Спасибо! Менеджер свяжется с вами в течение 10 минут.',
-                buttons: [{
-                    type: 'ok',
-                    text: 'Хорошо'
-                }]
-            });
+            alert('✅ Спасибо! Менеджер свяжется с вами в течение 10 минут.');
         } else {
-            tg.showAlert('❌ Ошибка при отправке заявки. Попробуйте позже.');
+            alert('❌ Ошибка при отправке заявки. Попробуйте позже.');
         }
         
     } catch (error) {
         console.error('Ошибка:', error);
         closeFormModal();
-        tg.showAlert('❌ Ошибка соединения с сервером');
+        alert('❌ Ошибка соединения с сервером');
     }
 }
 
-// Функция закрытия формы
 function closeFormModal() {
     const formModal = document.getElementById('formModal');
     if (formModal) {
@@ -374,12 +336,10 @@ function closeFormModal() {
     }
 }
 
-// Закрыть модальное окно
 function closeModal() {
     document.getElementById('loanModal').style.display = 'none';
 }
 
-// Закрытие модальных окон по клику вне контента
 window.onclick = function(event) {
     const modal = document.getElementById('loanModal');
     if (event.target === modal) {
